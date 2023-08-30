@@ -1,0 +1,298 @@
+{
+  "geonach_idle": {
+    "category": "hostile",
+    "subtitle": "sounds.legendarycreatures.geonach_idle",
+    "sounds": [
+      {
+        "name": "legendarycreatures:geonach_idle",
+        "stream": false
+      }
+    ]
+  },
+  "geonach_hurt": {
+    "category": "hostile",
+    "subtitle": "sounds.legendarycreatures.geonach_hurt",
+    "sounds": [
+      {
+        "name": "legendarycreatures:geonach_hurt",
+        "stream": false
+      }
+    ]
+  },
+  "geonach_death": {
+    "category": "hostile",
+    "subtitle": "sounds.legendarycreatures.geonach_death",
+    "sounds": [
+      {
+        "name": "legendarycreatures:geonach_death",
+        "stream": false
+      }
+    ]
+  },
+  "mojo_step": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.mojo_step",
+    "sounds": [
+      {
+        "name": "legendarycreatures:mojo_step",
+        "stream": false
+      }
+    ]
+  },
+  "mojo_death": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.mojo_death",
+    "sounds": [
+      {
+        "name": "legendarycreatures:mojo_death",
+        "stream": false
+      }
+    ]
+  },
+  "mojo_idle": {
+    "category": "hostile",
+    "subtitle": "sounds.legendarycreatures.mojo_idle",
+    "sounds": [
+      {
+        "name": "legendarycreatures:mojo_idle",
+        "stream": false
+      }
+    ]
+  },
+  "mojo_hurt": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.mojo_hurt",
+    "sounds": [
+      {
+        "name": "legendarycreatures:mojo_hurt",
+        "stream": false
+      }
+    ]
+  },
+  "hound_hurt": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.hound_hurt",
+    "sounds": [
+      {
+        "name": "legendarycreatures:hound_hurt",
+        "stream": false
+      }
+    ]
+  },
+  "hound_death": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.hound_death",
+    "sounds": [
+      {
+        "name": "legendarycreatures:hound_death",
+        "stream": false
+      }
+    ]
+  },
+  "hound_idle": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.hound_idle",
+    "sounds": [
+      {
+        "name": "legendarycreatures:hound_idle",
+        "stream": false
+      }
+    ]
+  },
+  "hound_step": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.hound_step",
+    "sounds": [
+      {
+        "name": "legendarycreatures:hound_step",
+        "stream": false
+      }
+    ]
+  },
+  "scarecrow_spawn": {
+    "category": "hostile",
+    "subtitle": "sounds.legendarycreatures.scarecrow_spawn",
+    "sounds": [
+      {
+        "name": "legendarycreatures:scarecrow_spawn",
+        "stream": false
+      }
+    ]
+  },
+  "scarecrow_death": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.scarecrow_death",
+    "sounds": [
+      {
+        "name": "legendarycreatures:scarecrow_death",
+        "stream": false
+      }
+    ]
+  },
+  "scarecrow_step": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.scarecrow_step",
+    "sounds": [
+      {
+        "name": "legendarycreatures:scarecrow_step",
+        "stream": false
+      }
+    ]
+  },
+  "wisp_death": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.wisp_death",
+    "sounds": [
+      {
+        "name": "legendarycreatures:wisp_death",
+        "stream": false
+      }
+    ]
+  },
+  "wisp_idle": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.wisp_idle",
+    "sounds": [
+      {
+        "name": "legendarycreatures:wisp_idle",
+        "stream": false
+      }
+    ]
+  },
+  "scorpion_death": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.scorpion_death",
+    "sounds": [
+      {
+        "name": "legendarycreatures:scorpion_death",
+        "stream": false
+      }
+    ]
+  },
+  "scorpion_hurt": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.scorpion_hurt",
+    "sounds": [
+      {
+        "name": "legendarycreatures:scorpion_hurt",
+        "stream": false
+      }
+    ]
+  },
+  "scorpion_idle": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.scorpion_idle",
+    "sounds": [
+      {
+        "name": "legendarycreatures:scorpion_idle",
+        "stream": false
+      }
+    ]
+  },
+  "scorpion_step": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.scorpion_step",
+    "sounds": [
+      {
+        "name": "legendarycreatures:scorpion_step",
+        "stream": false
+      }
+    ]
+  },
+  "corpse_eater_spawn": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.corpse_eater_spawn",
+    "sounds": [
+      {
+        "name": "legendarycreatures:corpse_eater/spawn0",
+        "stream": false
+      },
+	  {
+        "name": "legendarycreatures:corpse_eater/spawn1",
+        "stream": false
+      },
+	  {
+        "name": "legendarycreatures:corpse_eater/spawn2",
+        "stream": false
+      }
+    ]
+  },
+  "corpse_eater_death": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.corpse_eater_death",
+    "sounds": [
+      {
+        "name": "legendarycreatures:corpse_eater/death",
+        "stream": false
+      }
+    ]
+  },
+  "corpse_eater_hurt": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.corpse_eater_hurt",
+    "sounds": [
+      {
+        "name": "legendarycreatures:corpse_eater/hurt0",
+        "stream": false
+      },
+	  {
+        "name": "legendarycreatures:corpse_eater/hurt1",
+        "stream": false
+      },
+	  {
+        "name": "legendarycreatures:corpse_eater/hurt2",
+        "stream": false
+      }
+    ]
+  },
+  "corpse_eater_idle": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.corpse_eater_idle",
+    "sounds": [
+      {
+        "name": "legendarycreatures:corpse_eater/idle0",
+        "stream": false
+      },
+	  {
+        "name": "legendarycreatures:corpse_eater/idle1",
+        "stream": false
+      },
+	  {
+        "name": "legendarycreatures:corpse_eater/idle2",
+        "stream": false
+      },
+	  {
+        "name": "legendarycreatures:corpse_eater/idle3",
+        "stream": false
+      }
+    ]
+  },
+  "corpse_eater_step": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.corpse_eater_step",
+    "sounds": [
+      {
+        "name": "legendarycreatures:corpse_eater/step0",
+        "stream": false
+      },
+	  {
+        "name": "legendarycreatures:corpse_eater/step1",
+        "stream": false
+      },
+	  {
+        "name": "legendarycreatures:corpse_eater/step2",
+        "stream": false
+      }
+    ]
+  },
+  "corpse_eater_melee_attack": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.corpse_eater_melee_attack",
+    "sounds": [
+      {
+        "name": "legendarycreatures:corpse_eater/attack",
+        "stream": false
+      }
+    ]
+  }
+}
