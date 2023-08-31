@@ -14,6 +14,7 @@ import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
@@ -128,11 +129,10 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
         super.remove(keepData);
     }
 
-    public static void spawn(IWorld world, BlockPos pos, BlockState fromBlockStateSpawn) {
+    public static void spawn(IWorld world, Vector3d pos) {
         if (!world.isClientSide()) {
             ScorpionEntity entityToSpawn = EntityTypeRegistry.SCORPION.get().create((World) world);
             if (entityToSpawn != null) {
-                entityToSpawn.fromBlock(fromBlockStateSpawn);
                 WorldUtil.spawnEntity(entityToSpawn, world, pos);
             }
         }

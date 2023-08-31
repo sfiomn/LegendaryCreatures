@@ -29,7 +29,6 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 import java.util.Random;
 
 public abstract class AnimatedCreatureEntity extends CreatureEntity implements IAnimatable {
-    protected BlockState fromBlockStateSpawn;
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     private static final DataParameter<Integer> VARIANT = EntityDataManager.defineId(AnimatedCreatureEntity.class, DataSerializers.INT);
@@ -43,11 +42,6 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
 
     protected AnimatedCreatureEntity(EntityType<? extends CreatureEntity> type, World world) {
         super(type, world);
-    }
-
-    public AnimatedCreatureEntity fromBlock(BlockState fromBlockStateSpawn) {
-        this.fromBlockStateSpawn = fromBlockStateSpawn;
-        return this;
     }
 
     @Override
@@ -173,23 +167,5 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
         }
 
         super.customServerAiStep();
-    }
-
-    @Override
-    public void tick() {
-        if (getSpawnTimer() > 0 && level != null) {
-            //MinecraftClient.getInstance().particleManager.addBlockBreakParticles(this.getBlockPos().down(), world.getBlockState(this.getBlockPos().down()));
-            Random random = this.getRandom();
-            BlockState blockstate = fromBlockStateSpawn;
-            if (fromBlockStateSpawn != null && blockstate.getRenderShape() != BlockRenderType.INVISIBLE) {
-                for(int i = 0; i < 30; ++i) {
-                    double d0 = this.getX() + (double) ((random.nextFloat() * 1.4F) - 0.7);
-                    double d1 = this.getY();
-                    double d2 = this.getZ() + (double) ((random.nextFloat() * 1.4F) - 0.7);
-                    this.level.addParticle(new BlockParticleData(ParticleTypes.BLOCK, blockstate), d0, d1, d2, 0.0D, 0.0D, 0.0D);
-                }
-            }
-        }
-        super.tick();
     }
 }

@@ -99,11 +99,10 @@ public class WispEntity extends AnimatedCreatureEntity implements IFlyingAnimal 
         return super.hurt(source, amount);
     }
 
-    public static void spawn(IWorld world, BlockPos pos, BlockState fromBlockStateSpawn) {
+    public static void spawn(IWorld world, Vector3d pos) {
         if (!world.isClientSide()) {
             WispEntity entityToSpawn = EntityTypeRegistry.WISP.get().create((World) world);
             if (entityToSpawn != null) {
-                entityToSpawn.fromBlock(fromBlockStateSpawn);
                 WorldUtil.spawnEntity(entityToSpawn, world, pos);
             }
         }

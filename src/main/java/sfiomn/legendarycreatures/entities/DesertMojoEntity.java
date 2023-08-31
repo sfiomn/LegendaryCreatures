@@ -5,6 +5,7 @@ import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
@@ -28,11 +29,10 @@ public class DesertMojoEntity extends MojoEntity {
         return baseAttackDuration;
     }
 
-    public static void spawn(IWorld world, BlockPos pos, BlockState fromBlockStateSpawn) {
+    public static void spawn(IWorld world, Vector3d pos) {
         if (!world.isClientSide()) {
             DesertMojoEntity entityToSpawn = EntityTypeRegistry.DESERT_MOJO.get().create((World) world);
             if (entityToSpawn != null) {
-                entityToSpawn.fromBlock(fromBlockStateSpawn);
                 WorldUtil.spawnEntity(entityToSpawn, world, pos);
             }
         }

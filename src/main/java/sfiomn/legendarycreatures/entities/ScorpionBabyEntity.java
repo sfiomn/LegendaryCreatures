@@ -9,6 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
@@ -91,11 +92,10 @@ public class ScorpionBabyEntity extends AnimatedCreatureEntity {
         this.playSound(SoundRegistry.SCORPION_STEP.get(), 1.0F, 1.0F);
     }
 
-    public static void spawn(IWorld world, BlockPos pos, BlockState fromBlockStateSpawn) {
+    public static void spawn(IWorld world, Vector3d pos) {
         if (!world.isClientSide()) {
             ScorpionBabyEntity entityToSpawn = EntityTypeRegistry.SCORPION_BABY.get().create((World) world);
             if (entityToSpawn != null) {
-                entityToSpawn.fromBlock(fromBlockStateSpawn);
                 WorldUtil.spawnEntity(entityToSpawn, world, pos);
             }
         }

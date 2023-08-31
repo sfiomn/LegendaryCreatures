@@ -141,16 +141,20 @@ public class BaseMeleeAttackGoal extends Goal {
 
     protected void attack(LivingEntity target, double squaredDistance) {
 
-        if (this.sound != null && this.attackAnimationTick == (this.attackDuration - this.actionPoint) &&
+        if (this.sound != null && isActionPoint() &&
                 squaredDistance < getAttackReachSqr(target)) {
             mob.playSound(this.sound, 1.0F, 1.0F);
         }
 
-        if (target != null && this.attackAnimationTick == (this.attackDuration - this.actionPoint) &&
+        if (target != null && isActionPoint() &&
                 squaredDistance < getAttackReachSqr(target)) {
             mob.doHurtTarget(target);
         }
 
+    }
+
+    protected  boolean isActionPoint() {
+        return this.attackAnimationTick == (this.attackDuration - this.actionPoint);
     }
 
     protected double getAttackReachSqr(LivingEntity entity) {
