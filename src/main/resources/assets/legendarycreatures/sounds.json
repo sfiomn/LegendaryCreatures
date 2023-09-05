@@ -204,15 +204,7 @@
     "subtitle": "sounds.legendarycreatures.corpse_eater_spawn",
     "sounds": [
       {
-        "name": "legendarycreatures:corpse_eater/spawn0",
-        "stream": false
-      },
-	  {
-        "name": "legendarycreatures:corpse_eater/spawn1",
-        "stream": false
-      },
-	  {
-        "name": "legendarycreatures:corpse_eater/spawn2",
+        "name": "legendarycreatures:corpse_eater/spawn",
         "stream": false
       }
     ]

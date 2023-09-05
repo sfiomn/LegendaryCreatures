@@ -1,11 +1,22 @@
 package sfiomn.legendarycreatures.entities.goals;
 
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.Path;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
-import org.apache.commons.lang3.tuple.Pair;
+import net.minecraft.world.server.ServerWorld;
+import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
 
 import java.util.*;
@@ -18,22 +29,18 @@ public class ChargeMeleeAttackGoal extends Goal {
     private final double minDistance;
     private final SoundEvent sound;
     private final double speedModifier;
-    private final double avoidChargeAngle;
-    private final int avoidChargeTick;
-    private int originalPosCountInPastTick;
+    private final double chargeCorrectionAngle;
+    private final boolean mayDisableShield;
     private int updatePathTick;
+    private Path path;
+    private boolean pathUpdated;
     private int attackAnimationTick;
     private boolean hasAttacked;
     private long lastUseTime;
-    private int updateOriginalPosTick;
-    private final Queue<Pair<Vector3d, Vector3d>> pastPositions;
-    private Vector3d originalPos;
-    private Vector3d originalTargetPos;
-    private double targetX;
-    private double targetY;
-    private double targetZ;
+    private Vector3d chargeAxe;
+    private BlockPos targetBlockPos;
 
-    public ChargeMeleeAttackGoal(AnimatedCreatureEntity mob, int attackDuration, int hurtTick, int attackCoolDown, double minDistanceAttack, SoundEvent soundAttack, double speedModifier, double avoidChargeAngle, int avoidChargeTick) {
+    public ChargeMeleeAttackGoal(AnimatedCreatureEntity mob, int attackDuration, int hurtTick, int attackCoolDown, double minDistanceAttack, SoundEvent soundAttack, double speedModifier, double chargeCorrectionAngle, boolean mayDisableShield) {
         this.mob = mob;
         this.attackDuration = attackDuration;
         this.actionPoint = hurtTick;
@@ -41,9 +48,8 @@ public class ChargeMeleeAttackGoal extends Goal {
         this.minDistance = minDistanceAttack;
         this.sound = soundAttack;
         this.speedModifier = speedModifier;
-        this.avoidChargeAngle = avoidChargeAngle;
-        this.avoidChargeTick = avoidChargeTick;
-        this.pastPositions = new LinkedList<>();
+        this.chargeCorrectionAngle = chargeCorrectionAngle;
+        this.mayDisableShield = mayDisableShield;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
@@ -53,7 +59,7 @@ public class ChargeMeleeAttackGoal extends Goal {
     }
 
     public boolean isAttacking() {
-        return this.mob.getAttackAnimation() != AnimatedCreatureEntity.NO_ANIMATION;
+        return this.mob.getAttackAnimation() == AnimatedCreatureEntity.CHARGE_ATTACK;
     }
 
     public boolean canUse() {
@@ -67,10 +73,8 @@ public class ChargeMeleeAttackGoal extends Goal {
             } else if (!target.isAlive()) {
                 return false;
             } else {
-                Path path = this.mob.getNavigation().createPath(target, 0);
+                this.path = this.mob.getNavigation().createPath(target, 0);
                 if (path != null && this.mob.canSee(target) && this.mob.distanceToSqr(target) > minDistance * minDistance) {
-                    this.originalPos = new Vector3d(this.mob.getX(), this.mob.getY(), this.mob.getZ());
-                    this.originalTargetPos = new Vector3d(target.getX(), target.getY(), target.getZ());
                     return true;
                 } else {
                     return false;
@@ -90,18 +94,19 @@ public class ChargeMeleeAttackGoal extends Goal {
     }
 
     public void start() {
-        this.lastUseTime = this.mob.level.getGameTime();
-
+        this.mob.setAttackAnimation(AnimatedCreatureEntity.CHARGING);
         this.mob.setAggressive(true);
         this.attackAnimationTick = 0;
         this.hasAttacked = false;
         this.updatePathTick = 0;
-        this.updateOriginalPosTick = 0;
-        this.originalPosCountInPastTick = this.avoidChargeTick;
-        this.pastPositions.clear();
+        this.pathUpdated = false;
+        this.chargeAxe = Vector3d.ZERO;
+        this.targetBlockPos = BlockPos.ZERO;
     }
 
     public void stop() {
+        this.lastUseTime = this.mob.level.getGameTime();
+
         if (isAttacking())
             this.stopAttack();
 
@@ -112,53 +117,49 @@ public class ChargeMeleeAttackGoal extends Goal {
     public void tick() {
         LivingEntity target = this.mob.getTarget();
         if (target != null) {
-            if (this.originalPosCountInPastTick > 0)
-                this.originalPosCountInPastTick -= 1;
+            if (this.chargeAxe == Vector3d.ZERO)
+                this.chargeAxe = this.mob.position().subtract(target.position());
+            if (this.targetBlockPos == BlockPos.ZERO)
+                this.targetBlockPos = target.blockPosition();
 
-            double distSqrToTarget = this.mob.distanceToSqr(target);
-
-            // Add the original Mob Pos and Target Pos in the queue & read from the queue after "tick in Past"
-            // The idea is to update up where the mob can go based on where he was
-            // It allows to "avoid" the charge if you can move around the mob fast enough
-            if (--updateOriginalPosTick <= 0) {
-                this.updateOriginalPosTick = 5;
-
-                Vector3d originalPos = this.mob.getPosition(0.0f);
-                Vector3d originalTargetPos = target.getPosition(0.0f);
-
-                this.pastPositions.add(Pair.of(originalPos, originalTargetPos));
-
-                if (this.originalPosCountInPastTick == 0) {
-                    Pair<Vector3d, Vector3d> pastPosition = this.pastPositions.remove();
-                    this.originalPos = pastPosition.getLeft();
-                    this.originalTargetPos = pastPosition.getRight();
-                }
-            }
+            double distToTargetSqr = this.mob.distanceToSqr(target);
 
             // Update next target point
-            if (this.mob.canSee(target) && this.getCorrectionAngle(target) <= this.avoidChargeAngle) {
-                this.targetX = target.getX();
-                this.targetY = target.getY();
-                this.targetZ = target.getZ();
+            if (this.mob.canSee(target) && this.getAngleToChargeAxe(target) <= this.chargeCorrectionAngle && target.blockPosition() != this.targetBlockPos && !isAttacking() && !hasAttacked) {
+                this.targetBlockPos = target.blockPosition();
+                this.pathUpdated = false;
             }
 
-            // Move to target point
-            if (--updatePathTick <= 0 && getAttackReachSqr(target) / 2.0f < distSqrToTarget) {
-                if (this.mob.getNavigation().moveTo(this.targetX, this.targetY, this.targetZ, this.speedModifier)) {
-                    this.updatePathTick = 4 + this.mob.getRandom().nextInt(7);
-                } else if (!isAttacking()) {
-                    this.startAttack();
+            // Move effects
+            if (!hasAttacked) {
+                if (!this.mob.level.isClientSide()) {
+                    ((ServerWorld) this.mob.level).sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, this.mob.getX(), this.mob.getY(), this.mob.getZ(), 5, this.mob.getBbWidth() / 4.0F, 0, this.mob.getBbWidth() / 4.0F, 0.01D);
                 }
-                // Increase path calculation interval if target far away (similar to melee attack)
-                if (distSqrToTarget > 1024.0D) {
-                    this.updatePathTick += 10;
-                } else if (distSqrToTarget > 256.0D) {
-                    this.updatePathTick += 5;
+                if (this.mob.level.getGameTime() % 2L == 0L) {
+                    this.mob.playSound(SoundEvents.HOGLIN_STEP, 0.5F, (this.mob.getRandom().nextFloat() - this.mob.getRandom().nextFloat()) * 0.2f + 1.0f);
                 }
             }
 
-            // Attack target
-            if ((getAttackReachSqr(target) >= distSqrToTarget) && !isAttacking())
+            // Move to new target point
+            if (getAttackReachSqr(target) / 1.5f < distToTargetSqr) {
+                if (--updatePathTick <= 0 && !pathUpdated) {
+                    this.pathUpdated = true;
+                    if (this.move()) {
+                        this.updatePathTick = 1 + this.mob.getRandom().nextInt(5);
+                    }
+                    // Increase path calculation interval if target far away (similar to melee attack)
+                    if (distToTargetSqr > 1024.0D) {
+                        this.updatePathTick += 10;
+                    } else if (distToTargetSqr > 256.0D) {
+                        this.updatePathTick += 5;
+                    }
+                }
+            } else {
+                this.mob.getNavigation().stop();
+            }
+
+            // Attack target - ensure only 1 attack will be triggered per charge
+            if ((getAttackReachSqr(target) >= distToTargetSqr || this.path.getNextNodeIndex() >= (this.path.getNodeCount() - 1)) && !isAttacking() && !hasAttacked)
                 this.startAttack();
 
             if (this.attackAnimationTick > 0)
@@ -166,7 +167,7 @@ public class ChargeMeleeAttackGoal extends Goal {
             if (this.attackAnimationTick == 0 && isAttacking())
                 this.stopAttack();
 
-            this.attack(target, distSqrToTarget);
+            this.attack(target, distToTargetSqr);
         }
     }
 
@@ -182,13 +183,13 @@ public class ChargeMeleeAttackGoal extends Goal {
 
     protected void attack(LivingEntity target, double squaredDistance) {
         if (this.sound != null && isActionPoint() &&
-                squaredDistance < getAttackReachSqr(target)) {
+                squaredDistance <= getAttackReachSqr(target)) {
             mob.playSound(this.sound, 1.0F, 1.0F);
         }
 
         if (target != null && isActionPoint() &&
-                squaredDistance < getAttackReachSqr(target)) {
-            mob.doHurtTarget(target);
+                squaredDistance <= getAttackReachSqr(target)) {
+            this.doHurt(target);
         }
     }
 
@@ -200,12 +201,42 @@ public class ChargeMeleeAttackGoal extends Goal {
         return this.attackAnimationTick == (this.attackDuration - this.actionPoint);
     }
 
-    protected double getCorrectionAngle(LivingEntity target) {
-        double distFromOldToNewPos = Math.sqrt(target.distanceToSqr(this.originalTargetPos));
-        double distToOldPos = Math.sqrt(this.originalPos.distanceToSqr(this.originalTargetPos));
-        double distToNewPos = Math.sqrt(this.originalPos.distanceToSqr(target.getX(), target.getY(), target.getZ()));
-        double halfPerimeter = (distToNewPos + distToOldPos + distFromOldToNewPos) / 2.0;
-        double correctionAngleRad = 2 * Math.asin(Math.sqrt((halfPerimeter - distToOldPos) * (halfPerimeter - distToNewPos) / (distToOldPos * distToNewPos)));
-        return correctionAngleRad / Math.PI * 180;
+    protected double getAngleToChargeAxe(LivingEntity target) {
+        Vector3d currentPosToTargetVector = this.mob.position().subtract(target.position());
+        return Math.acos((currentPosToTargetVector.dot(this.chargeAxe)) / (currentPosToTargetVector.length() * this.chargeAxe.length())) / Math.PI * 180;
+    }
+
+    // Rewrite of moveTo navigation method to go up to the position of the target, instead of at reach distance 1
+    protected boolean move() {
+        Path path = this.mob.getNavigation().createPath(this.targetBlockPos, 0);
+        if (path != null)
+            this.path = path;
+        return path != null && this.mob.getNavigation().moveTo(this.path, this.speedModifier);
+    }
+
+    protected void doHurt(LivingEntity target) {
+        float damage = (float)this.mob.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        float knockBack = MathHelper.clamp(this.mob.getSpeed() / 0.7f, 0.2f, 3.0f);
+        boolean flag = target.hurt(DamageSource.mobAttack(this.mob), damage);
+        if (target instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity) target;
+            this.mayDisableShield(player, player.isUsingItem() ? player.getUseItem() : ItemStack.EMPTY);
+        }
+        if (flag) {
+            target.knockback(knockBack, this.chargeAxe.x, this.chargeAxe.z);
+            double knockBackResistance = Math.max(0.0, 1.0 - target.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+            target.setDeltaMovement(target.getDeltaMovement().add(0.0, 0.4f * knockBackResistance, 0.0));
+        }
+    }
+
+    protected void mayDisableShield(PlayerEntity player, ItemStack handItem) {
+        if (this.mayDisableShield && !handItem.isEmpty() && handItem.getItem() == Items.SHIELD) {
+            float f = 0.25F + (float) EnchantmentHelper.getBlockEfficiency(this.mob) * 0.05F;
+            if (this.mob.getRandom().nextFloat() < f) {
+                //player.stopUsingItem();
+                player.getCooldowns().addCooldown(Items.SHIELD, 100);
+                this.mob.level.broadcastEntityEvent(player, (byte)30);
+            }
+        }
     }
 }

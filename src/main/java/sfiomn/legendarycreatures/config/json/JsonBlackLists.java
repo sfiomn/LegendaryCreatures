@@ -1,16 +1,24 @@
 package sfiomn.legendarycreatures.config.json;
 
+import com.google.gson.JsonArray;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class JsonBlackLists {
+    @SerializedName("biome_names")
     public List<String> biomeNames;
+    @SerializedName("biome_categories")
     public List<String> biomeCategories;
+    @SerializedName("block_names")
     public List<String> breakingBlockNames;
+    @SerializedName("block_tags")
     public List<String> breakingBlockTags;
+    @SerializedName("entity_names")
     public List<String> killingEntityNames;
+    @SerializedName("entity_tags")
     public List<String> killingEntityTags;
-
 
     public JsonBlackLists() {
         this.biomeNames = new ArrayList<>();

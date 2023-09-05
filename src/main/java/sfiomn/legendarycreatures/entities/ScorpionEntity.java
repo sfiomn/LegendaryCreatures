@@ -20,6 +20,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
+import sfiomn.legendarycreatures.entities.goals.PoisonMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
 import sfiomn.legendarycreatures.util.WorldUtil;
@@ -35,7 +36,9 @@ import java.util.function.Predicate;
 
 public class ScorpionEntity extends AnimatedCreatureEntity {
     private final int baseAttackDuration = 16;
-    private final int tailAttackDuration = 19;
+    private final int baseAttackActionPoint = 10;
+    private final int tailAttackDuration = 20;
+    private final int tailAttackActionPoint = 7;
     public ScorpionEntity(EntityType<? extends CreatureEntity> type, World world) {
         super(type, world);
         this.xpReward = 5;
@@ -56,7 +59,8 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
         super.registerGoals();
         this.goalSelector.addGoal(1, new SwimGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
-        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, (int) (baseAttackDuration / 2.0f), 20, null, 1.0, true));
+        this.goalSelector.addGoal(3, new PoisonMeleeAttackGoal(this, 200, 1, tailAttackDuration, tailAttackActionPoint, 200, null, 1.0, true));
+        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, null, 1.0, true));
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false, false));
         this.goalSelector.addGoal(6, new LookRandomlyGoal(this));
         this.goalSelector.addGoal(7, new RandomWalkingGoal(this, 0.6, 40));
@@ -67,6 +71,9 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
         if (getAttackAnimation() == BASE_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
             event.getController().markNeedsReload();
             event.getController().setAnimation(new AnimationBuilder().addAnimation("claws", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+        } else if (getAttackAnimation() == POISON_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
+            event.getController().markNeedsReload();
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("tail", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
         }
         return PlayState.CONTINUE;
     }

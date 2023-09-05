@@ -70,7 +70,7 @@ public class EntityTypeRegistry {
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "wisp").toString()));
     public static final RegistryObject<EntityType<CorpseEaterEntity>> CORPSE_EATER = ENTITY_TYPES.register("corpse_eater",
             () -> EntityType.Builder.of(CorpseEaterEntity::new, EntityClassification.MONSTER)
-                    .sized(1.0F, 2.0F)
+                    .sized(0.79F, 1.6F)
                     .clientTrackingRange(10)
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)

@@ -22,12 +22,12 @@ public class CorpseEaterRenderer extends GeoEntityRenderer<CorpseEaterEntity> {
                 entity -> getGeoModelProvider().getModelLocation((CorpseEaterEntity) entity),
                 resourceLocation -> RenderType.eyes((ResourceLocation) resourceLocation)));
 
-        this.shadowRadius = 0.6f;
+        this.shadowRadius = 0.4f;
     }
 
     @Override
     public RenderType getRenderType(CorpseEaterEntity animatable, float partialTicks, MatrixStack stack, @Nullable IRenderTypeBuffer renderTypeBuffer, @Nullable IVertexBuilder vertexBuilder, int packedLightIn, ResourceLocation textureLocation) {
-        stack.scale(1.0f, 1.0f, 1.0f);
+        stack.scale(0.8f, 0.8f, 0.8f);
         return RenderType.entityCutoutNoCull(textureLocation);
     }
 }

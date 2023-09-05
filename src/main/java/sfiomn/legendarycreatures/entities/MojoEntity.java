@@ -46,11 +46,15 @@ public abstract class MojoEntity extends AnimatedCreatureEntity {
         return 0;
     }
 
+    protected int getBaseAttackActionPoint() {
+        return 0;
+    }
+
     @Override
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(1, new SwimGoal(this));
-        this.goalSelector.addGoal(2, new BaseMeleeAttackGoal(this, getBaseAttackDuration(), (int) (getBaseAttackDuration() / 2.0f), 20, null, 1.0, true));
+        this.goalSelector.addGoal(2, new BaseMeleeAttackGoal(this, getBaseAttackDuration(), getBaseAttackActionPoint(), 20, null, 1.0, true));
         this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(4, new RandomWalkingGoal(this, 0.6, 40));
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false, false));
@@ -90,6 +94,11 @@ public abstract class MojoEntity extends AnimatedCreatureEntity {
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
         this.playSound(SoundRegistry.MOJO_STEP.get(), 1.0F, 1.0F);
+    }
+
+    @Override
+    public AnimationBuilder getSprintAnimation() {
+        return new AnimationBuilder().addAnimation("run", ILoopType.EDefaultLoopTypes.LOOP);
     }
 
     @Override

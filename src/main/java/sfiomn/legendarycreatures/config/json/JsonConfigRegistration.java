@@ -1,6 +1,7 @@
 package sfiomn.legendarycreatures.config.json;
 
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.FileUtils;
 import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.api.entities.MobEntityEnum;
@@ -147,93 +148,10 @@ public class JsonConfigRegistration
 	{
 		File jsonFile = new File(jsonDir, jsonFileName);
 
-		Gson gson = buildNewGson();
-
 		if (jsonFile.exists())
 		{
-			JsonObject jsonSpawnInfoConfigFile = gson.fromJson(new FileReader(jsonFile), JsonObject.class);
-			if (jsonSpawnInfoConfigFile != null) {
-				JsonSpawnInfo spawnInfo = new JsonSpawnInfo();
-
-				JsonObject jsonBiomeNames = jsonSpawnInfoConfigFile.getAsJsonObject("biome_names");
-				if (jsonBiomeNames != null) {
-					for (Map.Entry<String, JsonElement> biomeName : jsonBiomeNames.entrySet()) {
-						spawnInfo.biomeNameSpawns.put(biomeName.getKey(), new JsonBiomeSpawn(biomeName.getValue().getAsJsonObject()));
-					}
-				}
-
-				JsonObject jsonBiomeCategories = jsonSpawnInfoConfigFile.getAsJsonObject("biome_categories");
-				if (jsonBiomeCategories != null){
-					for (Map.Entry<String, JsonElement> biomeCategory : jsonBiomeCategories.entrySet()) {
-						spawnInfo.biomeCategorySpawns.put(biomeCategory.getKey(), new JsonBiomeSpawn(biomeCategory.getValue().getAsJsonObject()));
-					}
-				}
-
-				JsonObject jsonBlockNames = jsonSpawnInfoConfigFile.getAsJsonObject("block_names");
-				if (jsonBlockNames != null) {
-					for (Map.Entry<String, JsonElement> blockName : jsonBlockNames.entrySet()) {
-						spawnInfo.breakingBlockNameSpawns.put(blockName.getKey(), new JsonChanceSpawn(blockName.getValue().getAsJsonObject()));
-					}
-				}
-
-				JsonObject jsonBlockTags = jsonSpawnInfoConfigFile.getAsJsonObject("block_tags");
-				if (jsonBlockTags != null) {
-					for (Map.Entry<String, JsonElement> blockTag : jsonBlockTags.entrySet()) {
-						spawnInfo.breakingBlockTagSpawns.put(blockTag.getKey(), new JsonChanceSpawn(blockTag.getValue().getAsJsonObject()));
-					}
-				}
-
-				JsonObject jsonEntityNames = jsonSpawnInfoConfigFile.getAsJsonObject("entity_names");
-				if (jsonEntityNames != null) {
-					for (Map.Entry<String, JsonElement> entityName : jsonEntityNames.entrySet()) {
-						spawnInfo.killingEntityNameSpawns.put(entityName.getKey(), new JsonChanceSpawn(entityName.getValue().getAsJsonObject()));
-					}
-				}
-
-				JsonObject jsonEntityTags = jsonSpawnInfoConfigFile.getAsJsonObject("entity_tags");
-				if (jsonEntityTags != null) {
-					for (Map.Entry<String, JsonElement> entityTag : jsonEntityTags.entrySet()) {
-						spawnInfo.killingEntityTagSpawns.put(entityTag.getKey(), new JsonChanceSpawn(entityTag.getValue().getAsJsonObject()));
-					}
-				}
-
-				JsonObject jsonBlackLists = jsonSpawnInfoConfigFile.getAsJsonObject("black_list");
-				if (jsonBlackLists != null) {
-					JsonArray jsonBiomeNamesBlackList = jsonBlackLists.getAsJsonArray("biome_names");
-					if (jsonBiomeNamesBlackList != null) {
-						for (int i=0; i<jsonBiomeNamesBlackList.size(); i++)
-							spawnInfo.blackLists.biomeNames.add(jsonBiomeNamesBlackList.get(i).getAsString());
-					}
-					JsonArray jsonBiomeCategoriesBlackList = jsonBlackLists.getAsJsonArray("biome_categories");
-					if (jsonBiomeCategoriesBlackList != null) {
-						for (int i=0; i<jsonBiomeCategoriesBlackList.size(); i++)
-							spawnInfo.blackLists.biomeCategories.add(jsonBiomeCategoriesBlackList.get(i).getAsString());
-					}
-					JsonArray jsonBlockNamesBlackList = jsonBlackLists.getAsJsonArray("block_names");
-					if (jsonBlockNamesBlackList != null) {
-						for (int i=0; i<jsonBlockNamesBlackList.size(); i++)
-							spawnInfo.blackLists.breakingBlockNames.add(jsonBlockNamesBlackList.get(i).getAsString());
-					}
-					JsonArray jsonBlockTagsBlackList = jsonBlackLists.getAsJsonArray("block_tags");
-					if (jsonBlockTagsBlackList != null) {
-						for (int i=0; i<jsonBlockTagsBlackList.size(); i++)
-							spawnInfo.blackLists.breakingBlockTags.add(jsonBlockTagsBlackList.get(i).getAsString());
-					}
-					JsonArray jsonEntityNamesBlackList = jsonBlackLists.getAsJsonArray("entity_names");
-					if (jsonEntityNamesBlackList != null) {
-						for (int i=0; i<jsonEntityNamesBlackList.size(); i++)
-							spawnInfo.blackLists.killingEntityNames.add(jsonEntityNamesBlackList.get(i).getAsString());
-					}
-					JsonArray jsonEntityTagsBlackList = jsonBlackLists.getAsJsonArray("entity_tags");
-					if (jsonEntityTagsBlackList != null) {
-						for (int i=0; i<jsonEntityTagsBlackList.size(); i++)
-							spawnInfo.blackLists.killingEntityTags.add(jsonEntityTagsBlackList.get(i).getAsString());
-					}
-				}
-
-				return spawnInfo;
-			}
-			return null;
+			Gson gson = buildNewGson();
+			return gson.fromJson(new FileReader(jsonFile), new TypeToken<JsonSpawnInfo>(){}.getType());
 		}
 		return null;
 	}
@@ -251,55 +169,8 @@ public class JsonConfigRegistration
 				return;
 		}
 		Gson gson = buildNewGson();
-		JsonObject config = formattedConfig(gson, jsonSpawnInfo);
 
-		FileUtils.write(jsonFile, gson.toJson(config, JsonObject.class), (String) null);
-	}
-
-	private static JsonObject formattedConfig(Gson gson, JsonSpawnInfo jsonSpawnInfo) {
-		JsonObject config = new JsonObject();
-
-		JsonElement biomeNameConfig = gson.toJsonTree(jsonSpawnInfo.biomeNameSpawns);
-		config.add("biome_names", biomeNameConfig);
-
-		JsonElement biomeCategoryConfig = gson.toJsonTree(jsonSpawnInfo.biomeCategorySpawns);
-		config.add("biome_categories", biomeCategoryConfig);
-
-		JsonElement blockNameConfig = gson.toJsonTree(jsonSpawnInfo.breakingBlockNameSpawns);
-		config.add("block_names", blockNameConfig);
-
-		JsonElement blockTagConfig = gson.toJsonTree(jsonSpawnInfo.breakingBlockTagSpawns);
-		config.add("block_tags", blockTagConfig);
-
-		JsonElement entityNameConfig = gson.toJsonTree(jsonSpawnInfo.killingEntityNameSpawns);
-		config.add("entity_names", entityNameConfig);
-
-		JsonElement entityTagConfig = gson.toJsonTree(jsonSpawnInfo.killingEntityTagSpawns);
-		config.add("entity_tags", entityTagConfig);
-
-		JsonObject blackListConfig = new JsonObject();
-
-		JsonElement biomeNameBlackList = gson.toJsonTree(jsonSpawnInfo.blackLists.biomeNames);
-		blackListConfig.add("biome_names", biomeNameBlackList);
-
-		JsonElement biomeCategoryBlackList = gson.toJsonTree(jsonSpawnInfo.blackLists.biomeCategories);
-		blackListConfig.add("biome_categories", biomeCategoryBlackList);
-
-		JsonElement blockNameBlackList = gson.toJsonTree(jsonSpawnInfo.blackLists.breakingBlockNames);
-		blackListConfig.add("block_names", blockNameBlackList);
-
-		JsonElement blockTagBlackList = gson.toJsonTree(jsonSpawnInfo.blackLists.breakingBlockTags);
-		blackListConfig.add("block_tags", blockTagBlackList);
-
-		JsonElement entityNameBlackList = gson.toJsonTree(jsonSpawnInfo.blackLists.killingEntityNames);
-		blackListConfig.add("entity_names", entityNameBlackList);
-
-		JsonElement entityTagBlackList = gson.toJsonTree(jsonSpawnInfo.blackLists.killingEntityTags);
-		blackListConfig.add("entity_tags", entityTagBlackList);
-
-		config.add("black_list", blackListConfig);
-
-		return config;
+		FileUtils.write(jsonFile, gson.toJson(jsonSpawnInfo, JsonSpawnInfo.class), (String) null);
 	}
 	
 	private static Gson buildNewGson()

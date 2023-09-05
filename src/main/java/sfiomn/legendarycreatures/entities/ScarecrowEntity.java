@@ -1,23 +1,16 @@
 package sfiomn.legendarycreatures.entities;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.brain.task.LookAtEntityTask;
-import net.minecraft.entity.ai.brain.task.MoveToTargetTask;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particles.BlockParticleData;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
@@ -34,7 +27,8 @@ import java.util.Random;
 
 public class ScarecrowEntity extends AnimatedCreatureEntity {
     private final int spawnTimerInTicks = 32;
-    private final int baseAttackDuration = 27;
+    private final int baseAttackDuration = 10;
+    private final int baseAttackActionPoint = 5;
     public ScarecrowEntity(EntityType<? extends CreatureEntity> type, World world) {
         super(type, world);
         this.xpReward = 12;
@@ -63,7 +57,7 @@ public class ScarecrowEntity extends AnimatedCreatureEntity {
         super.registerGoals();
         this.goalSelector.addGoal(1, new SwimGoal(this));
         this.targetSelector.addGoal(4, new HurtByTargetGoal(this));
-        this.goalSelector.addGoal(5, new BaseMeleeAttackGoal(this, baseAttackDuration, (int) (baseAttackDuration / 2.0f), 20, null, 1.0, true));
+        this.goalSelector.addGoal(5, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, null, 1.0, true));
         this.targetSelector.addGoal(6, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false));
     }
 
@@ -104,22 +98,5 @@ public class ScarecrowEntity extends AnimatedCreatureEntity {
                 world.playSound(null, new BlockPos(pos), SoundRegistry.SCARECROW_SPAWN.get(), SoundCategory.HOSTILE, 10.0F, 1.0F);
             }
         }
-    }
-
-    @Override
-    public void tick() {
-        if (getSpawnTimer() > 4 && level != null) {
-            Random random = this.getRandom();
-            for(int i = 0; i < 6; ++i) {
-                double x = this.getX() + 0.5 + (double) ((random.nextFloat() * 0.5F) - 1.0);
-                double y = this.getY() + 0.1;
-                double z = this.getZ() + 0.5 + (double) ((random.nextFloat() * 0.5F) - 1.0);
-                BlockState blockstate = this.level.getBlockState(new BlockPos(x, y, z).below());
-                if (blockstate.getRenderShape() != BlockRenderType.INVISIBLE && this.level.isClientSide) {
-                    this.level.addParticle(new BlockParticleData(ParticleTypes.BLOCK, blockstate), x, y, z, 0.0D, 0.0D, 0.0D);
-                }
-            }
-        }
-        super.tick();
     }
 }

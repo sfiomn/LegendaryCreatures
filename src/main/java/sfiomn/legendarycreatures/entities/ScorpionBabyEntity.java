@@ -7,7 +7,9 @@ import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IWorld;
@@ -26,7 +28,8 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import javax.annotation.Nullable;
 
 public class ScorpionBabyEntity extends AnimatedCreatureEntity {
-    private final int baseAttackDuration = 27;
+    private final int baseAttackDuration = 10;
+    private final int baseAttackActionPoint = 5;
     public ScorpionBabyEntity(EntityType<? extends CreatureEntity> type, World world) {
         super(type, world);
         this.xpReward = 5;
@@ -48,7 +51,12 @@ public class ScorpionBabyEntity extends AnimatedCreatureEntity {
         this.goalSelector.addGoal(1, new SwimGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(3, new LookAtGoal(this, PlayerEntity.class, (float) 12));
-        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, (int) (baseAttackDuration / 2.0f), 20, null, 1.0, true));
+        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, SoundEvents.SILVERFISH_AMBIENT, 1.0, true) {
+            @Override
+            protected double getAttackReachSqr(LivingEntity entity) {
+                return (0.5 * 2.0F * 0.5 * 2.0F + entity.getBbWidth());
+            }
+        });
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false, false));
         this.goalSelector.addGoal(6, new LookRandomlyGoal(this));
         this.goalSelector.addGoal(7, new RandomWalkingGoal(this, 0.6, 10));
@@ -58,7 +66,7 @@ public class ScorpionBabyEntity extends AnimatedCreatureEntity {
     public <E extends IAnimatable> PlayState attackingPredicate(AnimationEvent<E> event) {
         if (getAttackAnimation() == BASE_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
             event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("claws", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("attack", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
         }
         return PlayState.CONTINUE;
     }
@@ -74,22 +82,22 @@ public class ScorpionBabyEntity extends AnimatedCreatureEntity {
     @Nullable
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundRegistry.SCORPION_IDLE.get();
+        return SoundEvents.SILVERFISH_AMBIENT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundRegistry.SCORPION_DEATH.get();
+        return SoundEvents.SILVERFISH_DEATH;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundRegistry.SCORPION_HURT.get();
+        return SoundEvents.SILVERFISH_HURT;
     }
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
-        this.playSound(SoundRegistry.SCORPION_STEP.get(), 1.0F, 1.0F);
+        this.playSound(SoundEvents.SILVERFISH_STEP, 1.0F, 1.0F);
     }
 
     public static void spawn(IWorld world, Vector3d pos) {
@@ -97,6 +105,7 @@ public class ScorpionBabyEntity extends AnimatedCreatureEntity {
             ScorpionBabyEntity entityToSpawn = EntityTypeRegistry.SCORPION_BABY.get().create((World) world);
             if (entityToSpawn != null) {
                 WorldUtil.spawnEntity(entityToSpawn, world, pos);
+                world.playSound(null, new BlockPos(pos), SoundEvents.SILVERFISH_STEP, SoundCategory.HOSTILE, 10.0F, 1.0F);
             }
         }
     }

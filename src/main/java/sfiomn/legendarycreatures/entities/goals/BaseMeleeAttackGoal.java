@@ -39,12 +39,12 @@ public class BaseMeleeAttackGoal extends Goal {
     }
 
     public boolean isAttacking() {
-        return this.mob.getAttackAnimation() != AnimatedCreatureEntity.NO_ANIMATION;
+        return this.mob.getAttackAnimation() == AnimatedCreatureEntity.BASE_ATTACK;
     }
 
     public boolean canUse() {
         long time = this.mob.level.getGameTime();
-        if (time - this.lastUseTime < coolDown || isAttacking()) {
+        if (time - this.lastUseTime < 20 || isAttacking()) {
             return false;
         } else {
             LivingEntity target = this.mob.getTarget();
@@ -76,8 +76,6 @@ public class BaseMeleeAttackGoal extends Goal {
     }
 
     public void start() {
-        this.lastUseTime = this.mob.level.getGameTime();
-
         this.mob.setAggressive(true);
         this.attackAnimationTick = 0;
         this.ticksUntilNextPathRecalculation = 0;
@@ -85,7 +83,10 @@ public class BaseMeleeAttackGoal extends Goal {
     }
 
     public void stop() {
-        this.stopAttack();
+        this.lastUseTime = this.mob.level.getGameTime();
+
+        if (isAttacking())
+            this.stopAttack();
 
         this.mob.setAggressive(false);
         mob.getNavigation().stop();
@@ -102,30 +103,30 @@ public class BaseMeleeAttackGoal extends Goal {
             this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
 
             // Move to target
-            double d = this.mob.distanceToSqr(target);
-            if ((this.followingEvenIfNotSeen || this.mob.canSee(target)) && getAttackReachSqr(target) / 2.0f < d) {
+            double distToTargetSqr = this.mob.distanceToSqr(target);
+            if ((this.followingEvenIfNotSeen || this.mob.canSee(target)) && getAttackReachSqr(target) / 1.5f < distToTargetSqr) {
                 if (--ticksUntilNextPathRecalculation <= 0) {
                     if (this.mob.getNavigation().moveTo(target, this.speedModifier)) {
                         this.ticksUntilNextPathRecalculation = 4 + this.mob.getRandom().nextInt(7);
                     } else {
                         this.ticksUntilNextPathRecalculation += 15;
                     }
-                    if (d > 1024.0D) {
+                    if (distToTargetSqr > 1024.0D) {
                         this.ticksUntilNextPathRecalculation += 10;
-                    } else if (d > 256.0D) {
+                    } else if (distToTargetSqr > 256.0D) {
                         this.ticksUntilNextPathRecalculation += 5;
                     }
                 }
             }
 
             // Attack target
-            if (this.ticksUntilNextAttack == 0 && getAttackReachSqr(target) >= d && !isAttacking())
+            if (this.ticksUntilNextAttack == 0 && getAttackReachSqr(target) >= distToTargetSqr && !isAttacking())
                 this.startAttack();
 
             if (this.attackAnimationTick == 0 && isAttacking())
                 this.stopAttack();
 
-            this.attack(target, d);
+            this.attack(target, distToTargetSqr);
         }
     }
 
@@ -142,12 +143,12 @@ public class BaseMeleeAttackGoal extends Goal {
     protected void attack(LivingEntity target, double squaredDistance) {
 
         if (this.sound != null && isActionPoint() &&
-                squaredDistance < getAttackReachSqr(target)) {
+                squaredDistance <= getAttackReachSqr(target)) {
             mob.playSound(this.sound, 1.0F, 1.0F);
         }
 
         if (target != null && isActionPoint() &&
-                squaredDistance < getAttackReachSqr(target)) {
+                squaredDistance <= getAttackReachSqr(target)) {
             mob.doHurtTarget(target);
         }
 
@@ -160,5 +161,4 @@ public class BaseMeleeAttackGoal extends Goal {
     protected double getAttackReachSqr(LivingEntity entity) {
         return (double) (this.mob.getBbWidth() * 2.0F * this.mob.getBbWidth() * 2.0F + entity.getBbWidth());
     }
-
 }

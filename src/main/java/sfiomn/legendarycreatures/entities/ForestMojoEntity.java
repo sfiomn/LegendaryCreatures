@@ -13,6 +13,7 @@ import sfiomn.legendarycreatures.util.WorldUtil;
 
 public class ForestMojoEntity extends MojoEntity {
     private final int baseAttackDuration = 12;
+    private final int baseAttackActionPoint = 6;
 
     public ForestMojoEntity(EntityType<? extends CreatureEntity> type, World world) {
         super(type, world);
@@ -28,6 +29,11 @@ public class ForestMojoEntity extends MojoEntity {
     @Override
     protected int getBaseAttackDuration() {
         return baseAttackDuration;
+    }
+
+    @Override
+    protected int getBaseAttackActionPoint() {
+        return baseAttackActionPoint;
     }
 
     public static void spawn(IWorld world, Vector3d pos) {

@@ -1,5 +1,7 @@
 package sfiomn.legendarycreatures;
 
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.resources.ReloadListener;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IResourceManager;
@@ -24,9 +26,7 @@ import org.apache.logging.log4j.Logger;
 import sfiomn.legendarycreatures.config.Config;
 import sfiomn.legendarycreatures.config.json.JsonConfigRegistration;
 import sfiomn.legendarycreatures.entities.render.*;
-import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
-import sfiomn.legendarycreatures.registry.ItemRegistry;
-import sfiomn.legendarycreatures.registry.SoundRegistry;
+import sfiomn.legendarycreatures.registry.*;
 import sfiomn.legendarycreatures.world.ModEntityPlacement;
 import software.bernie.geckolib3.GeckoLib;
 
@@ -52,6 +52,8 @@ public class LegendaryCreatures
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 
+        BlockRegistry.register(modBus);
+        EffectRegistry.register(modBus);
         EntityTypeRegistry.register(modBus);
         ItemRegistry.register(modBus);
         SoundRegistry.register(modBus);
@@ -83,6 +85,11 @@ public class LegendaryCreatures
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
+        event.enqueueWork(() ->
+        {
+            RenderTypeLookup.setRenderLayer(BlockRegistry.DOOM_FIRE.get(), RenderType.cutout());
+        });
+
         DistExecutor.safeRunWhenOn(Dist.CLIENT, LegendaryCreatures::registerEntityRendering);
     }
 

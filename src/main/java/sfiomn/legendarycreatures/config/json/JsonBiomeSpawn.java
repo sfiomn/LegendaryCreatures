@@ -8,10 +8,10 @@ public class JsonBiomeSpawn
 	@SerializedName("weight")
 	public int weight;
 
-	@SerializedName("minGroup")
+	@SerializedName("min_group")
 	public int minGroup;
 
-	@SerializedName("maxGroup")
+	@SerializedName("max_group")
 	public int maxGroup;
 	
 	public JsonBiomeSpawn(int weight)
@@ -30,6 +30,6 @@ public class JsonBiomeSpawn
 	}
 
 	public JsonBiomeSpawn(JsonObject jsonObject) {
-		this(jsonObject.get("weight").getAsInt(), jsonObject.get("minGroup").getAsInt(), jsonObject.get("maxGroup").getAsInt());
+		this(jsonObject.get("weight").getAsInt(), jsonObject.get("min_group").getAsInt(), jsonObject.get("max_group").getAsInt());
 	}
 }

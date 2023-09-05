@@ -11,11 +11,7 @@ import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import sfiomn.legendarycreatures.LegendaryCreatures;
-import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -38,7 +34,9 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
     public static final int NO_ANIMATION = 0;
     public static final int BASE_ATTACK = 1;
     public static final int CHARGE_ATTACK = 2;
-    public static final int HOLD_ATTACK = 3;
+    public static final int CHARGING = 3;
+    public static final int ROOT_ATTACK = 4;
+    public static final int POISON_ATTACK = 5;
 
     protected AnimatedCreatureEntity(EntityType<? extends CreatureEntity> type, World world) {
         super(type, world);
@@ -103,6 +101,9 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
 
     public <E extends IAnimatable> PlayState movementPredicate(AnimationEvent<E> event) {
         boolean isMoving = !(event.getLimbSwingAmount() > -0.15F && event.getLimbSwingAmount() < 0.15F);
+        if (getSpawnTimer() > 0)
+            return PlayState.CONTINUE;
+
         if (getDeathAnimation() != null && this.dead) {
             event.getController().setAnimation(getDeathAnimation());
             return PlayState.CONTINUE;
@@ -110,7 +111,7 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
             if (getSwimAnimation() != null && this.isInWaterOrBubble()) {
                 event.getController().setAnimation(getSwimAnimation());
                 return PlayState.CONTINUE;
-            } else if (getSprintAnimation() != null && this.isAggressive()) {
+            } else if (getSprintAnimation() != null && this.isSprinting()) {
                 event.getController().setAnimation(getSprintAnimation());
                 return PlayState.CONTINUE;
             } else if (getWalkAnimation() != null) {
@@ -141,6 +142,23 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
     }
 
     @Override
+    public void tick() {
+        if (getSpawnTimer() > 10 && level != null) {
+            Random random = this.getRandom();
+            for(int i = 0; i < 6; ++i) {
+                double x = this.getX() + 0.5 + (double) ((random.nextFloat() * 0.5F) - 1.0);
+                double y = this.getY() + 0.1;
+                double z = this.getZ() + 0.5 + (double) ((random.nextFloat() * 0.5F) - 1.0);
+                BlockState blockstate = this.level.getBlockState(new BlockPos(x, y, z).below());
+                if (blockstate.getRenderShape() != BlockRenderType.INVISIBLE && this.level.isClientSide) {
+                    this.level.addParticle(new BlockParticleData(ParticleTypes.BLOCK, blockstate), x, y, z, 0.0D, 0.0D, 0.0D);
+                }
+            }
+        }
+        super.tick();
+    }
+
+    @Override
     public AnimationFactory getFactory() {
         return this.factory;
     }
@@ -165,6 +183,9 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
         if (this.getSpawnTimer() > 0) {
             this.setSpawnTimer(getSpawnTimer() - 1);
         }
+
+        if (this.isSprinting() != this.isAggressive())
+            this.setSprinting(this.isAggressive());
 
         super.customServerAiStep();
     }

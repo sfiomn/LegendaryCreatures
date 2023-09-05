@@ -1,15 +1,27 @@
 package sfiomn.legendarycreatures.config.json;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class JsonSpawnInfo {
+    @SerializedName("biome_names")
     public Map<String, JsonBiomeSpawn> biomeNameSpawns;
+    @SerializedName("biome_categories")
     public Map<String, JsonBiomeSpawn> biomeCategorySpawns;
+    @SerializedName("block_names")
     public Map<String, JsonChanceSpawn> breakingBlockNameSpawns;
+    @SerializedName("block_tags")
     public Map<String, JsonChanceSpawn> breakingBlockTagSpawns;
+    @SerializedName("entity_names")
     public Map<String, JsonChanceSpawn> killingEntityNameSpawns;
+    @SerializedName("entity_tags")
     public Map<String, JsonChanceSpawn> killingEntityTagSpawns;
+    @SerializedName("black_list")
     public JsonBlackLists blackLists;
 
     public JsonSpawnInfo() {
