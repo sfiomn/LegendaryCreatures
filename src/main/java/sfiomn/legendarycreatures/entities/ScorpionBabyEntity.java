@@ -38,10 +38,10 @@ public class ScorpionBabyEntity extends AnimatedCreatureEntity {
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
         return MobEntity.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 18)
+                .add(Attributes.MAX_HEALTH, 3)
                 .add(Attributes.MOVEMENT_SPEED, 0.3)
                 .add(Attributes.ARMOR, 0)
-                .add(Attributes.ATTACK_DAMAGE, 8)
+                .add(Attributes.ATTACK_DAMAGE, 2)
                 .add(Attributes.FOLLOW_RANGE, 16);
     }
 

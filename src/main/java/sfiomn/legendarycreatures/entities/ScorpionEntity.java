@@ -59,8 +59,8 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
         super.registerGoals();
         this.goalSelector.addGoal(1, new SwimGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
-        this.goalSelector.addGoal(3, new PoisonMeleeAttackGoal(this, 200, 1, tailAttackDuration, tailAttackActionPoint, 200, null, 1.0, true));
-        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, null, 1.0, true));
+        this.goalSelector.addGoal(3, new PoisonMeleeAttackGoal(this, 200, 0, tailAttackDuration, tailAttackActionPoint, 200, null, 1.0, true));
+        //this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, null, 1.0, true));
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false, false));
         this.goalSelector.addGoal(6, new LookRandomlyGoal(this));
         this.goalSelector.addGoal(7, new RandomWalkingGoal(this, 0.6, 40));

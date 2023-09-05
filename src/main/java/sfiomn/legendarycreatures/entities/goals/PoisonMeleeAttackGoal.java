@@ -61,7 +61,7 @@ public class PoisonMeleeAttackGoal extends Goal {
             } else {
                 Path path = this.mob.getNavigation().createPath(target, 0);
                 if (path != null) {
-                    return true;
+                    return !target.hasEffect(Effects.POISON);
                 } else {
                     return !target.hasEffect(Effects.POISON) && this.getAttackReachSqr(target) >= this.mob.distanceToSqr(target) && this.mob.canSee(target);
                 }
@@ -78,7 +78,7 @@ public class PoisonMeleeAttackGoal extends Goal {
         } else if (!this.followingEvenIfNotSeen) {
             return !this.mob.getNavigation().isDone();
         }
-        return isTargetPoisoned;
+        return !isTargetPoisoned;
     }
 
     public void start() {
@@ -156,9 +156,10 @@ public class PoisonMeleeAttackGoal extends Goal {
 
         if (target != null && isActionPoint() &&
                 squaredDistance <= getAttackReachSqr(target)) {
-            mob.doHurtTarget(target);
-            target.addEffect(new EffectInstance(Effects.POISON, this.poisonDuration, this.poisonStrength, false, true));
-            this.isTargetPoisoned = target.hasEffect(Effects.POISON);
+            if (mob.doHurtTarget(target)) {
+                target.addEffect(new EffectInstance(Effects.POISON, this.poisonDuration, this.poisonStrength, false, true));
+                this.isTargetPoisoned = target.hasEffect(Effects.POISON);
+            }
         }
     }
 
