@@ -90,6 +90,7 @@ public class ScarecrowEntity extends AnimatedCreatureEntity {
         return new AnimationBuilder().addAnimation("spawn", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
     }
 
+    // Only used by ModEvents to spawn an entity based on killing entity or breaking block
     public static void spawn(IWorld world, Vector3d pos) {
         if (!world.isClientSide()) {
             ScarecrowEntity entityToSpawn = EntityTypeRegistry.SCARECROW.get().create((World) world);

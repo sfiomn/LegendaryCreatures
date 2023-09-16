@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.util.ResourceLocation;
 import sfiomn.legendarycreatures.entities.CorpseEaterEntity;
 import sfiomn.legendarycreatures.entities.model.CorpseEaterModel;
+import sfiomn.legendarycreatures.util.RenderTypeUtil;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 import software.bernie.geckolib3.renderers.geo.layer.LayerGlowingAreasGeo;
 
@@ -20,7 +21,7 @@ public class CorpseEaterRenderer extends GeoEntityRenderer<CorpseEaterEntity> {
         addLayer(new LayerGlowingAreasGeo(this,
                 entity -> getGeoModelProvider().getTextureLocation((CorpseEaterEntity) entity),
                 entity -> getGeoModelProvider().getModelLocation((CorpseEaterEntity) entity),
-                resourceLocation -> RenderType.eyes((ResourceLocation) resourceLocation)));
+                resourceLocation -> RenderTypeUtil.glowingNoTransparency((ResourceLocation) resourceLocation)));
 
         this.shadowRadius = 0.4f;
     }

@@ -2,14 +2,13 @@ package sfiomn.legendarycreatures.entities;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.*;
+import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.controller.FlyingMovementController;
 import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.entity.passive.IFlyingAnimal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.pathfinding.FlyingPathNavigator;
@@ -20,7 +19,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
+import sfiomn.legendarycreatures.registry.ParticleTypeRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
 import sfiomn.legendarycreatures.util.WorldUtil;
 
@@ -30,7 +31,6 @@ import java.util.Random;
 public class WispEntity extends AnimatedCreatureEntity implements IFlyingAnimal {
     public WispEntity(EntityType<? extends CreatureEntity> type, World world) {
         super(type, world);
-        this.xpReward = 12;
         this.maxUpStep = 1.0F;
 
         this.moveControl = new FlyingMovementController(this, 10, true);
@@ -45,7 +45,7 @@ public class WispEntity extends AnimatedCreatureEntity implements IFlyingAnimal 
                 .add(Attributes.ATTACK_DAMAGE, 0)
                 .add(Attributes.FOLLOW_RANGE, 16)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.5)
-                .add(Attributes.FLYING_SPEED, 0.45);
+                .add(Attributes.FLYING_SPEED, 0.35);
     }
 
     @Override
@@ -55,16 +55,27 @@ public class WispEntity extends AnimatedCreatureEntity implements IFlyingAnimal 
         this.goalSelector.addGoal(2, new AvoidEntityGoal<>(this, PlayerEntity.class, (float) 30, 0.8, 1.4));
         this.goalSelector.addGoal(3, new LookRandomlyGoal(this));
         this.goalSelector.addGoal(4, new SwimGoal(this));
-        this.goalSelector.addGoal(5, new RandomWalkingGoal(this, 0.8, 40) {
+        this.goalSelector.addGoal(5, new RandomWalkingGoal(this, 1.0, 20) {
             @Override
             protected Vector3d getPosition() {
-                Random random = this.mob.getRandom();
-                double dir_x = this.mob.position().x + ((random.nextFloat() * 2 - 1) * 4);
-                double dir_y = Math.max(this.mob.position().y + ((random.nextFloat() * 2 - 1) * 2), 120);
-                double dir_z = this.mob.position().z + ((random.nextFloat() * 2 - 1) * 4);
-                return new Vector3d(dir_x, dir_y, dir_z);
+                return RandomPositionGenerator.getAirPos(this.mob, 5, 5, 3, null, 0);
             }
         });
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        double offsetX = (2 * this.getRandom().nextFloat() - 1) * 0.3F;
+        double offsetZ = (2 * this.getRandom().nextFloat() - 1) * 0.3F;
+
+        double x = this.position().x + offsetX;
+        double y = this.position().y + (this.getRandom().nextFloat() * 0.05F);
+        double z = this.position().z + offsetZ;
+
+        if (this.level.getGameTime() % 3 == 0)
+            this.level.addParticle(ParticleTypeRegistry.WISP_PARTICLE.get(), x, y, z, offsetX / 10, 0.01D, offsetZ / 10);
     }
 
     @Override
@@ -99,6 +110,26 @@ public class WispEntity extends AnimatedCreatureEntity implements IFlyingAnimal 
         return super.hurt(source, amount);
     }
 
+    @Override
+    public void remove(boolean keepData) {
+        if (!this.level.isClientSide && this.isDeadOrDying() && !this.removed) {
+            WispPurseEntity wispPurseEntity = EntityTypeRegistry.WISP_PURSE.get().create(this.level);
+            if (wispPurseEntity == null)
+                return;
+
+            if (this.isPersistenceRequired()) {
+                wispPurseEntity.setPersistenceRequired();
+            }
+
+            wispPurseEntity.setInvulnerable(this.isInvulnerable());
+            wispPurseEntity.moveTo(this.getX(), this.getY(), this.getZ(), this.random.nextFloat() * 360.0F, this.random.nextFloat() * 360.0F);
+            this.level.addFreshEntity(wispPurseEntity);
+        }
+
+        super.remove(keepData);
+    }
+
+    // Only used by ModEvents to spawn an entity based on killing entity or breaking block
     public static void spawn(IWorld world, Vector3d pos) {
         if (!world.isClientSide()) {
             WispEntity entityToSpawn = EntityTypeRegistry.WISP.get().create((World) world);

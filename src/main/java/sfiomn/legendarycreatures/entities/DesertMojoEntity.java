@@ -35,6 +35,7 @@ public class DesertMojoEntity extends MojoEntity {
         return baseAttackActionPoint;
     }
 
+    // Only used by ModEvents to spawn an entity based on killing entity or breaking block
     public static void spawn(IWorld world, Vector3d pos) {
         if (!world.isClientSide()) {
             DesertMojoEntity entityToSpawn = EntityTypeRegistry.DESERT_MOJO.get().create((World) world);

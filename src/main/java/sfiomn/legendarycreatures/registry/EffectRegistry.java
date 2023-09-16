@@ -15,7 +15,6 @@ public class EffectRegistry {
 
     public static final RegistryObject<Effect> ROOT = EFFECTS.register("root", RootEffect::new);
 
-
     public static void register (IEventBus eventBus){
         EFFECTS.register(eventBus);
     }

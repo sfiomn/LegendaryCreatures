@@ -12,6 +12,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
+import sfiomn.legendarycreatures.entities.goals.ChargeMeleeAttackGoal;
 import sfiomn.legendarycreatures.entities.goals.RootMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
@@ -56,18 +58,18 @@ public class HoundEntity extends AnimatedCreatureEntity {
         this.goalSelector.addGoal(1, new SwimGoal(this));
         //this.goalSelector.addGoal(2, new LeapAtTargetGoal(this, (float) 1.0));
         this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
-        /*this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 10, null, 1.0, true) {
+        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 10, null, 1.0, true) {
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
             }
-        });*//*
+        });
         this.goalSelector.addGoal(5, new ChargeMeleeAttackGoal(this, chargeAttackDuration, chargeAttackActionPoint, 120, 8, null,  1.9, 25, true) {
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
             }
-        });*/
+        });
         this.goalSelector.addGoal(6, new RootMeleeAttackGoal(this, this.biteAttackDuration, this.biteAttackActionPoint, 0.1f, 0.3, 1.0f, 240, null) {
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
@@ -124,6 +126,7 @@ public class HoundEntity extends AnimatedCreatureEntity {
         return new AnimationBuilder().addAnimation("run", ILoopType.EDefaultLoopTypes.LOOP);
     }
 
+    // Only used by ModEvents to spawn an entity based on killing entity or breaking block
     public static void spawn(IWorld world, Vector3d pos) {
         if (!world.isClientSide()) {
             HoundEntity entityToSpawn = EntityTypeRegistry.HOUND.get().create((World) world);

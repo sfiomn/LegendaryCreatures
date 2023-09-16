@@ -2,6 +2,7 @@ package sfiomn.legendarycreatures.registry;
 
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
@@ -68,6 +69,13 @@ public class EntityTypeRegistry {
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "wisp").toString()));
+    public static final RegistryObject<EntityType<WispPurseEntity>> WISP_PURSE = ENTITY_TYPES.register("wisp_purse",
+            () -> EntityType.Builder.<WispPurseEntity>of(WispPurseEntity::new, EntityClassification.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(64)
+                    .setUpdateInterval(3)
+                    .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "wisp_purse").toString()));
+
     public static final RegistryObject<EntityType<CorpseEaterEntity>> CORPSE_EATER = ENTITY_TYPES.register("corpse_eater",
             () -> EntityType.Builder.of(CorpseEaterEntity::new, EntityClassification.MONSTER)
                     .sized(0.79F, 1.6F)

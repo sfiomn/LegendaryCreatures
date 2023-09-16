@@ -5,11 +5,12 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 import org.apache.commons.lang3.tuple.Pair;
 import sfiomn.legendarycreatures.LegendaryCreatures;
-import sfiomn.legendarycreatures.config.json.JsonConfigRegistration;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
 
 public class Config
 {
@@ -63,6 +64,7 @@ public class Config
 		public final ForgeConfigSpec.ConfigValue<Boolean> wispNaturalSpawn;
 		public final ForgeConfigSpec.ConfigValue<Boolean> wispBreakingBlockSpawn;
 		public final ForgeConfigSpec.ConfigValue<Boolean> wispKillingEntitySpawn;
+		public final ForgeConfigSpec.ConfigValue<List<Integer>> wispPurseXpReward;
 		public final ForgeConfigSpec.ConfigValue<Boolean> corpseEaterNaturalSpawn;
 		public final ForgeConfigSpec.ConfigValue<Boolean> corpseEaterBreakingBlockSpawn;
 		public final ForgeConfigSpec.ConfigValue<Boolean> corpseEaterKillingEntitySpawn;
@@ -116,6 +118,7 @@ public class Config
 			wispNaturalSpawn = builder.define("Wisp Natural Spawn ", true);
 			wispBreakingBlockSpawn = builder.define("Wisp Breaking Block Spawn ", true);
 			wispKillingEntitySpawn = builder.define("Wisp Killing Entity Spawn ", true);
+			wispPurseXpReward = builder.define("Wisp Purse Xp Reward Range ", Arrays.asList(10, 10));
 			builder.pop();
 
 			builder.push("corpse_eater");
@@ -151,6 +154,7 @@ public class Config
 		public static boolean wispNaturalSpawn;
 		public static boolean wispBreakingBlockSpawn;
 		public static boolean wispKillingEntitySpawn;
+		public static List<Integer> wispPurseXpReward;
 		public static boolean corpseEaterNaturalSpawn;
 		public static boolean corpseEaterBreakingBlockSpawn;
 		public static boolean corpseEaterKillingEntitySpawn;
@@ -180,6 +184,7 @@ public class Config
 				wispNaturalSpawn = COMMON.wispNaturalSpawn.get();
 				wispBreakingBlockSpawn = COMMON.wispBreakingBlockSpawn.get();
 				wispKillingEntitySpawn = COMMON.wispKillingEntitySpawn.get();
+				wispPurseXpReward = COMMON.wispPurseXpReward.get();
 				corpseEaterNaturalSpawn = COMMON.corpseEaterNaturalSpawn.get();
 				corpseEaterBreakingBlockSpawn = COMMON.corpseEaterBreakingBlockSpawn.get();
 				corpseEaterKillingEntitySpawn = COMMON.corpseEaterKillingEntitySpawn.get();

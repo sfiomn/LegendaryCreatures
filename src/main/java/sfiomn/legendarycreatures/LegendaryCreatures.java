@@ -56,6 +56,7 @@ public class LegendaryCreatures
         EffectRegistry.register(modBus);
         EntityTypeRegistry.register(modBus);
         ItemRegistry.register(modBus);
+        ParticleTypeRegistry.register(modBus);
         SoundRegistry.register(modBus);
 
         Config.register();
@@ -87,7 +88,7 @@ public class LegendaryCreatures
     private void doClientStuff(final FMLClientSetupEvent event) {
         event.enqueueWork(() ->
         {
-            RenderTypeLookup.setRenderLayer(BlockRegistry.DOOM_FIRE.get(), RenderType.cutout());
+            RenderTypeLookup.setRenderLayer(BlockRegistry.DOOM_FIRE_BLOCK.get(), RenderType.cutout());
         });
 
         DistExecutor.safeRunWhenOn(Dist.CLIENT, LegendaryCreatures::registerEntityRendering);
@@ -109,6 +110,7 @@ public class LegendaryCreatures
                 RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.SCORPION.get(), ScorpionRenderer::new);
                 RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.SCORPION_BABY.get(), ScorpionBabyRenderer::new);
                 RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.WISP.get(), WispRenderer::new);
+                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.WISP_PURSE.get(), WispPurseRenderer::new);
                 RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.CORPSE_EATER.get(), CorpseEaterRenderer::new);
             }
         };

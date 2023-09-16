@@ -100,6 +100,7 @@ public class ScorpionBabyEntity extends AnimatedCreatureEntity {
         this.playSound(SoundEvents.SILVERFISH_STEP, 1.0F, 1.0F);
     }
 
+    // Only used by ModEvents to spawn an entity based on killing entity or breaking block
     public static void spawn(IWorld world, Vector3d pos) {
         if (!world.isClientSide()) {
             ScorpionBabyEntity entityToSpawn = EntityTypeRegistry.SCORPION_BABY.get().create((World) world);

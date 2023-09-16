@@ -1,9 +1,9 @@
 {
   "textures": [
-    "legendary_creatures_and_tools:desert_mojo_particles_1",
-    "legendary_creatures_and_tools:desert_mojo_particles_2",
-    "legendary_creatures_and_tools:desert_mojo_particles_3",
-    "legendary_creatures_and_tools:desert_mojo_particles_4",
-    "legendary_creatures_and_tools:desert_mojo_particles_5"
+    "legendarycreatures:desert_mojo_particles_1",
+    "legendarycreatures:desert_mojo_particles_2",
+    "legendarycreatures:desert_mojo_particles_3",
+    "legendarycreatures:desert_mojo_particles_4",
+    "legendarycreatures:desert_mojo_particles_5"
   ]
 }

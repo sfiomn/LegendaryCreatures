@@ -60,7 +60,7 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
         this.goalSelector.addGoal(1, new SwimGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(3, new PoisonMeleeAttackGoal(this, 200, 0, tailAttackDuration, tailAttackActionPoint, 200, null, 1.0, true));
-        //this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, null, 1.0, true));
+        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, null, 1.0, true));
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false, false));
         this.goalSelector.addGoal(6, new LookRandomlyGoal(this));
         this.goalSelector.addGoal(7, new RandomWalkingGoal(this, 0.6, 40));
@@ -76,6 +76,11 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
             event.getController().setAnimation(new AnimationBuilder().addAnimation("tail", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
         }
         return PlayState.CONTINUE;
+    }
+
+    @Override
+    public AnimationBuilder getSprintAnimation() {
+        return new AnimationBuilder().addAnimation("run", ILoopType.EDefaultLoopTypes.LOOP);
     }
 
     public boolean hasBabies() {
@@ -136,6 +141,7 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
         super.remove(keepData);
     }
 
+    // Only used by ModEvents to spawn an entity based on killing entity or breaking block
     public static void spawn(IWorld world, Vector3d pos) {
         if (!world.isClientSide()) {
             ScorpionEntity entityToSpawn = EntityTypeRegistry.SCORPION.get().create((World) world);

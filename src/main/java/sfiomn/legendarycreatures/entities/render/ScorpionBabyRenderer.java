@@ -10,6 +10,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import sfiomn.legendarycreatures.entities.CorpseEaterEntity;
 import sfiomn.legendarycreatures.entities.ScorpionBabyEntity;
 import sfiomn.legendarycreatures.entities.model.ScorpionBabyModel;
+import sfiomn.legendarycreatures.util.RenderTypeUtil;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 import software.bernie.geckolib3.renderers.geo.layer.LayerGlowingAreasGeo;
 
@@ -24,7 +25,7 @@ public class ScorpionBabyRenderer extends GeoEntityRenderer<ScorpionBabyEntity> 
         addLayer(new LayerGlowingAreasGeo(this,
                 entity -> getGeoModelProvider().getTextureLocation((ScorpionBabyEntity) entity),
                 entity -> getGeoModelProvider().getModelLocation((ScorpionBabyEntity) entity),
-                resourceLocation -> RenderType.eyes((ResourceLocation) resourceLocation)));
+                resourceLocation -> RenderTypeUtil.glowingNoTransparency((ResourceLocation) resourceLocation)));
 
         this.shadowRadius = 0.0f;
     }
