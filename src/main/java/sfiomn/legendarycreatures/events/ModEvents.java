@@ -1,22 +1,25 @@
 package sfiomn.legendarycreatures.events;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.api.entities.MobEntityEnum;
 import sfiomn.legendarycreatures.config.json.JsonBlackLists;
 import sfiomn.legendarycreatures.config.json.JsonChanceSpawn;
 import sfiomn.legendarycreatures.config.json.JsonConfig;
-import sfiomn.legendarycreatures.entities.*;
+import sfiomn.legendarycreatures.util.WorldUtil;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -51,13 +54,11 @@ public class ModEvents {
 
             boolean cancelSpawn = false;
             if (blackLists.breakingBlockNames.contains(blockName)) {
-                LegendaryCreatures.LOGGER.debug("cancel spawn " + mobId + " black list block name : " + blockName);
                 cancelSpawn = true;
             }
             else
                 for (ResourceLocation tag : blockTags) {
                     if (blackLists.breakingBlockTags.contains(tag.toString())) {
-                        LegendaryCreatures.LOGGER.debug("cancel spawn " + mobId + " black list block tag : " + tag);
                         cancelSpawn = true;
                     }
                 }
@@ -65,7 +66,6 @@ public class ModEvents {
                 continue;
 
             if (breakingBlockNameSpawns.containsKey(blockRegistryName.toString())) {
-                LegendaryCreatures.LOGGER.debug("spawn " + mobId + " block name found : " + blockRegistryName);
                 if (spawnEntity(world, pos, mobEntityEnum, breakingBlockNameSpawns.get(blockRegistryName.toString()).chance)) {
                     return;
                 }
@@ -74,13 +74,11 @@ public class ModEvents {
                 for (ResourceLocation tag : blockTags) {
                     if (breakingBlockTagSpawns.containsKey(tag.toString())) {
                         tagFound = true;
-                        LegendaryCreatures.LOGGER.debug("spawn " + mobId + " block tag found : " + tag);
                         if (spawnEntity(world, pos, mobEntityEnum, breakingBlockTagSpawns.get(tag.toString()).chance)) {
                             return;
                         }
                     }
                     if (!tagFound && breakingBlockNameSpawns.containsKey("default")) {
-                        LegendaryCreatures.LOGGER.debug("spawn " + mobId + " by default, block name : " + blockName);
                         if (spawnEntity(world, pos, mobEntityEnum, breakingBlockNameSpawns.get("default").chance)) {
                             return;
                         }
@@ -108,13 +106,11 @@ public class ModEvents {
 
                 boolean cancelSpawn = false;
                 if (blackLists.killingEntityNames.contains(killedEntityName.toString())) {
-                    LegendaryCreatures.LOGGER.debug("cancel spawn " + mobId + " black list killed entity : " + killedEntityName);
                     cancelSpawn = true;
                 }
                 else
                     for (ResourceLocation tag : killedEntityTags) {
                         if (blackLists.killingEntityTags.contains(tag.toString())) {
-                            LegendaryCreatures.LOGGER.debug("cancel spawn " + mobId + " black list block tag : " + tag);
                             cancelSpawn = true;
                         }
                     }
@@ -122,7 +118,6 @@ public class ModEvents {
                     continue;
 
                 if (killingEntityNameSpawns.containsKey(killedEntityName.toString())) {
-                    LegendaryCreatures.LOGGER.debug("spawn " + mobId + " killed entity : " + killedEntityName);
                     if (spawnEntity(event.getEntity().getCommandSenderWorld(), event.getEntity().position(), mobEntityEnum, killingEntityNameSpawns.get(killedEntityName.toString()).chance)) {
                         return;
                     }
@@ -130,7 +125,6 @@ public class ModEvents {
                     boolean tagFound = false;
                     for (ResourceLocation tag : killedEntityTags) {
                         if (killingEntityTagSpawns.containsKey(tag.toString())) {
-                            LegendaryCreatures.LOGGER.debug("spawn " + mobId + " killed entity tag found : " + tag);
                             tagFound = true;
                             if (spawnEntity(event.getEntity().getCommandSenderWorld(), event.getEntity().position(), mobEntityEnum, killingEntityTagSpawns.get(tag.toString()).chance)) {
                                 return;
@@ -138,7 +132,6 @@ public class ModEvents {
                         }
                     }
                     if (!tagFound && killingEntityNameSpawns.containsKey("default")) {
-                        LegendaryCreatures.LOGGER.debug("spawn " + mobId + " by default, killed entity : " + killedEntityName);
                         if (spawnEntity(event.getEntity().getCommandSenderWorld(), event.getEntity().position(), mobEntityEnum, killingEntityNameSpawns.get("default").chance)) {
                             return;
                         }
@@ -150,18 +143,16 @@ public class ModEvents {
 
     private static boolean spawnEntity(IWorld world, Vector3d pos, MobEntityEnum mobEntityEnum, double chance) {
         Random rand = world.getRandom();
-        Class<? extends AnimatedCreatureEntity> classEntity = mobEntityEnum.entityConstructor;
 
         if (rand.nextFloat() < chance) {
-            try {
-                Method spawnMethod = classEntity.getMethod("spawn", IWorld.class, Vector3d.class);
-                Object[] parametersArray = new Object[]{world, pos};
-                spawnMethod.invoke(null, parametersArray);
-            } catch (NoSuchMethodException | IllegalAccessException |
-                     InvocationTargetException ignored) {
+            EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(LegendaryCreatures.MOD_ID, mobEntityEnum.mobId));
+            if (entityType != null) {
+                Entity entityToSpawn = entityType.create((World) world);
+                if (entityToSpawn != null) {
+                    WorldUtil.spawnEntity(entityToSpawn, world, pos);
+                    return true;
+                }
             }
-            LegendaryCreatures.LOGGER.debug("successful entity spawned : " + mobEntityEnum.mobId);
-            return true;
         }
         return false;
     }

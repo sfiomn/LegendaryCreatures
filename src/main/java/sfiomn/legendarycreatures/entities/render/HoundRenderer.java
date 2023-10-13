@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.util.ResourceLocation;
 import sfiomn.legendarycreatures.entities.HoundEntity;
-import sfiomn.legendarycreatures.entities.model.HoundModel;
+import sfiomn.legendarycreatures.entities.render.model.HoundModel;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
 import javax.annotation.Nullable;

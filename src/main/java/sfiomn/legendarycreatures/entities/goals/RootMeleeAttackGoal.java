@@ -1,44 +1,44 @@
 package sfiomn.legendarycreatures.entities.goals;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.vector.Vector3d;
-import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.api.DamageSources;
 import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
 import sfiomn.legendarycreatures.registry.EffectRegistry;
 
 import java.util.EnumSet;
 
-public class RootMeleeAttackGoal extends Goal {
-    protected final AnimatedCreatureEntity mob;
-    private final int attackDuration;
-    private final int actionPoint;
-    private final float damageEvery10Ticks;
+public class RootMeleeAttackGoal extends MoveToTargetGoal {
+    private final AttributeModifier maxKnockBackResistance = new AttributeModifier("maxKnockBackResistance", 1000.0D, AttributeModifier.Operation.ADDITION);
+    private ModifiableAttributeInstance mobKnockBackResAttribute;
+    private final int initialAttackDuration;
+    private final int initialActionPoint;
+    private boolean initialAttackDone;
+    private final int longAttackDuration;
+    private final float damageEvery20Ticks;
     private final int coolDown;
-    private final SoundEvent sound;
-    private final double speedModifier;
     private final double stopAttackMobHealthPercent;
     private float mobHealth;
-    private boolean attackBlocked;
+    private boolean isInitialAttackBlocked;
     private int attackAnimationTick;
+    private int rootTick;
     private long lastUseTime;
-    private int ticksUntilNextPathRecalculation;
-    private int ticksUntilNextAttack;
     private LivingEntity rootTarget;
 
-    public RootMeleeAttackGoal(AnimatedCreatureEntity mob, int attackDuration, int startActionPoint, float damageEvery10Ticks, double stopAttackMobHealthPercent, double speedModifier, int goalCoolDown, SoundEvent soundAttack) {
-        this.mob = mob;
-        this.attackDuration = attackDuration;
-        this.actionPoint = startActionPoint;
-        this.damageEvery10Ticks = damageEvery10Ticks;
+    public RootMeleeAttackGoal(AnimatedCreatureEntity mob, int initialAttackDuration, int initialActionPoint, int longAttackDuration, float damageEvery20Ticks, double stopAttackMobHealthPercent, double speedModifier, int goalCoolDown) {
+        super(mob, speedModifier, true);
+        this.initialAttackDuration = initialAttackDuration;
+        this.initialActionPoint = initialActionPoint;
+        this.longAttackDuration = longAttackDuration;
+        this.damageEvery20Ticks = damageEvery20Ticks;
         this.coolDown = goalCoolDown;
-        this.sound = soundAttack;
-        this.speedModifier = speedModifier;
         this.stopAttackMobHealthPercent = stopAttackMobHealthPercent;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
@@ -49,7 +49,7 @@ public class RootMeleeAttackGoal extends Goal {
     }
 
     public boolean isAttacking() {
-        return this.mob.getAttackAnimation() == AnimatedCreatureEntity.ROOT_ATTACK;
+        return this.mob.getAttackAnimation() == AnimatedCreatureEntity.ROOT_ATTACK || this.mob.getAttackAnimation() == AnimatedCreatureEntity.BASE_ATTACK;
     }
 
     public boolean canUse() {
@@ -57,60 +57,47 @@ public class RootMeleeAttackGoal extends Goal {
         if (time - this.lastUseTime < coolDown || isAttacking()) {
             return false;
         } else {
-            LivingEntity target = this.mob.getTarget();
-            if (target == null) {
-                return false;
-            } else if (!target.isAlive()) {
-                return false;
-            } else {
-                Path path = this.mob.getNavigation().createPath(target, 0);
-                if (path != null) {
-                    return true;
-                } else {
-                    return this.getAttackReachSqr(target) >= this.mob.distanceToSqr(target) && this.mob.canSee(target);
-                }
-            }
+            return super.canUse();
         }
     }
 
     public boolean canContinueToUse() {
-        LivingEntity target = this.mob.getTarget();
-        if (target == null) {
+        if (super.canContinueToUse()) {
+            if (((this.mobHealth - this.mob.getHealth()) / this.mob.getMaxHealth()) > this.stopAttackMobHealthPercent) {
+                return false;
+            }
+            return !this.isInitialAttackBlocked;
+        } else
             return false;
-        } else if (!target.isAlive()) {
-            return false;
-        } else if (((this.mobHealth - this.mob.getHealth()) / this.mob.getMaxHealth()) > this.stopAttackMobHealthPercent) {
-            LegendaryCreatures.LOGGER.debug("start mob health : " + this.mobHealth + ", current health : " + this.mob.getHealth() + ", stop trigger : " + ((this.mobHealth - this.mob.getHealth()) / this.mob.getMaxHealth()));
-            LegendaryCreatures.LOGGER.debug("stop attack ? " + (((this.mobHealth - this.mob.getHealth()) / this.mob.getMaxHealth()) > this.stopAttackMobHealthPercent));
-            return false;
-        }
-        return !this.attackBlocked;
     }
 
     public void start() {
+        super.start();
         this.mob.setAggressive(true);
         this.attackAnimationTick = 0;
-        this.ticksUntilNextPathRecalculation = 0;
-        this.ticksUntilNextAttack = 0;
         this.mobHealth = this.mob.getHealth();
-        this.attackBlocked = false;
+        this.isInitialAttackBlocked = false;
+        this.initialAttackDone = false;
+        this.rootTick = 0;
+        this.mobKnockBackResAttribute = this.mob.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
     }
 
     public void stop() {
+        super.stop();
         this.lastUseTime = this.mob.level.getGameTime();
 
         if (isAttacking())
             this.stopAttack();
 
+        if (this.rootTarget != null)
+            removeRootEffect(this.rootTarget);
+
         this.mob.setAggressive(false);
-        mob.getNavigation().stop();
     }
 
     public void tick() {
         if (this.attackAnimationTick > 0)
             this.attackAnimationTick -= 1;
-        if (this.ticksUntilNextAttack > 0)
-            this.ticksUntilNextAttack -= 1;
 
         LivingEntity target = this.mob.getTarget();
         if (target != null) {
@@ -118,93 +105,86 @@ public class RootMeleeAttackGoal extends Goal {
 
             // Move to target
             double distToTargetSqr = this.mob.distanceToSqr(target);
-            if (this.mob.canSee(target) && (getAttackReachSqr(target) / 1.5f) < distToTargetSqr) {
-                if (--ticksUntilNextPathRecalculation <= 0) {
-                    if (this.mob.getNavigation().moveTo(target, this.speedModifier)) {
-                        this.ticksUntilNextPathRecalculation = 4 + this.mob.getRandom().nextInt(7);
-                    } else {
-                        this.ticksUntilNextPathRecalculation += 15;
-                    }
-                    if (distToTargetSqr > 1024.0D) {
-                        this.ticksUntilNextPathRecalculation += 10;
-                    } else if (distToTargetSqr > 256.0D) {
-                        this.ticksUntilNextPathRecalculation += 5;
-                    }
-                }
-            }
+            super.tick();
 
             // Attack target
-            if (this.ticksUntilNextAttack == 0 && getAttackReachSqr(target) >= distToTargetSqr && !isAttacking()) {
+            if (getAttackReachSqr(target) >= distToTargetSqr && !isAttacking()) {
                 this.startAttack();
             }
 
             if (this.attackAnimationTick == 0 && isAttacking())
                 this.stopAttack();
 
-            this.attack(target, distToTargetSqr);
-        }
-    }
-
-    protected void startAttack() {
-        this.mob.setAttackAnimation(AnimatedCreatureEntity.ROOT_ATTACK);
-        this.attackAnimationTick = this.attackDuration;
-    }
-
-    protected void stopAttack() {
-        this.mob.setAttackAnimation(AnimatedCreatureEntity.NO_ANIMATION);
-        if (this.rootTarget != null)
-            removeRootEffect(this.rootTarget);
-    }
-
-    protected void attack(LivingEntity target, double squaredDistance) {
-        if (this.sound != null && isAttacking() && isActionPoint() &&
-                squaredDistance <= getAttackReachSqr(target)) {
-            mob.playSound(this.sound, 1.0F, 1.0F);
-        }
-
-        if (target != null && isAttacking()) {
-            if (squaredDistance <= getAttackReachSqr(target)) {
-                // Apply root effect on first "hurt" if not blocked
-                if (isActionPoint()) {
-                    if (isInitialActionPoint()) {
-                        if (!this.isDamageSourceBlocked(target)) {
-                            target.hurt(DamageSources.ROOT_ATTACK, this.damageEvery10Ticks);
-                            addRootEffect(target);
-                            this.rootTarget = target;
-                        } else {
-                            target.hurt(DamageSource.mobAttack(this.mob), this.damageEvery10Ticks);
-                            this.attackBlocked = true;
+            if (isAttacking()) {
+                if (distToTargetSqr <= getAttackReachSqr(target)) {
+                    // Apply root effect on first "hurt" if not blocked
+                    if (this.initialAttackDone) {
+                        if (this.rootTick++ >= 19) {
+                            this.rootTick = 0;
+                            this.executeRootAttack(target);
                         }
-                    } else {
-                        target.hurt(DamageSources.ROOT_ATTACK, this.damageEvery10Ticks);
+                    } else if (isInitialActionPoint()) {
+                        this.executeInitialAttack(target);
                     }
-                }
-                // remove root effect if out of reach
-            } else {
-                if (this.rootTarget != null) {
-                    removeRootEffect(this.rootTarget);
+                } else {
+                    // remove root effect if out of reach
+                    if (this.rootTarget != null) {
+                        removeRootEffect(this.rootTarget);
+                    }
                 }
             }
         }
     }
 
+    protected void startAttack() {
+        if (!this.initialAttackDone) {
+            this.mob.setAttackAnimation(AnimatedCreatureEntity.BASE_ATTACK);
+            this.attackAnimationTick = this.initialAttackDuration;
+        } else {
+            this.mob.setAttackAnimation(AnimatedCreatureEntity.ROOT_ATTACK);
+            this.attackAnimationTick = this.longAttackDuration;
+        }
+    }
+
+    protected void stopAttack() {
+        this.mob.setAttackAnimation(AnimatedCreatureEntity.NO_ANIMATION);
+    }
+
+    protected void executeInitialAttack(LivingEntity target) {
+        if (target != null) {
+            if (!this.isDamageSourceBlocked(target)) {
+                target.hurt(DamageSources.ROOT_ATTACK, this.damageEvery20Ticks);
+                addRootEffect(target);
+                this.rootTarget = target;
+                this.initialAttackDone = true;
+            } else {
+                target.hurt(DamageSource.mobAttack(this.mob), this.damageEvery20Ticks);
+                this.isInitialAttackBlocked = true;
+            }
+        }
+    }
+
+    protected void executeRootAttack(LivingEntity target) {
+        addRootEffect(target);
+        target.hurt(DamageSources.ROOT_ATTACK, this.damageEvery20Ticks);
+    }
+
     protected void addRootEffect(LivingEntity target) {
-        target.addEffect(new EffectInstance(EffectRegistry.ROOT.get(), this.attackDuration, 0, false, true));
+        target.addEffect(new EffectInstance(EffectRegistry.ROOT.get(), this.longAttackDuration, 0, false, true));
+        if (this.mobKnockBackResAttribute != null && !this.mobKnockBackResAttribute.hasModifier(maxKnockBackResistance))
+            this.mobKnockBackResAttribute.addTransientModifier(maxKnockBackResistance);
     }
 
     protected void removeRootEffect(LivingEntity target) {
         if (target.hasEffect(EffectRegistry.ROOT.get())) {
             target.removeEffect(EffectRegistry.ROOT.get());
         }
+        if (this.mobKnockBackResAttribute != null && this.mobKnockBackResAttribute.hasModifier(maxKnockBackResistance))
+            this.mobKnockBackResAttribute.removeModifier(maxKnockBackResistance);
     }
 
     protected boolean isInitialActionPoint() {
-        return (this.attackDuration - this.actionPoint) == this.attackAnimationTick;
-    }
-
-    protected boolean isActionPoint() {
-        return (this.attackDuration - this.actionPoint - this.attackAnimationTick) % 10 == 0 &&
-                (this.attackDuration - this.actionPoint - this.attackAnimationTick) >= 0;
+        return (this.initialAttackDuration - this.initialActionPoint) == this.attackAnimationTick;
     }
 
     protected double getAttackReachSqr(LivingEntity entity) {

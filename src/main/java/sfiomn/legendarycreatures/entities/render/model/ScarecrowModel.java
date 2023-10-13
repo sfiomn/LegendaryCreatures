@@ -1,4 +1,4 @@
-package sfiomn.legendarycreatures.entities.model;
+package sfiomn.legendarycreatures.entities.render.model;
 
 import net.minecraft.util.ResourceLocation;
 import sfiomn.legendarycreatures.LegendaryCreatures;

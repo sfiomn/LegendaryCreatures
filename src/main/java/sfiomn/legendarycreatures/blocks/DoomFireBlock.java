@@ -25,7 +25,7 @@ public class DoomFireBlock extends AbstractFireBlock {
     }
 
     public static boolean canSurviveOnBlock(Block block) {
-        return !block.is(Blocks.AIR) && !block.is(Blocks.FIRE) && !block.is(Blocks.SOUL_FIRE) && !block.is(BlockRegistry.DOOM_FIRE_BLOCK.get()) && !block.is(Blocks.WATER);
+        return !block.is(Blocks.AIR) && !block.is(Blocks.FIRE) && !block.is(Blocks.SOUL_FIRE) && !block.is(BlockRegistry.DOOM_FIRE_BLOCK.get()) && !block.is(Blocks.WATER) && block.;
     }
 
     @Override

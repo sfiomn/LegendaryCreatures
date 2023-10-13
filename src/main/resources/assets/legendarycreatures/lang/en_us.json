@@ -1,5 +1,4 @@
 {
-
   "itemGroup.legendary_creatures": "Legendary Creatures",
 
   "item.legendarycreatures.desert_mojo_spawn_egg": "Desert Mojo Spawn Egg",
@@ -27,23 +26,30 @@
   "sounds.legendarycreatures.mojo_death": "Mojo Death Sound",
   "sounds.legendarycreatures.mojo_idle": "Mojo Idle Sound",
   "sounds.legendarycreatures.mojo_hurt": "Mojo Hurt Sound",
+  "sounds.legendarycreatures.mojo_base_attack_hit": "Mojo Attack Sound",
   "sounds.legendarycreatures.hound_hurt": "Hound Hurt Sound",
   "sounds.legendarycreatures.hound_death": "Hound Death Sound",
   "sounds.legendarycreatures.hound_idle": "Hound Idle Sound",
   "sounds.legendarycreatures.hound_step": "Hound Step Sound",
+  "sounds.legendarycreatures.hound_base_attack_hit": "Hound Attack Sound",
   "sounds.legendarycreatures.scarecrow_spawn": "Scarecrow Spawn Sound",
   "sounds.legendarycreatures.scarecrow_death": "Scarecrow Death Sound",
   "sounds.legendarycreatures.scarecrow_step": "Scarecrow Step Sound",
+  "sounds.legendarycreatures.scarecrow_base_attack_hit": "Scarecrow Attack Sound",
   "sounds.legendarycreatures.scorpion_hurt": "Scorpion Hurt Sound",
   "sounds.legendarycreatures.scorpion_death": "Scorpion Death Sound",
   "sounds.legendarycreatures.scorpion_idle": "Scorpion Idle Sound",
   "sounds.legendarycreatures.scorpion_step": "Scorpion Step Sound",
+  "sounds.legendarycreatures.scorpion_claws_hit": "Scorpion Claws Snap Sound",
+  "sounds.legendarycreatures.scorpion_tail_hit": "Scorpion Tail Hit Sound",
   "sounds.legendarycreatures.wisp_idle": "Wisp Idle Sound",
   "sounds.legendarycreatures.wisp_death": "Wisp Death Sound",
+  "sounds.legendarycreatures.corpse_eater_spawn": "Corpse Eater Spawn",
   "sounds.legendarycreatures.corpse_eater_hurt": "Corpse Eater Hurt Sound",
   "sounds.legendarycreatures.corpse_eater_run": "Corpse Eater Run Sound",
   "sounds.legendarycreatures.corpse_eater_death": "Corpse Eater Death Sound",
   "sounds.legendarycreatures.corpse_eater_idle": "Corpse Eater Idle Sound",
   "sounds.legendarycreatures.corpse_eater_step": "Corpse Eater Step Sound",
-  "sounds.legendarycreatures.corpse_eater_melee_attack": "Corpse Eater Melee Attack Sound"
+  "sounds.legendarycreatures.corpse_eater_attack": "Corpse Eater Attack Sound",
+  "sounds.legendarycreatures.corpse_eater_attack_hit": "Corpse Eater Attack Hit Sound"
 }

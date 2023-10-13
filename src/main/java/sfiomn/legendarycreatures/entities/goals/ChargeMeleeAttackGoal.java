@@ -16,7 +16,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
-import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
 
 import java.util.*;
@@ -27,7 +26,6 @@ public class ChargeMeleeAttackGoal extends Goal {
     private final int actionPoint;
     private final int coolDown;
     private final double minDistance;
-    private final SoundEvent sound;
     private final double speedModifier;
     private final double chargeCorrectionAngle;
     private final boolean mayDisableShield;
@@ -40,13 +38,12 @@ public class ChargeMeleeAttackGoal extends Goal {
     private Vector3d chargeAxe;
     private BlockPos targetBlockPos;
 
-    public ChargeMeleeAttackGoal(AnimatedCreatureEntity mob, int attackDuration, int hurtTick, int attackCoolDown, double minDistanceAttack, SoundEvent soundAttack, double speedModifier, double chargeCorrectionAngle, boolean mayDisableShield) {
+    public ChargeMeleeAttackGoal(AnimatedCreatureEntity mob, int attackDuration, int hurtTick, int attackCoolDown, double minDistanceAttack, double speedModifier, double chargeCorrectionAngle, boolean mayDisableShield) {
         this.mob = mob;
         this.attackDuration = attackDuration;
         this.actionPoint = hurtTick;
         this.coolDown = attackCoolDown;
         this.minDistance = minDistanceAttack;
-        this.sound = soundAttack;
         this.speedModifier = speedModifier;
         this.chargeCorrectionAngle = chargeCorrectionAngle;
         this.mayDisableShield = mayDisableShield;
@@ -123,9 +120,10 @@ public class ChargeMeleeAttackGoal extends Goal {
                 this.targetBlockPos = target.blockPosition();
 
             double distToTargetSqr = this.mob.distanceToSqr(target);
+            double angleToTarget = this.getAngleToChargeAxe(target);
 
             // Update next target point
-            if (this.mob.canSee(target) && this.getAngleToChargeAxe(target) <= this.chargeCorrectionAngle && target.blockPosition() != this.targetBlockPos && !isAttacking() && !hasAttacked) {
+            if (this.mob.canSee(target) && angleToTarget <= this.chargeCorrectionAngle && target.blockPosition() != this.targetBlockPos && !isAttacking() && !hasAttacked) {
                 this.targetBlockPos = target.blockPosition();
                 this.pathUpdated = false;
             }
@@ -141,7 +139,7 @@ public class ChargeMeleeAttackGoal extends Goal {
             }
 
             // Move to new target point
-            if (getAttackReachSqr(target) / 1.5f < distToTargetSqr) {
+            if (getAttackReachSqr(target) / 2.0f < distToTargetSqr) {
                 if (--updatePathTick <= 0 && !pathUpdated) {
                     this.pathUpdated = true;
                     if (this.move()) {
@@ -149,9 +147,9 @@ public class ChargeMeleeAttackGoal extends Goal {
                     }
                     // Increase path calculation interval if target far away (similar to melee attack)
                     if (distToTargetSqr > 1024.0D) {
-                        this.updatePathTick += 10;
+                        this.updatePathTick += 20;
                     } else if (distToTargetSqr > 256.0D) {
-                        this.updatePathTick += 5;
+                        this.updatePathTick += 10;
                     }
                 }
             } else {
@@ -159,7 +157,7 @@ public class ChargeMeleeAttackGoal extends Goal {
             }
 
             // Attack target - ensure only 1 attack will be triggered per charge
-            if ((getAttackReachSqr(target) >= distToTargetSqr || this.path.getNextNodeIndex() >= (this.path.getNodeCount() - 1)) && !isAttacking() && !hasAttacked)
+            if ((getAttackReachSqr(target) >= distToTargetSqr || (this.path.getNextNodeIndex() >= (this.path.getNodeCount() - 1) && angleToTarget > this.chargeCorrectionAngle)) && !isAttacking() && !hasAttacked)
                 this.startAttack();
 
             if (this.attackAnimationTick > 0)
@@ -167,7 +165,9 @@ public class ChargeMeleeAttackGoal extends Goal {
             if (this.attackAnimationTick == 0 && isAttacking())
                 this.stopAttack();
 
-            this.attack(target, distToTargetSqr);
+            if (isActionPoint() && distToTargetSqr <= getAttackReachSqr(target)) {
+                this.executeAttack(target);
+            }
         }
     }
 
@@ -181,14 +181,8 @@ public class ChargeMeleeAttackGoal extends Goal {
         this.hasAttacked = true;
     }
 
-    protected void attack(LivingEntity target, double squaredDistance) {
-        if (this.sound != null && isActionPoint() &&
-                squaredDistance <= getAttackReachSqr(target)) {
-            mob.playSound(this.sound, 1.0F, 1.0F);
-        }
-
-        if (target != null && isActionPoint() &&
-                squaredDistance <= getAttackReachSqr(target)) {
+    protected void executeAttack(LivingEntity target) {
+        if (target != null) {
             this.doHurt(target);
         }
     }

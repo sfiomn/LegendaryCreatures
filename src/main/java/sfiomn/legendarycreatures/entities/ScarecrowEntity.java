@@ -57,7 +57,13 @@ public class ScarecrowEntity extends AnimatedCreatureEntity {
         super.registerGoals();
         this.goalSelector.addGoal(1, new SwimGoal(this));
         this.targetSelector.addGoal(4, new HurtByTargetGoal(this));
-        this.goalSelector.addGoal(5, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, null, 1.0, true));
+        this.goalSelector.addGoal(5, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, 1.0, true) {
+            @Override
+            protected void executeAttack(LivingEntity target) {
+                super.executeAttack(target);
+                this.mob.playSound(SoundRegistry.SCARECROW_BASE_ATTACK_HIT.get(), 1.0f, 1.0f);
+            }
+        });
         this.targetSelector.addGoal(6, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false));
     }
 
@@ -90,14 +96,12 @@ public class ScarecrowEntity extends AnimatedCreatureEntity {
         return new AnimationBuilder().addAnimation("spawn", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
     }
 
-    // Only used by ModEvents to spawn an entity based on killing entity or breaking block
-    public static void spawn(IWorld world, Vector3d pos) {
-        if (!world.isClientSide()) {
-            ScarecrowEntity entityToSpawn = EntityTypeRegistry.SCARECROW.get().create((World) world);
-            if (entityToSpawn != null) {
-                WorldUtil.spawnEntity(entityToSpawn, world, pos);
-                world.playSound(null, new BlockPos(pos), SoundRegistry.SCARECROW_SPAWN.get(), SoundCategory.HOSTILE, 10.0F, 1.0F);
-            }
+    @Override
+    public void tick() {
+        super.tick();
+
+        if (getSpawnTimer() == spawnTimerInTicks - 1) {
+            this.level.playSound(null, new BlockPos(this.position()), SoundRegistry.SCARECROW_SPAWN.get(), SoundCategory.HOSTILE, 10.0F, 1.0F);
         }
     }
 }

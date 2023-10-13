@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.util.ResourceLocation;
 import sfiomn.legendarycreatures.entities.ScarecrowEntity;
-import sfiomn.legendarycreatures.entities.model.ScarecrowModel;
+import sfiomn.legendarycreatures.entities.render.model.ScarecrowModel;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
 import javax.annotation.Nullable;

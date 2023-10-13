@@ -35,14 +35,4 @@ public class ForestMojoEntity extends MojoEntity {
     protected int getBaseAttackActionPoint() {
         return baseAttackActionPoint;
     }
-
-    // Only used by ModEvents to spawn an entity based on killing entity or breaking block
-    public static void spawn(IWorld world, Vector3d pos) {
-        if (!world.isClientSide()) {
-            ForestMojoEntity entityToSpawn = EntityTypeRegistry.FOREST_MOJO.get().create((World) world);
-            if (entityToSpawn != null) {
-                WorldUtil.spawnEntity(entityToSpawn, world, pos);
-            }
-        }
-    }
 }

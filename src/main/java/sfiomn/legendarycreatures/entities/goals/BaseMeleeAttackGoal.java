@@ -9,27 +9,19 @@ import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
 
 import java.util.EnumSet;
 
-public class BaseMeleeAttackGoal extends Goal {
-    protected final AnimatedCreatureEntity mob;
+public class BaseMeleeAttackGoal extends MoveToTargetGoal {
     private final int attackDuration;
     private final int actionPoint;
     private final int coolDown;
-    private final SoundEvent sound;
-    private final double speedModifier;
-    private final boolean followingEvenIfNotSeen;
     private int attackAnimationTick;
     private long lastUseTime;
-    private int ticksUntilNextPathRecalculation;
     private int ticksUntilNextAttack;
 
-    public BaseMeleeAttackGoal(AnimatedCreatureEntity mob, int attackDuration, int hurtTick, int attackCoolDown, SoundEvent soundAttack, double speedModifier, boolean followingEvenIfNotSeen ) {
-        this.mob = mob;
+    public BaseMeleeAttackGoal(AnimatedCreatureEntity mob, int attackDuration, int hurtTick, int attackCoolDown, double speedModifier, boolean followingEvenIfNotSeen ) {
+        super(mob, speedModifier, followingEvenIfNotSeen);
         this.attackDuration = attackDuration;
         this.actionPoint = hurtTick;
         this.coolDown = attackCoolDown;
-        this.sound = soundAttack;
-        this.speedModifier = speedModifier;
-        this.followingEvenIfNotSeen = followingEvenIfNotSeen;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
@@ -47,49 +39,31 @@ public class BaseMeleeAttackGoal extends Goal {
         if (time - this.lastUseTime < 20 || isAttacking()) {
             return false;
         } else {
-            LivingEntity target = this.mob.getTarget();
-            if (target == null) {
-                return false;
-            } else if (!target.isAlive()) {
-                return false;
-            } else {
-                Path path = this.mob.getNavigation().createPath(target, 0);
-                if (path != null) {
-                    return true;
-                } else {
-                    return this.getAttackReachSqr(target) >= this.mob.distanceToSqr(target) && this.mob.canSee(target);
-                }
-            }
+            return super.canUse();
         }
     }
 
     public boolean canContinueToUse() {
-        LivingEntity target = this.mob.getTarget();
-        if (target == null) {
-            return false;
-        } else if (!target.isAlive()) {
-            return false;
-        } else if (!this.followingEvenIfNotSeen) {
-            return !this.mob.getNavigation().isDone();
-        }
-        return true;
+        return super.canContinueToUse();
     }
 
     public void start() {
+        LegendaryCreatures.LOGGER.debug("start melee attack");
+        super.start();
         this.mob.setAggressive(true);
         this.attackAnimationTick = 0;
-        this.ticksUntilNextPathRecalculation = 0;
         this.ticksUntilNextAttack = 0;
     }
 
     public void stop() {
+        LegendaryCreatures.LOGGER.debug("stop melee attack");
+        super.stop();
         this.lastUseTime = this.mob.level.getGameTime();
 
         if (isAttacking())
             this.stopAttack();
 
         this.mob.setAggressive(false);
-        mob.getNavigation().stop();
     }
 
     public void tick() {
@@ -104,20 +78,8 @@ public class BaseMeleeAttackGoal extends Goal {
 
             // Move to target
             double distToTargetSqr = this.mob.distanceToSqr(target);
-            if ((this.followingEvenIfNotSeen || this.mob.canSee(target)) && getAttackReachSqr(target) / 1.5f < distToTargetSqr) {
-                if (--ticksUntilNextPathRecalculation <= 0) {
-                    if (this.mob.getNavigation().moveTo(target, this.speedModifier)) {
-                        this.ticksUntilNextPathRecalculation = 4 + this.mob.getRandom().nextInt(7);
-                    } else {
-                        this.ticksUntilNextPathRecalculation += 15;
-                    }
-                    if (distToTargetSqr > 1024.0D) {
-                        this.ticksUntilNextPathRecalculation += 10;
-                    } else if (distToTargetSqr > 256.0D) {
-                        this.ticksUntilNextPathRecalculation += 5;
-                    }
-                }
-            }
+
+            super.tick();
 
             // Attack target
             if (this.ticksUntilNextAttack == 0 && getAttackReachSqr(target) >= distToTargetSqr && !isAttacking())
@@ -126,7 +88,8 @@ public class BaseMeleeAttackGoal extends Goal {
             if (this.attackAnimationTick == 0 && isAttacking())
                 this.stopAttack();
 
-            this.attack(target, distToTargetSqr);
+            if (isActionPoint() && distToTargetSqr <= getAttackReachSqr(target))
+                this.executeAttack(target);
         }
     }
 
@@ -140,18 +103,11 @@ public class BaseMeleeAttackGoal extends Goal {
         this.ticksUntilNextAttack = this.coolDown;
     }
 
-    protected void attack(LivingEntity target, double squaredDistance) {
-
-        if (this.sound != null && isActionPoint() &&
-                squaredDistance <= getAttackReachSqr(target)) {
-            mob.playSound(this.sound, 1.0F, 1.0F);
-        }
-
-        if (target != null && isActionPoint() &&
-                squaredDistance <= getAttackReachSqr(target)) {
+    protected void executeAttack(LivingEntity target) {
+        if (target != null) {
+            LegendaryCreatures.LOGGER.debug("execute melee attack");
             mob.doHurtTarget(target);
         }
-
     }
 
     protected  boolean isActionPoint() {

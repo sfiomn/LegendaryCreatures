@@ -69,12 +69,30 @@
       }
     ]
   },
+  "mojo_base_attack_hit": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.mojo_base_attack_hit",
+    "sounds": [
+      {
+        "name": "legendarycreatures:mojo_base_attack_hit1",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:mojo_base_attack_hit2",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:mojo_base_attack_hit3",
+        "stream": false
+      }
+    ]
+  },
   "hound_hurt": {
     "category": "neutral",
     "subtitle": "sounds.legendarycreatures.hound_hurt",
     "sounds": [
       {
-        "name": "legendarycreatures:hound_hurt",
+        "name": "legendarycreatures:hound/hurt",
         "stream": false
       }
     ]
@@ -84,7 +102,7 @@
     "subtitle": "sounds.legendarycreatures.hound_death",
     "sounds": [
       {
-        "name": "legendarycreatures:hound_death",
+        "name": "legendarycreatures:hound/death",
         "stream": false
       }
     ]
@@ -94,7 +112,7 @@
     "subtitle": "sounds.legendarycreatures.hound_idle",
     "sounds": [
       {
-        "name": "legendarycreatures:hound_idle",
+        "name": "legendarycreatures:hound/idle",
         "stream": false
       }
     ]
@@ -104,7 +122,37 @@
     "subtitle": "sounds.legendarycreatures.hound_step",
     "sounds": [
       {
-        "name": "legendarycreatures:hound_step",
+        "name": "legendarycreatures:hound/step1",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:hound/step2",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:hound/step3",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:hound/step4",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:hound/step5",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:hound/step6",
+        "stream": false
+      }
+    ]
+  },
+  "hound_base_attack_hit": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.hound_base_attack_hit",
+    "sounds": [
+      {
+        "name": "legendarycreatures:hound/base_attack_hit",
         "stream": false
       }
     ]
@@ -135,6 +183,24 @@
     "sounds": [
       {
         "name": "legendarycreatures:scarecrow_step",
+        "stream": false
+      }
+    ]
+  },
+  "scarecrow_base_attack_hit": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.scarecrow_base_attack_hit",
+    "sounds": [
+      {
+        "name": "legendarycreatures:scarecrow_base_attack_hit1",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:scarecrow_base_attack_hit2",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:scarecrow_base_attack_hit3",
         "stream": false
       }
     ]
@@ -195,6 +261,42 @@
     "sounds": [
       {
         "name": "legendarycreatures:scorpion_step",
+        "stream": false
+      }
+    ]
+  },
+  "scorpion_claws_hit": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.scorpion_claws_hit",
+    "sounds": [
+      {
+        "name": "legendarycreatures:scorpion_claws_hit1",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:scorpion_claws_hit2",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:scorpion_claws_hit3",
+        "stream": false
+      }
+    ]
+  },
+  "scorpion_tail_hit": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.scorpion_tail_hit",
+    "sounds": [
+      {
+        "name": "legendarycreatures:scorpion_tail_hit1",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:scorpion_tail_hit2",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:scorpion_tail_hit3",
         "stream": false
       }
     ]
@@ -277,12 +379,22 @@
       }
     ]
   },
-  "corpse_eater_melee_attack": {
+  "corpse_eater_attack": {
     "category": "neutral",
-    "subtitle": "sounds.legendarycreatures.corpse_eater_melee_attack",
+    "subtitle": "sounds.legendarycreatures.corpse_eater_attack",
     "sounds": [
       {
         "name": "legendarycreatures:corpse_eater/attack",
+        "stream": false
+      }
+    ]
+  },
+  "corpse_eater_attack_hit": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.corpse_eater_attack_hit",
+    "sounds": [
+      {
+        "name": "legendarycreatures:corpse_eater/attack_hit",
         "stream": false
       }
     ]

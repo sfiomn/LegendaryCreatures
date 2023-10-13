@@ -51,10 +51,16 @@ public class ScorpionBabyEntity extends AnimatedCreatureEntity {
         this.goalSelector.addGoal(1, new SwimGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(3, new LookAtGoal(this, PlayerEntity.class, (float) 12));
-        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, SoundEvents.SILVERFISH_AMBIENT, 1.0, true) {
+        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, 1.0, true) {
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (0.5 * 2.0F * 0.5 * 2.0F + entity.getBbWidth());
+            }
+
+            @Override
+            protected void executeAttack(LivingEntity target) {
+                super.executeAttack(target);
+                this.mob.playSound(SoundEvents.SILVERFISH_AMBIENT, 1.0f, 1.0f);
             }
         });
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false, false));
@@ -98,16 +104,5 @@ public class ScorpionBabyEntity extends AnimatedCreatureEntity {
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
         this.playSound(SoundEvents.SILVERFISH_STEP, 1.0F, 1.0F);
-    }
-
-    // Only used by ModEvents to spawn an entity based on killing entity or breaking block
-    public static void spawn(IWorld world, Vector3d pos) {
-        if (!world.isClientSide()) {
-            ScorpionBabyEntity entityToSpawn = EntityTypeRegistry.SCORPION_BABY.get().create((World) world);
-            if (entityToSpawn != null) {
-                WorldUtil.spawnEntity(entityToSpawn, world, pos);
-                world.playSound(null, new BlockPos(pos), SoundEvents.SILVERFISH_STEP, SoundCategory.HOSTILE, 10.0F, 1.0F);
-            }
-        }
     }
 }

@@ -8,6 +8,7 @@ import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IWorld;
@@ -28,12 +29,11 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import javax.annotation.Nullable;
 
 public class HoundEntity extends AnimatedCreatureEntity {
-    private final int baseAttackDuration = 12;
-    private final int baseAttackActionPoint = 7;
     private final int chargeAttackDuration = 17;
     private final int chargeAttackActionPoint = 9;
-    private final int biteAttackDuration = 26;
+    private final int biteAttackDuration = 12;
     private final int biteAttackActionPoint = 7;
+    private final int biteLongAttackDuration = 26;
 
     public HoundEntity(EntityType<? extends CreatureEntity> type, World world) {
         super(type, world);
@@ -44,36 +44,65 @@ public class HoundEntity extends AnimatedCreatureEntity {
     public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
         return MobEntity.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 20)
-                .add(Attributes.MOVEMENT_SPEED, 0.3)
+                .add(Attributes.MOVEMENT_SPEED, 0.29)
                 .add(Attributes.ARMOR, 0)
                 .add(Attributes.ATTACK_DAMAGE, 5)
                 .add(Attributes.FOLLOW_RANGE, 20)
-                .add(Attributes.KNOCKBACK_RESISTANCE, 0.2)
-                .add(Attributes.ATTACK_KNOCKBACK, 4);
+                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
+                .add(Attributes.ATTACK_KNOCKBACK, 0.5);
     }
 
     @Override
     protected void registerGoals() {
         super.registerGoals();
+        ChargeMeleeAttackGoal chargeMeleeAttackGoal = new ChargeMeleeAttackGoal(this, chargeAttackDuration, chargeAttackActionPoint, 120, 8,  1.9, 30, true) {
+            @Override
+            protected double getAttackReachSqr(LivingEntity entity) {
+                return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
+            }
+
+            @Override
+            protected void executeAttack(LivingEntity target) {
+                super.executeAttack(target);
+                this.mob.playSound(SoundRegistry.HOUND_BASE_ATTACK_HIT.get(), 1.0f, 1.0f);
+            }
+        };
+
+        RootMeleeAttackGoal rootMeleeAttackGoal = new RootMeleeAttackGoal(this, this.biteAttackDuration, this.biteAttackActionPoint, biteLongAttackDuration, 0.1f,   0.3, 1.0f, 240) {
+            @Override
+            protected double getAttackReachSqr(LivingEntity entity) {
+                return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
+            }
+
+            @Override
+            protected void executeInitialAttack(LivingEntity target) {
+                super.executeInitialAttack(target);
+                this.mob.playSound(SoundRegistry.HOUND_BASE_ATTACK_HIT.get(), 1.0f, 1.0f);
+            }
+        };
+
         this.goalSelector.addGoal(1, new SwimGoal(this));
-        //this.goalSelector.addGoal(2, new LeapAtTargetGoal(this, (float) 1.0));
-        this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
-        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 10, null, 1.0, true) {
+        this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
+        this.goalSelector.addGoal(3, chargeMeleeAttackGoal);
+        this.goalSelector.addGoal(4, rootMeleeAttackGoal);
+        this.goalSelector.addGoal(5, new BaseMeleeAttackGoal(this, biteAttackDuration, biteAttackActionPoint, 10, 1.0, true) {
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
             }
-        });
-        this.goalSelector.addGoal(5, new ChargeMeleeAttackGoal(this, chargeAttackDuration, chargeAttackActionPoint, 120, 8, null,  1.9, 25, true) {
+
             @Override
-            protected double getAttackReachSqr(LivingEntity entity) {
-                return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
+            protected void executeAttack(LivingEntity target) {
+                super.executeAttack(target);
+
+                mob.playSound(SoundRegistry.HOUND_BASE_ATTACK_HIT.get(), 1.0F, 1.0F);
             }
-        });
-        this.goalSelector.addGoal(6, new RootMeleeAttackGoal(this, this.biteAttackDuration, this.biteAttackActionPoint, 0.1f, 0.3, 1.0f, 240, null) {
+
             @Override
-            protected double getAttackReachSqr(LivingEntity entity) {
-                return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
+            public boolean canContinueToUse() {
+                if (chargeMeleeAttackGoal.canUse() || rootMeleeAttackGoal.canUse())
+                    return false;
+                return super.canContinueToUse();
             }
         });
         this.targetSelector.addGoal(7, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false, false));
@@ -82,20 +111,20 @@ public class HoundEntity extends AnimatedCreatureEntity {
     }
 
     private float getMobLength() {
-        return 1.0f;
+        return 1.2f;
     }
 
     @Override
     public <E extends IAnimatable> PlayState attackingPredicate(AnimationEvent<E> event) {
         if (getAttackAnimation() == BASE_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
             event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("attack", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("bite", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
         } else if (getAttackAnimation() == CHARGE_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
             event.getController().markNeedsReload();
             event.getController().setAnimation(new AnimationBuilder().addAnimation("charge", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
         }else if (getAttackAnimation() == ROOT_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
             event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("bite", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("bite_long", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
         }
         return PlayState.CONTINUE;
     }
@@ -119,20 +148,10 @@ public class HoundEntity extends AnimatedCreatureEntity {
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
         if (getAttackAnimation() != CHARGING)
-            this.playSound(SoundRegistry.HOUND_STEP.get(), 1.0F, 1.0F);
+            this.playSound(SoundEvents.HOGLIN_STEP, 1.0F, 1.0F);
     }
 
     public AnimationBuilder getSprintAnimation() {
         return new AnimationBuilder().addAnimation("run", ILoopType.EDefaultLoopTypes.LOOP);
-    }
-
-    // Only used by ModEvents to spawn an entity based on killing entity or breaking block
-    public static void spawn(IWorld world, Vector3d pos) {
-        if (!world.isClientSide()) {
-            HoundEntity entityToSpawn = EntityTypeRegistry.HOUND.get().create((World) world);
-            if (entityToSpawn != null) {
-                WorldUtil.spawnEntity(entityToSpawn, world, pos);
-            }
-        }
     }
 }

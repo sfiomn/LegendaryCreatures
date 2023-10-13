@@ -12,7 +12,9 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
@@ -50,20 +52,56 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
                 .add(Attributes.MAX_HEALTH, 18)
                 .add(Attributes.MOVEMENT_SPEED, 0.3)
                 .add(Attributes.ARMOR, 0)
-                .add(Attributes.ATTACK_DAMAGE, 8)
-                .add(Attributes.FOLLOW_RANGE, 16);
+                .add(Attributes.ATTACK_DAMAGE, 4)
+                .add(Attributes.FOLLOW_RANGE, 16)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 0.5);
     }
 
     @Override
     protected void registerGoals() {
         super.registerGoals();
+        PoisonMeleeAttackGoal poisonMeleeAttackGoal = new PoisonMeleeAttackGoal(this, 200, 0, tailAttackDuration, tailAttackActionPoint, 20, 1.0, true, 200){
+            @Override
+            protected double getAttackReachSqr(LivingEntity entity) {
+                return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
+            }
+
+            @Override
+            protected void executeAttack(LivingEntity target) {
+                super.executeAttack(target);
+                this.mob.playSound(SoundRegistry.SCORPION_TAIL_ATTACK_HIT.get(), 1.0f, 1.0f);
+            }
+        };
+
         this.goalSelector.addGoal(1, new SwimGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
-        this.goalSelector.addGoal(3, new PoisonMeleeAttackGoal(this, 200, 0, tailAttackDuration, tailAttackActionPoint, 200, null, 1.0, true));
-        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, null, 1.0, true));
+        this.goalSelector.addGoal(3, poisonMeleeAttackGoal);
+        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, 1.0, true){
+            @Override
+            protected double getAttackReachSqr(LivingEntity entity) {
+                return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
+            }
+
+            @Override
+            protected void executeAttack(LivingEntity target) {
+                super.executeAttack(target);
+                this.mob.playSound(SoundRegistry.SCORPION_CLAWS_ATTACK_HIT.get(), 1.0f, 1.0f);
+            }
+
+            @Override
+            public boolean canContinueToUse() {
+                if (poisonMeleeAttackGoal.canUse())
+                    return false;
+                return super.canContinueToUse();
+            }
+        });
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false, false));
         this.goalSelector.addGoal(6, new LookRandomlyGoal(this));
         this.goalSelector.addGoal(7, new RandomWalkingGoal(this, 0.6, 40));
+    }
+
+    private float getMobLength() {
+        return 1.2f;
     }
 
     @Override
@@ -132,6 +170,7 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
                     scorpionBabyEntity.setPersistenceRequired();
                 }
 
+                this.level.playSound(null, new BlockPos(this.position()), SoundEvents.SILVERFISH_STEP, SoundCategory.HOSTILE, 10.0F, 1.0F);
                 scorpionBabyEntity.setInvulnerable(this.isInvulnerable());
                 scorpionBabyEntity.moveTo(this.getX() + (double)f1, this.getY() + 0.5D, this.getZ() + (double)f2, this.random.nextFloat() * 360.0F, 0.0F);
                 this.level.addFreshEntity(scorpionBabyEntity);
@@ -139,15 +178,5 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
         }
 
         super.remove(keepData);
-    }
-
-    // Only used by ModEvents to spawn an entity based on killing entity or breaking block
-    public static void spawn(IWorld world, Vector3d pos) {
-        if (!world.isClientSide()) {
-            ScorpionEntity entityToSpawn = EntityTypeRegistry.SCORPION.get().create((World) world);
-            if (entityToSpawn != null) {
-                WorldUtil.spawnEntity(entityToSpawn, world, pos);
-            }
-        }
     }
 }
