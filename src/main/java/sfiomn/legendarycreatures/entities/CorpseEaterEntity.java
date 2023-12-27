@@ -8,6 +8,7 @@ import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -61,7 +62,7 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
         this.goalSelector.addGoal(1, new SwimGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(3, new LookAtGoal(this, PlayerEntity.class, (float) 12));
-        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 10, 1.0, true) {
+        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 10, 1.5, true) {
             @Override
             protected void executeAttack(LivingEntity target) {
                 super.executeAttack(target);
@@ -145,11 +146,11 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
                         BlockPos pos = this.blockPosition().offset(new Vector3i(i, 0, j));
                         BlockPos posUp = this.blockPosition().above().offset(new Vector3i(i, 0, j));
                         BlockPos posDown = this.blockPosition().below().offset(new Vector3i(i, 0, j));
-                        if (DoomFireBlock.canSurviveOnBlock(this.level.getBlockState(pos.below()).getBlock()) && this.level.getBlockState(pos).getDestroySpeed(this.level, pos) == 0.0f)
+                        if (DoomFireBlock.canSurviveOnBlock(this.level.getBlockState(pos.below()).getBlock()) && this.level.getBlockState(pos.below()).isFaceSturdy(this.level, pos.below(), Direction.UP) && this.level.getBlockState(pos).getDestroySpeed(this.level, pos) == 0.0f)
                             this.level.setBlockAndUpdate(pos, BlockRegistry.DOOM_FIRE_BLOCK.get().defaultBlockState());
-                        else if (DoomFireBlock.canSurviveOnBlock(this.level.getBlockState(posDown.below()).getBlock()) && this.level.getBlockState(posDown).getDestroySpeed(this.level, posDown) == 0.0f)
+                        else if (DoomFireBlock.canSurviveOnBlock(this.level.getBlockState(posDown.below()).getBlock()) && this.level.getBlockState(posDown.below()).isFaceSturdy(this.level, posDown.below(), Direction.UP)  && this.level.getBlockState(posDown).getDestroySpeed(this.level, posDown) == 0.0f)
                             this.level.setBlockAndUpdate(posDown, BlockRegistry.DOOM_FIRE_BLOCK.get().defaultBlockState());
-                        else if (DoomFireBlock.canSurviveOnBlock(this.level.getBlockState(posUp.below()).getBlock()) && this.level.getBlockState(posUp).getDestroySpeed(this.level, posUp) == 0.0f)
+                        else if (DoomFireBlock.canSurviveOnBlock(this.level.getBlockState(posUp.below()).getBlock()) && this.level.getBlockState(posUp.below()).isFaceSturdy(this.level, posUp.below(), Direction.UP)  && this.level.getBlockState(posUp).getDestroySpeed(this.level, posUp) == 0.0f)
                             this.level.setBlockAndUpdate(posUp, BlockRegistry.DOOM_FIRE_BLOCK.get().defaultBlockState());
                     }
                 }

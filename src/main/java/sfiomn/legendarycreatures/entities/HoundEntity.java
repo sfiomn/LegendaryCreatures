@@ -44,7 +44,7 @@ public class HoundEntity extends AnimatedCreatureEntity {
     public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
         return MobEntity.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 20)
-                .add(Attributes.MOVEMENT_SPEED, 0.29)
+                .add(Attributes.MOVEMENT_SPEED, 0.31)
                 .add(Attributes.ARMOR, 0)
                 .add(Attributes.ATTACK_DAMAGE, 5)
                 .add(Attributes.FOLLOW_RANGE, 20)
@@ -85,7 +85,7 @@ public class HoundEntity extends AnimatedCreatureEntity {
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(3, chargeMeleeAttackGoal);
         this.goalSelector.addGoal(4, rootMeleeAttackGoal);
-        this.goalSelector.addGoal(5, new BaseMeleeAttackGoal(this, biteAttackDuration, biteAttackActionPoint, 10, 1.0, true) {
+        this.goalSelector.addGoal(5, new BaseMeleeAttackGoal(this, biteAttackDuration, biteAttackActionPoint, 10, 1.5, true) {
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());

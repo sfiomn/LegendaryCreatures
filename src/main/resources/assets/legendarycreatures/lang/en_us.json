@@ -10,6 +10,8 @@
   "item.legendarycreatures.wisp_spawn_egg": "Wisp Spawn Egg",
   "item.legendarycreatures.corpse_eater_spawn_egg": "Corpse Eater Spawn Egg",
 
+  "effect.legendarycreatures.root": "Root",
+
   "entity.legendarycreatures.desert_mojo": "Desert Mojo",
   "entity.legendarycreatures.forest_mojo": "Forest Mojo",
   "entity.legendarycreatures.hound": "Hound",

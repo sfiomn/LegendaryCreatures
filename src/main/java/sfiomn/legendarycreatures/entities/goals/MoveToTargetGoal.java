@@ -63,10 +63,10 @@ public abstract class MoveToTargetGoal extends Goal {
         if (target != null) {
             // Move to target
             double distToTargetSqr = this.mob.distanceToSqr(target);
-            if ((this.followingEvenIfNotSeen || this.mob.canSee(target)) && getAttackReachSqr(target) / 1.5f < distToTargetSqr) {
+            if ((this.followingEvenIfNotSeen || this.mob.canSee(target))) {
                 if (--ticksUntilNextPathRecalculation <= 0) {
                     if (this.mob.getNavigation().moveTo(target, this.speedModifier)) {
-                        this.ticksUntilNextPathRecalculation = 2 + this.mob.getRandom().nextInt(4);
+                        this.ticksUntilNextPathRecalculation = 4 + this.mob.getRandom().nextInt(7);
                     } else {
                         this.ticksUntilNextPathRecalculation += 15;
                     }
