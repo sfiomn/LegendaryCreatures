@@ -146,11 +146,14 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
                         BlockPos pos = this.blockPosition().offset(new Vector3i(i, 0, j));
                         BlockPos posUp = this.blockPosition().above().offset(new Vector3i(i, 0, j));
                         BlockPos posDown = this.blockPosition().below().offset(new Vector3i(i, 0, j));
-                        if (DoomFireBlock.canSurviveOnBlock(this.level.getBlockState(pos.below()).getBlock()) && this.level.getBlockState(pos.below()).isFaceSturdy(this.level, pos.below(), Direction.UP) && this.level.getBlockState(pos).getDestroySpeed(this.level, pos) == 0.0f)
+                        if (DoomFireBlock.checkDoomFireSurvive(this.level.getBlockState(pos.below()), this.level, pos.below()) &&
+                                this.level.getBlockState(pos).getDestroySpeed(this.level, pos) == 0.0f)
                             this.level.setBlockAndUpdate(pos, BlockRegistry.DOOM_FIRE_BLOCK.get().defaultBlockState());
-                        else if (DoomFireBlock.canSurviveOnBlock(this.level.getBlockState(posDown.below()).getBlock()) && this.level.getBlockState(posDown.below()).isFaceSturdy(this.level, posDown.below(), Direction.UP)  && this.level.getBlockState(posDown).getDestroySpeed(this.level, posDown) == 0.0f)
+                        else if (DoomFireBlock.checkDoomFireSurvive(this.level.getBlockState(posDown.below()), this.level, posDown.below()) &&
+                                this.level.getBlockState(posDown).getDestroySpeed(this.level, posDown) == 0.0f)
                             this.level.setBlockAndUpdate(posDown, BlockRegistry.DOOM_FIRE_BLOCK.get().defaultBlockState());
-                        else if (DoomFireBlock.canSurviveOnBlock(this.level.getBlockState(posUp.below()).getBlock()) && this.level.getBlockState(posUp.below()).isFaceSturdy(this.level, posUp.below(), Direction.UP)  && this.level.getBlockState(posUp).getDestroySpeed(this.level, posUp) == 0.0f)
+                        else if (DoomFireBlock.checkDoomFireSurvive(this.level.getBlockState(posUp.below()), this.level, posUp.below()) &&
+                                this.level.getBlockState(posUp).getDestroySpeed(this.level, posUp) == 0.0f)
                             this.level.setBlockAndUpdate(posUp, BlockRegistry.DOOM_FIRE_BLOCK.get().defaultBlockState());
                     }
                 }

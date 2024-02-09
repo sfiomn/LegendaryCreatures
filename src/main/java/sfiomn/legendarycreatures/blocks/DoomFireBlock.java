@@ -4,7 +4,6 @@ import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
@@ -21,11 +20,20 @@ public class DoomFireBlock extends AbstractFireBlock {
     }
 
     public boolean canSurvive(BlockState blockState, IWorldReader world, BlockPos blockPos) {
-        return canSurviveOnBlock(world.getBlockState(blockPos.below()).getBlock());
+        return checkDoomFireSurvive(blockState, world, blockPos);
+    }
+
+    public static boolean checkDoomFireSurvive(BlockState blockState, IWorldReader world, BlockPos blockPos) {
+        return canSurviveOnBlock(world.getBlockState(blockPos.below()).getBlock()) &&
+                blockState.isFaceSturdy(world, blockPos.below(), Direction.UP);
     }
 
     public static boolean canSurviveOnBlock(Block block) {
-        return !block.is(Blocks.AIR) && !block.is(Blocks.FIRE) && !block.is(Blocks.SOUL_FIRE) && !block.is(BlockRegistry.DOOM_FIRE_BLOCK.get()) && !block.is(Blocks.WATER);
+        return !block.is(Blocks.AIR) &&
+                !block.is(Blocks.FIRE) &&
+                !block.is(Blocks.SOUL_FIRE) &&
+                !block.is(BlockRegistry.DOOM_FIRE_BLOCK.get()) &&
+                !block.is(Blocks.WATER);
     }
 
     @Override

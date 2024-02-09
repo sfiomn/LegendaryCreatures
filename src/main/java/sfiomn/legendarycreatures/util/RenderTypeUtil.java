@@ -6,10 +6,11 @@ import net.minecraft.client.renderer.RenderState;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import sfiomn.legendarycreatures.LegendaryCreatures;
 
 public class RenderTypeUtil {
-    public static RenderType glowingNoTransparency(ResourceLocation p_228652_0_) {
-        RenderType.State rendertype$state = RenderType.State.builder().setTextureState(new RenderState.TextureState(p_228652_0_, false, false))
+    public static RenderType glowingNoTransparency(ResourceLocation textureLocation) {
+        RenderType.State rendertype$state = RenderType.State.builder().setTextureState(new RenderState.TextureState(textureLocation, false, false))
                 .setAlphaState(new RenderState.AlphaState(0.003921569F))
                 .setCullState(new RenderState.CullState(false))
                 .setDiffuseLightingState(new RenderState.DiffuseLightingState(true))
@@ -22,6 +23,9 @@ public class RenderTypeUtil {
                             RenderSystem.disableFog();
                         }))
                 .createCompositeState(false);
-        return RenderType.create("glowingNoTransparency", DefaultVertexFormats.NEW_ENTITY, 7, 256, false, true, rendertype$state);
+        if (!LegendaryCreatures.optifineLoaded)
+            return RenderType.create("glowingNoTransparency", DefaultVertexFormats.NEW_ENTITY, 7, 256, false, true, rendertype$state);
+        else
+            return RenderType.eyes(textureLocation);
     }
 }

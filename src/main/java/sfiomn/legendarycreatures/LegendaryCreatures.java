@@ -12,6 +12,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -21,6 +22,7 @@ import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sfiomn.legendarycreatures.config.Config;
@@ -43,6 +45,10 @@ public class LegendaryCreatures
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "legendarycreatures";
+
+    // Check if shaders are loaded or not. Necessary for the glowing effect. If shader loaded, shaderpack will manage the glowing effect.
+    public static boolean optifineLoaded = false;
+
     public static Path configPath = FMLPaths.CONFIGDIR.get();
     public static Path modConfigPath = Paths.get(configPath.toAbsolutePath().toString(), "legendarycreatures");
     public static Path modConfigJson = Paths.get(modConfigPath.toString(), "json");
@@ -78,6 +84,20 @@ public class LegendaryCreatures
 
         // Register ourselves for server and other game events we are interested in
         forgeBus.register(this);
+        modIntegration();
+    }
+
+    private void modIntegration() {
+
+        try {
+            Class.forName("net.optifine.Config");
+            optifineLoaded = true;
+        } catch (ClassNotFoundException e) {
+            optifineLoaded = false;
+        }
+
+        if (optifineLoaded)
+            LOGGER.debug("Optifine is loaded, disabling custom glowing shader");
     }
 
     private void setup(final FMLCommonSetupEvent event)
