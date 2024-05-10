@@ -32,7 +32,7 @@ public class PeacockSpiderModel extends AnimatedGeoModel<PeacockSpiderEntity> {
         if (entity.getVariant() == 9)
             texture = new ResourceLocation(LegendaryCreatures.MOD_ID, "textures/entity/peacock_spider_level3.png");
         else if (entity.getVariant() == 7)
-            texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/peacock_spider_level3.png");
+            texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/peacock_spider_level2.png");
         else
             texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/peacock_spider.png");
     }
