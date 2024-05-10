@@ -230,7 +230,7 @@
     "subtitle": "sounds.legendarycreatures.scorpion_death",
     "sounds": [
       {
-        "name": "legendarycreatures:scorpion_death",
+        "name": "legendarycreatures:scorpion/scorpion_death",
         "stream": false
       }
     ]
@@ -240,7 +240,7 @@
     "subtitle": "sounds.legendarycreatures.scorpion_hurt",
     "sounds": [
       {
-        "name": "legendarycreatures:scorpion_hurt",
+        "name": "legendarycreatures:scorpion/scorpion_hurt",
         "stream": false
       }
     ]
@@ -250,7 +250,7 @@
     "subtitle": "sounds.legendarycreatures.scorpion_idle",
     "sounds": [
       {
-        "name": "legendarycreatures:scorpion_idle",
+        "name": "legendarycreatures:scorpion/scorpion_idle",
         "stream": false
       }
     ]
@@ -260,7 +260,7 @@
     "subtitle": "sounds.legendarycreatures.scorpion_step",
     "sounds": [
       {
-        "name": "legendarycreatures:scorpion_step",
+        "name": "legendarycreatures:scorpion/scorpion_step",
         "stream": false
       }
     ]
@@ -270,15 +270,15 @@
     "subtitle": "sounds.legendarycreatures.scorpion_claws_hit",
     "sounds": [
       {
-        "name": "legendarycreatures:scorpion_claws_hit1",
+        "name": "legendarycreatures:scorpion/scorpion_claws_hit1",
         "stream": false
       },
       {
-        "name": "legendarycreatures:scorpion_claws_hit2",
+        "name": "legendarycreatures:scorpion/scorpion_claws_hit2",
         "stream": false
       },
       {
-        "name": "legendarycreatures:scorpion_claws_hit3",
+        "name": "legendarycreatures:scorpion/scorpion_claws_hit3",
         "stream": false
       }
     ]
@@ -288,15 +288,15 @@
     "subtitle": "sounds.legendarycreatures.scorpion_tail_hit",
     "sounds": [
       {
-        "name": "legendarycreatures:scorpion_tail_hit1",
+        "name": "legendarycreatures:scorpion/scorpion_tail_hit1",
         "stream": false
       },
       {
-        "name": "legendarycreatures:scorpion_tail_hit2",
+        "name": "legendarycreatures:scorpion/scorpion_tail_hit2",
         "stream": false
       },
       {
-        "name": "legendarycreatures:scorpion_tail_hit3",
+        "name": "legendarycreatures:scorpion/scorpion_tail_hit3",
         "stream": false
       }
     ]
@@ -395,6 +395,154 @@
     "sounds": [
       {
         "name": "legendarycreatures:corpse_eater/attack_hit",
+        "stream": false
+      }
+    ]
+  },
+  "peacock_spider_step": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.peacock_spider_step",
+    "sounds": [
+      {
+        "name": "legendarycreatures:peacock_spider/peacock_step1",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:peacock_spider/peacock_step2",
+        "stream": false
+      }
+    ]
+  },
+  "peacock_spider_hiss": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.peacock_spider_hiss",
+    "sounds": [
+      {
+        "name": "legendarycreatures:peacock_spider/peacock_hiss1",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:peacock_spider/peacock_hiss2",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:peacock_spider/peacock_hiss3",
+        "stream": false
+      }
+    ]
+  },
+  "peacock_spider_death": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.peacock_spider_death",
+    "sounds": [
+      {
+        "name": "legendarycreatures:peacock_spider/peacock_death",
+        "stream": false
+      }
+    ]
+  },
+  "peacock_spider_hurt": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.peacock_spider_hurt",
+    "sounds": [
+      {
+        "name": "legendarycreatures:peacock_spider/peacock_hurt1",
+        "stream": false
+      }
+    ]
+  },
+  "peacock_spider_run": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.peacock_spider_run",
+    "sounds": [
+      {
+        "name": "legendarycreatures:peacock_spider/peacock_boing1",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:peacock_spider/peacock_boing2",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:peacock_spider/peacock_boing3",
+        "stream": false
+      }
+    ]
+  },
+  "bullfrog_death": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.bullfrog_death",
+    "sounds": [
+      {
+        "name": "legendarycreatures:bullfrog/frog_death",
+        "stream": false
+      }
+    ]
+  },
+  "bullfrog_idle": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.bullfrog_idle",
+    "sounds": [
+      {
+        "name": "legendarycreatures:bullfrog/frog_idle1",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:bullfrog/frog_idle2",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:bullfrog/frog_idle3",
+        "stream": false
+      }
+    ]
+  },
+  "bullfrog_step": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.bullfrog_step",
+    "sounds": [
+      {
+        "name": "legendarycreatures:bullfrog/frog_step1",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:bullfrog/frog_step2",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:bullfrog/frog_step3",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:bullfrog/frog_step4",
+        "stream": false
+      }
+    ]
+  },
+  "bullfrog_tongue_attack": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.bullfrog_tongue_attack",
+    "sounds": [
+      {
+        "name": "legendarycreatures:bullfrog/frog_tongue1",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:bullfrog/frog_tongue2",
+        "stream": false
+      }
+    ]
+  },
+  "bullfrog_attack": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.bullfrog_attack",
+    "sounds": [
+      {
+        "name": "legendarycreatures:bullfrog/frog_attack1",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:bullfrog/frog_attack2",
         "stream": false
       }
     ]

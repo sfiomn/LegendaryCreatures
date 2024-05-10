@@ -59,9 +59,9 @@ public class ScarecrowEntity extends AnimatedCreatureEntity {
         this.targetSelector.addGoal(4, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(5, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, 1.0, true) {
             @Override
-            protected void executeAttack(LivingEntity target) {
-                super.executeAttack(target);
+            protected boolean executeAttack(LivingEntity target) {
                 this.mob.playSound(SoundRegistry.SCARECROW_BASE_ATTACK_HIT.get(), 1.0f, 1.0f);
+                return super.executeAttack(target);
             }
         });
         this.targetSelector.addGoal(6, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false));
@@ -79,11 +79,6 @@ public class ScarecrowEntity extends AnimatedCreatureEntity {
     @Override
     protected SoundEvent getDeathSound() {
         return SoundRegistry.SCARECROW_DEATH.get();
-    }
-
-    @Override
-    protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.HOSTILE_HURT;
     }
 
     @Override

@@ -1,20 +1,15 @@
 package sfiomn.legendarycreatures.entities.goals;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.pathfinding.Path;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
-import net.minecraft.util.SoundEvent;
-import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
-import sfiomn.legendarycreatures.entities.MojoEntity;
 
 import java.util.EnumSet;
 
-public class PoisonMeleeAttackGoal extends MoveToTargetGoal {
-    private final int poisonDuration;
-    private final int poisonStrength;
+public class EffectMeleeAttackGoal extends MoveToTargetGoal {
+    protected final int effectDuration;
+    protected final int effectStrength;
     private final int attackDuration;
     private final int actionPoint;
     private final int attackCoolDown;
@@ -22,12 +17,12 @@ public class PoisonMeleeAttackGoal extends MoveToTargetGoal {
     private int attackAnimationTick;
     private long lastUseTime;
     private int ticksUntilNextAttack;
-    private boolean isTargetPoisoned;
+    protected boolean isEffectApplied;
 
-    public PoisonMeleeAttackGoal(AnimatedCreatureEntity mob, int poisonDuration, int poisonStrength, int attackDuration, int hurtTick, int attackCoolDown, double speedModifier, boolean followingEvenIfNotSeen, int goalCoolDown) {
+    public EffectMeleeAttackGoal(AnimatedCreatureEntity mob, int effectDuration, int effectStrength, int attackDuration, int hurtTick, int attackCoolDown, double speedModifier, boolean followingEvenIfNotSeen, int goalCoolDown) {
         super(mob, speedModifier, followingEvenIfNotSeen);
-        this.poisonDuration = poisonDuration;
-        this.poisonStrength = poisonStrength;
+        this.effectDuration = effectDuration;
+        this.effectStrength = effectStrength;
         this.attackDuration = attackDuration;
         this.actionPoint = hurtTick;
         this.attackCoolDown = attackCoolDown;
@@ -41,7 +36,7 @@ public class PoisonMeleeAttackGoal extends MoveToTargetGoal {
     }
 
     public boolean isAttacking() {
-        return this.mob.getAttackAnimation() == AnimatedCreatureEntity.POISON_ATTACK;
+        return this.mob.getAttackAnimation() == AnimatedCreatureEntity.EFFECT_ATTACK;
     }
 
     public boolean canUse() {
@@ -58,7 +53,7 @@ public class PoisonMeleeAttackGoal extends MoveToTargetGoal {
 
     public boolean canContinueToUse() {
         if (super.canContinueToUse())
-            return !isTargetPoisoned;
+            return !isEffectApplied;
         else
             return false;
     }
@@ -67,7 +62,7 @@ public class PoisonMeleeAttackGoal extends MoveToTargetGoal {
         super.start();
         this.mob.setAggressive(true);
         this.attackAnimationTick = 0;
-        this.isTargetPoisoned = false;
+        this.isEffectApplied = false;
         this.ticksUntilNextAttack = 0;
     }
 
@@ -89,7 +84,7 @@ public class PoisonMeleeAttackGoal extends MoveToTargetGoal {
 
         LivingEntity target = this.mob.getTarget();
         if (target != null) {
-            this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
+            this.mob.getLookControl().setLookAt(target.position());
 
             // Move to target
             double distToTargetSqr = this.mob.distanceToSqr(target);
@@ -108,7 +103,7 @@ public class PoisonMeleeAttackGoal extends MoveToTargetGoal {
     }
 
     protected void startAttack() {
-        this.mob.setAttackAnimation(AnimatedCreatureEntity.POISON_ATTACK);
+        this.mob.setAttackAnimation(AnimatedCreatureEntity.EFFECT_ATTACK);
         this.attackAnimationTick = this.attackDuration;
     }
 
@@ -119,12 +114,15 @@ public class PoisonMeleeAttackGoal extends MoveToTargetGoal {
 
     protected void executeAttack(LivingEntity target) {
         if (target != null) {
-            LegendaryCreatures.LOGGER.debug("execute poison attack");
             if (mob.doHurtTarget(target)) {
-                target.addEffect(new EffectInstance(Effects.POISON, this.poisonDuration, this.poisonStrength, false, true));
-                this.isTargetPoisoned = target.hasEffect(Effects.POISON);
+                applyEffect(target);
             }
         }
+    }
+
+    protected void applyEffect(LivingEntity target) {
+        target.addEffect(new EffectInstance(Effects.POISON, this.effectDuration, this.effectStrength, false, true));
+        this.isEffectApplied = target.hasEffect(Effects.POISON);
     }
 
     protected  boolean isActionPoint() {

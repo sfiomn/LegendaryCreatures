@@ -1,5 +1,6 @@
 package sfiomn.legendarycreatures.entities.goals;
 
+import net.minecraft.command.arguments.EntityAnchorArgument;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.pathfinding.Path;
@@ -48,7 +49,6 @@ public class BaseMeleeAttackGoal extends MoveToTargetGoal {
     }
 
     public void start() {
-        LegendaryCreatures.LOGGER.debug("start melee attack");
         super.start();
         this.mob.setAggressive(true);
         this.attackAnimationTick = 0;
@@ -56,7 +56,6 @@ public class BaseMeleeAttackGoal extends MoveToTargetGoal {
     }
 
     public void stop() {
-        LegendaryCreatures.LOGGER.debug("stop melee attack");
         super.stop();
         this.lastUseTime = this.mob.level.getGameTime();
 
@@ -74,16 +73,16 @@ public class BaseMeleeAttackGoal extends MoveToTargetGoal {
 
         LivingEntity target = this.mob.getTarget();
         if (target != null) {
-            this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
-
-            // Move to target
             double distToTargetSqr = this.mob.distanceToSqr(target);
 
+            // Move to target
             super.tick();
 
             // Attack target
-            if (this.ticksUntilNextAttack == 0 && getAttackReachSqr(target) >= distToTargetSqr && !isAttacking())
+            if (this.ticksUntilNextAttack == 0 && getAttackReachSqr(target) >= distToTargetSqr && !isAttacking()) {
+                this.mob.lookAt(EntityAnchorArgument.Type.EYES, target.position());
                 this.startAttack();
+            }
 
             if (this.attackAnimationTick == 0 && isAttacking())
                 this.stopAttack();
@@ -103,11 +102,8 @@ public class BaseMeleeAttackGoal extends MoveToTargetGoal {
         this.ticksUntilNextAttack = this.coolDown;
     }
 
-    protected void executeAttack(LivingEntity target) {
-        if (target != null) {
-            LegendaryCreatures.LOGGER.debug("execute melee attack");
-            mob.doHurtTarget(target);
-        }
+    protected boolean executeAttack(LivingEntity target) {
+        return mob.doHurtTarget(target);
     }
 
     protected  boolean isActionPoint() {

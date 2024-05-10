@@ -68,6 +68,12 @@ public class Config
 		public final ForgeConfigSpec.ConfigValue<Boolean> corpseEaterNaturalSpawn;
 		public final ForgeConfigSpec.ConfigValue<Boolean> corpseEaterBreakingBlockSpawn;
 		public final ForgeConfigSpec.ConfigValue<Boolean> corpseEaterKillingEntitySpawn;
+		public final ForgeConfigSpec.ConfigValue<Boolean> peacockSpiderNaturalSpawn;
+		public final ForgeConfigSpec.ConfigValue<Boolean> peacockSpiderBreakingBlockSpawn;
+		public final ForgeConfigSpec.ConfigValue<Boolean> peacockSpiderKillingEntitySpawn;
+		public final ForgeConfigSpec.ConfigValue<Boolean> bullfrogNaturalSpawn;
+		public final ForgeConfigSpec.ConfigValue<Boolean> bullfrogBreakingBlockSpawn;
+		public final ForgeConfigSpec.ConfigValue<Boolean> bullfrogKillingEntitySpawn;
 
 		Common(ForgeConfigSpec.Builder builder)
 		{
@@ -127,6 +133,18 @@ public class Config
 			corpseEaterKillingEntitySpawn = builder.define("Corpse Eater Killing Entity Spawn ", true);
 			builder.pop();
 
+			builder.push("peacock_spider");
+			peacockSpiderNaturalSpawn = builder.define("Peacock Spider Natural Spawn ", true);
+			peacockSpiderBreakingBlockSpawn = builder.define("Peacock Spider Breaking Block Spawn ", true);
+			peacockSpiderKillingEntitySpawn = builder.define("Peacock Spider Killing Entity Spawn ", true);
+			builder.pop();
+
+			builder.push("bullfrog");
+			bullfrogNaturalSpawn = builder.define("Bullfrog Natural Spawn ", true);
+			bullfrogBreakingBlockSpawn = builder.define("Bullfrog Breaking Block Spawn ", true);
+			bullfrogKillingEntitySpawn = builder.define("Bullfrog Killing Entity Spawn ", true);
+			builder.pop();
+
 			builder.pop();
 		}
 	}
@@ -158,6 +176,12 @@ public class Config
 		public static boolean corpseEaterNaturalSpawn;
 		public static boolean corpseEaterBreakingBlockSpawn;
 		public static boolean corpseEaterKillingEntitySpawn;
+		public static boolean peacockSpiderNaturalSpawn;
+		public static boolean peacockSpiderBreakingBlockSpawn;
+		public static boolean peacockSpiderKillingEntitySpawn;
+		public static boolean bullfrogNaturalSpawn;
+		public static boolean bullfrogBreakingBlockSpawn;
+		public static boolean bullfrogKillingEntitySpawn;
 
 		public static void bakeCommon()
 		{
@@ -188,6 +212,12 @@ public class Config
 				corpseEaterNaturalSpawn = COMMON.corpseEaterNaturalSpawn.get();
 				corpseEaterBreakingBlockSpawn = COMMON.corpseEaterBreakingBlockSpawn.get();
 				corpseEaterKillingEntitySpawn = COMMON.corpseEaterKillingEntitySpawn.get();
+				peacockSpiderNaturalSpawn = COMMON.peacockSpiderNaturalSpawn.get();
+				peacockSpiderBreakingBlockSpawn = COMMON.peacockSpiderBreakingBlockSpawn.get();
+				peacockSpiderKillingEntitySpawn = COMMON.peacockSpiderKillingEntitySpawn.get();
+				bullfrogNaturalSpawn = COMMON.bullfrogNaturalSpawn.get();
+				bullfrogBreakingBlockSpawn = COMMON.bullfrogBreakingBlockSpawn.get();
+				bullfrogKillingEntitySpawn = COMMON.bullfrogKillingEntitySpawn.get();
 
 			}
 			catch (Exception e)

@@ -1,5 +1,6 @@
 package sfiomn.legendarycreatures.entities.goals;
 
+import net.minecraft.command.arguments.EntityAnchorArgument;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -101,14 +102,15 @@ public class RootMeleeAttackGoal extends MoveToTargetGoal {
 
         LivingEntity target = this.mob.getTarget();
         if (target != null) {
-            this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
+            this.mob.getLookControl().setLookAt(target.position());
 
             // Move to target
-            double distToTargetSqr = this.mob.distanceToSqr(target);
             super.tick();
 
             // Attack target
+            double distToTargetSqr = this.mob.distanceToSqr(target);
             if (getAttackReachSqr(target) >= distToTargetSqr && !isAttacking()) {
+                this.mob.lookAt(EntityAnchorArgument.Type.EYES, target.position());
                 this.startAttack();
             }
 

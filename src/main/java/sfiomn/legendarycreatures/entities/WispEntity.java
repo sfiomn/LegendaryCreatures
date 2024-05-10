@@ -39,7 +39,7 @@ public class WispEntity extends AnimatedCreatureEntity implements IFlyingAnimal 
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
         return MobEntity.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 8)
+                .add(Attributes.MAX_HEALTH, 1)
                 .add(Attributes.MOVEMENT_SPEED, 0.25)
                 .add(Attributes.ARMOR, 0)
                 .add(Attributes.ATTACK_DAMAGE, 0)
@@ -92,11 +92,6 @@ public class WispEntity extends AnimatedCreatureEntity implements IFlyingAnimal 
     @Override
     protected SoundEvent getDeathSound() {
         return SoundRegistry.WISP_DEATH.get();
-    }
-
-    @Override
-    protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.HOSTILE_HURT;
     }
 
     @Override

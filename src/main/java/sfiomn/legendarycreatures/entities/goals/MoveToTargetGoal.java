@@ -29,6 +29,7 @@ public abstract class MoveToTargetGoal extends Goal {
             if (path != null) {
                 return true;
             } else {
+                // If we can't find a path to the target, but can reach it and see it
                 return this.getAttackReachSqr(target) >= this.mob.distanceToSqr(target) && this.mob.canSee(target);
             }
         }

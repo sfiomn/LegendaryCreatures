@@ -9,8 +9,11 @@
   "item.legendarycreatures.scorpion_baby_spawn_egg": "Baby Scorpion Spawn Egg",
   "item.legendarycreatures.wisp_spawn_egg": "Wisp Spawn Egg",
   "item.legendarycreatures.corpse_eater_spawn_egg": "Corpse Eater Spawn Egg",
+  "item.legendarycreatures.peacock_spider_spawn_egg": "Peacock Spider Spawn Egg",
+  "item.legendarycreatures.bullfrog_spawn_egg": "Bullfrog Spawn Egg",
 
   "effect.legendarycreatures.root": "Root",
+  "effect.legendarycreatures.convulsion": "Convulsion",
 
   "entity.legendarycreatures.desert_mojo": "Desert Mojo",
   "entity.legendarycreatures.forest_mojo": "Forest Mojo",
@@ -20,6 +23,8 @@
   "entity.legendarycreatures.scorpion_baby": "Baby Scorpion",
   "entity.legendarycreatures.wisp": "Wisp",
   "entity.legendarycreatures.corpse_eater": "Corpse Eater",
+  "entity.legendarycreatures.peacock_spider": "Peacock Spider",
+  "entity.legendarycreatures.bullfrog": "Bullfrog",
 
   "sounds.legendarycreatures.geonach_idle": "Geonach Idle Sound",
   "sounds.legendarycreatures.geonach_hurt": "Geonach Hurt Sound",
@@ -53,5 +58,16 @@
   "sounds.legendarycreatures.corpse_eater_idle": "Corpse Eater Idle Sound",
   "sounds.legendarycreatures.corpse_eater_step": "Corpse Eater Step Sound",
   "sounds.legendarycreatures.corpse_eater_attack": "Corpse Eater Attack Sound",
-  "sounds.legendarycreatures.corpse_eater_attack_hit": "Corpse Eater Attack Hit Sound"
+  "sounds.legendarycreatures.corpse_eater_attack_hit": "Corpse Eater Attack Hit Sound",
+  "sounds.legendarycreatures.peacock_spider_hurt": "Peacock Spider Hurt Sound",
+  "sounds.legendarycreatures.peacock_spider_run": "Peacock Spider Run Sound",
+  "sounds.legendarycreatures.peacock_spider_death": "Peacock Spider Death Sound",
+  "sounds.legendarycreatures.peacock_spider_step": "Peacock Spider Step Sound",
+  "sounds.legendarycreatures.peacock_spider_attack": "Peacock Spider Attack Sound",
+  "sounds.legendarycreatures.peacock_spider_hiss": "Peacock Spider Hiss Sound",
+  "sounds.legendarycreatures.bullfrog_death": "Bullfrog Death Sound",
+  "sounds.legendarycreatures.bullfrog_idle": "Bullfrog Idle Sound",
+  "sounds.legendarycreatures.bullfrog_step": "Bullfrog Step Sound",
+  "sounds.legendarycreatures.bullfrog_attack": "Bullfrog Attack Sound",
+  "sounds.legendarycreatures.bullfrog_tongue_attack": "Bullfrog Tongue Attack Sound"
 }

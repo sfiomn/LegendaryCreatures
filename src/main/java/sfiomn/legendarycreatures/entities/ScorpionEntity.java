@@ -1,31 +1,21 @@
 package sfiomn.legendarycreatures.entities;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.monster.SlimeEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
-import sfiomn.legendarycreatures.entities.goals.PoisonMeleeAttackGoal;
+import sfiomn.legendarycreatures.entities.goals.EffectMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
-import sfiomn.legendarycreatures.util.WorldUtil;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -34,7 +24,6 @@ import software.bernie.geckolib3.core.builder.ILoopType;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 
 import javax.annotation.Nullable;
-import java.util.function.Predicate;
 
 public class ScorpionEntity extends AnimatedCreatureEntity {
     private final int baseAttackDuration = 16;
@@ -58,9 +47,18 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
     }
 
     @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+
+        // 70% to have babies
+        if (getRandom().nextInt(100) >= 70)
+            this.setVariant(7);
+    }
+
+    @Override
     protected void registerGoals() {
         super.registerGoals();
-        PoisonMeleeAttackGoal poisonMeleeAttackGoal = new PoisonMeleeAttackGoal(this, 200, 0, tailAttackDuration, tailAttackActionPoint, 20, 1.0, true, 200){
+        EffectMeleeAttackGoal effectMeleeAttackGoal = new EffectMeleeAttackGoal(this, 200, 0, tailAttackDuration, tailAttackActionPoint, 20, 1.0, true, 200){
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
@@ -75,7 +73,7 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
 
         this.goalSelector.addGoal(1, new SwimGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
-        this.goalSelector.addGoal(3, poisonMeleeAttackGoal);
+        this.goalSelector.addGoal(3, effectMeleeAttackGoal);
         this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, 1.0, true){
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
@@ -83,14 +81,14 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
             }
 
             @Override
-            protected void executeAttack(LivingEntity target) {
-                super.executeAttack(target);
+            protected boolean executeAttack(LivingEntity target) {
                 this.mob.playSound(SoundRegistry.SCORPION_CLAWS_ATTACK_HIT.get(), 1.0f, 1.0f);
+                return super.executeAttack(target);
             }
 
             @Override
             public boolean canContinueToUse() {
-                if (poisonMeleeAttackGoal.canUse())
+                if (effectMeleeAttackGoal.canUse())
                     return false;
                 return super.canContinueToUse();
             }
@@ -109,7 +107,7 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
         if (getAttackAnimation() == BASE_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
             event.getController().markNeedsReload();
             event.getController().setAnimation(new AnimationBuilder().addAnimation("claws", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
-        } else if (getAttackAnimation() == POISON_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
+        } else if (getAttackAnimation() == EFFECT_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
             event.getController().markNeedsReload();
             event.getController().setAnimation(new AnimationBuilder().addAnimation("tail", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
         }
@@ -122,7 +120,7 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
     }
 
     public boolean hasBabies() {
-        return this.getVariant() > 7;
+        return this.getVariant() >= 7;
     }
 
     public CreatureAttribute getMobType() {

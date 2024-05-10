@@ -46,6 +46,14 @@ public class ItemRegistry {
             () -> new ForgeSpawnEggItem(EntityTypeRegistry.CORPSE_EATER, 0x0F1F27, 0x137FC2,
                     new Item.Properties().tab(ModItemGroup.LEGENDARY_CREATURES_GROUP)));
 
+    public static final RegistryObject<SpawnEggItem> PEACOCK_SPIDER_SPAWN_EGG = ITEMS.register("peacock_spider_spawn_egg",
+            () -> new ForgeSpawnEggItem(EntityTypeRegistry.PEACOCK_SPIDER, 0x0964aa, 0xac3033,
+                    new Item.Properties().tab(ModItemGroup.LEGENDARY_CREATURES_GROUP)));
+
+    public static final RegistryObject<SpawnEggItem> BULLFROG_SPAWN_EGG = ITEMS.register("bullfrog_spawn_egg",
+            () -> new ForgeSpawnEggItem(EntityTypeRegistry.BULLFROG, 0x7b9a24, 0x7a1f1d,
+                    new Item.Properties().tab(ModItemGroup.LEGENDARY_CREATURES_GROUP)));
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

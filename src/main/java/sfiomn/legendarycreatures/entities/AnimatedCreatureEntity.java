@@ -10,9 +10,10 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import sfiomn.legendarycreatures.LegendaryCreatures;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -24,6 +25,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.Random;
+import java.util.UUID;
 
 public abstract class AnimatedCreatureEntity extends CreatureEntity implements IAnimatable {
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
@@ -37,7 +39,9 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
     public static final int CHARGE_ATTACK = 2;
     public static final int CHARGING = 3;
     public static final int ROOT_ATTACK = 4;
-    public static final int POISON_ATTACK = 5;
+    public static final int EFFECT_ATTACK = 5;
+    public static final int DELAY_ATTACK = 6;
+    public static final int DISTANCE_ATTACK = 7;
 
     protected AnimatedCreatureEntity(EntityType<? extends CreatureEntity> type, World world) {
         super(type, world);
@@ -47,9 +51,7 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
     protected void defineSynchedData() {
         super.defineSynchedData();
 
-        int variant = random.nextInt(10);
-
-        this.entityData.define(VARIANT, variant);
+        this.entityData.define(VARIANT, 0);
         this.entityData.define(ATTACK_ANIMATION, NO_ANIMATION);
         this.entityData.define(SPAWN_TIMER, 0);
     }
@@ -109,9 +111,14 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
             event.getController().setAnimation(getDeathAnimation());
             return PlayState.CONTINUE;
         } else if (isMoving) {
-            if (getSwimAnimation() != null && this.isInWaterOrBubble()) {
-                event.getController().setAnimation(getSwimAnimation());
-                return PlayState.CONTINUE;
+            if (this.isInWaterOrBubble()) {
+                if (getSwimAnimation() != null) {
+                    event.getController().setAnimation(getSwimAnimation());
+                    return PlayState.CONTINUE;
+                } else if (getWalkAnimation() != null) {
+                    event.getController().setAnimation(getWalkAnimation());
+                    return PlayState.CONTINUE;
+                }
             } else if (getSprintAnimation() != null && this.isSprinting()) {
                 event.getController().setAnimation(getSprintAnimation());
                 return PlayState.CONTINUE;
@@ -157,6 +164,11 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
             }
         }
         super.tick();
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return SoundEvents.HOSTILE_HURT;
     }
 
     @Override

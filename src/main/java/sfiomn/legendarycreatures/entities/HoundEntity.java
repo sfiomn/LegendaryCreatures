@@ -92,10 +92,9 @@ public class HoundEntity extends AnimatedCreatureEntity {
             }
 
             @Override
-            protected void executeAttack(LivingEntity target) {
-                super.executeAttack(target);
-
+            protected boolean executeAttack(LivingEntity target) {
                 mob.playSound(SoundRegistry.HOUND_BASE_ATTACK_HIT.get(), 1.0F, 1.0F);
+                return super.executeAttack(target);
             }
 
             @Override
@@ -147,8 +146,10 @@ public class HoundEntity extends AnimatedCreatureEntity {
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
-        if (getAttackAnimation() != CHARGING)
+        if (getAttackAnimation() == CHARGING)
             this.playSound(SoundEvents.HOGLIN_STEP, 1.0F, 1.0F);
+        else
+            this.playSound(SoundRegistry.HOUND_STEP.get(), 1.0F, 1.0F);
     }
 
     public AnimationBuilder getSprintAnimation() {

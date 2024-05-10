@@ -64,10 +64,9 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
         this.goalSelector.addGoal(3, new LookAtGoal(this, PlayerEntity.class, (float) 12));
         this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 10, 1.5, true) {
             @Override
-            protected void executeAttack(LivingEntity target) {
-                super.executeAttack(target);
-
+            protected boolean executeAttack(LivingEntity target) {
                 mob.playSound(SoundRegistry.CORPSE_EATER_ATTACK_HIT.get(), 1.0F, 1.0F);
+                return super.executeAttack(target);
             }
         });
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false, false));

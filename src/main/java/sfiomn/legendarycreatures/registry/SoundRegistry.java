@@ -44,6 +44,16 @@ public class SoundRegistry {
     public static final RegistryObject<SoundEvent> CORPSE_EATER_IDLE = registerSoundEvent("corpse_eater_idle");
     public static final RegistryObject<SoundEvent> CORPSE_EATER_ATTACK = registerSoundEvent("corpse_eater_attack");
     public static final RegistryObject<SoundEvent> CORPSE_EATER_ATTACK_HIT = registerSoundEvent("corpse_eater_attack_hit");
+    public static final RegistryObject<SoundEvent> PEACOCK_SPIDER_DEATH = registerSoundEvent("peacock_spider_death");
+    public static final RegistryObject<SoundEvent> PEACOCK_SPIDER_HURT = registerSoundEvent("peacock_spider_hurt");
+    public static final RegistryObject<SoundEvent> PEACOCK_SPIDER_STEP = registerSoundEvent("peacock_spider_walk");
+    public static final RegistryObject<SoundEvent> PEACOCK_SPIDER_RUN = registerSoundEvent("peacock_spider_run");
+    public static final RegistryObject<SoundEvent> PEACOCK_SPIDER_HISS = registerSoundEvent("peacock_spider_hiss");
+    public static final RegistryObject<SoundEvent> BULLFROG_DEATH = registerSoundEvent("bullfrog_death");
+    public static final RegistryObject<SoundEvent> BULLFROG_IDLE = registerSoundEvent("bullfrog_idle");
+    public static final RegistryObject<SoundEvent> BULLFROG_STEP = registerSoundEvent("bullfrog_step");
+    public static final RegistryObject<SoundEvent> BULLFROG_ATTACK = registerSoundEvent("bullfrog_attack");
+    public static final RegistryObject<SoundEvent> BULLFROG_TONGUE_ATTACK = registerSoundEvent("bullfrog_tongue_attack");
 
     private static RegistryObject<SoundEvent> registerSoundEvent(String name) {
         return SOUND_EVENTS.register(name, () -> new SoundEvent(

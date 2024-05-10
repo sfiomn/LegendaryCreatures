@@ -58,9 +58,9 @@ public class ScorpionBabyEntity extends AnimatedCreatureEntity {
             }
 
             @Override
-            protected void executeAttack(LivingEntity target) {
-                super.executeAttack(target);
+            protected boolean executeAttack(LivingEntity target) {
                 this.mob.playSound(SoundEvents.SILVERFISH_AMBIENT, 1.0f, 1.0f);
+                return super.executeAttack(target);
             }
         });
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false, false));

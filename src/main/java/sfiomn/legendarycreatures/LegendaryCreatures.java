@@ -132,6 +132,8 @@ public class LegendaryCreatures
                 RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.WISP.get(), WispRenderer::new);
                 RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.WISP_PURSE.get(), WispPurseRenderer::new);
                 RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.CORPSE_EATER.get(), CorpseEaterRenderer::new);
+                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.PEACOCK_SPIDER.get(), PeacockSpiderRenderer::new);
+                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.BULLFROG.get(), BullfrogRenderer::new);
             }
         };
     }
