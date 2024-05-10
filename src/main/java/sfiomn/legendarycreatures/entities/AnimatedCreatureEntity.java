@@ -28,6 +28,9 @@ import java.util.Random;
 import java.util.UUID;
 
 public abstract class AnimatedCreatureEntity extends CreatureEntity implements IAnimatable {
+    protected static final UUID MAX_HEALTH_UUID = UUID.fromString("4133085c-5129-4018-9ea1-de2b2190ecc1");
+    protected static final UUID ATTACK_DAMAGE_UUID = UUID.fromString("1d16a9ed-6ef2-4547-b14c-f3e3e7ec273e");
+
     private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     private static final DataParameter<Integer> VARIANT = EntityDataManager.defineId(AnimatedCreatureEntity.class, DataSerializers.INT);

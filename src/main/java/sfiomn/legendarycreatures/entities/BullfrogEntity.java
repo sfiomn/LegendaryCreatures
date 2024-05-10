@@ -1,23 +1,26 @@
 package sfiomn.legendarycreatures.entities;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.*;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.controller.BodyController;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.play.server.SEntityVelocityPacket;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
+import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
 import sfiomn.legendarycreatures.entities.goals.RangedMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
@@ -67,6 +70,32 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
             setVariant(9);
         else if (randomVariant >= 76)
             setVariant(7);
+    }
+
+    @Nullable
+    @Override
+    public ILivingEntityData finalizeSpawn(IServerWorld serverWorld, DifficultyInstance difficulty, SpawnReason spawnReason, @Nullable ILivingEntityData entityData, @Nullable CompoundNBT nbt) {
+        ModifiableAttributeInstance healthAttribute = this.getAttribute(Attributes.MAX_HEALTH);
+        ModifiableAttributeInstance attackAttribute = this.getAttribute(Attributes.ATTACK_DAMAGE);
+        if (this.isLevel2()) {
+            if (attackAttribute != null) {
+                attackAttribute.addPermanentModifier(new AttributeModifier(ATTACK_DAMAGE_UUID, LegendaryCreatures.MOD_ID + ":bullfrog_level2", 5, AttributeModifier.Operation.ADDITION));
+            }
+            if (healthAttribute != null) {
+                healthAttribute.addPermanentModifier(new AttributeModifier(MAX_HEALTH_UUID, LegendaryCreatures.MOD_ID + ":bullfrog_level2", 15, AttributeModifier.Operation.ADDITION));
+                this.setHealth(1000);
+            }
+        } else if (this.isLevel3()) {
+            if (attackAttribute != null) {
+                attackAttribute.addPermanentModifier(new AttributeModifier(ATTACK_DAMAGE_UUID, LegendaryCreatures.MOD_ID + ":bullfrog_level3", 10, AttributeModifier.Operation.ADDITION));
+            }
+            if (healthAttribute != null) {
+                healthAttribute.addPermanentModifier(new AttributeModifier(MAX_HEALTH_UUID, LegendaryCreatures.MOD_ID + ":bullfrog_level3", 35, AttributeModifier.Operation.ADDITION));
+                this.setHealth(1000);
+            }
+        }
+
+        return super.finalizeSpawn(serverWorld, difficulty, spawnReason, entityData, nbt);
     }
 
     @Override

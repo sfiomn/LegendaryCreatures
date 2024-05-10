@@ -2,18 +2,24 @@ package sfiomn.legendarycreatures.entities;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.controller.BodyController;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
+import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.goals.DelayedMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.EffectRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
@@ -23,6 +29,8 @@ import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.builder.ILoopType;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+
+import javax.annotation.Nullable;
 
 public class PeacockSpiderEntity extends AnimatedCreatureEntity {
     private final int baseAttackDuration = 16;
@@ -60,6 +68,27 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
             setVariant(9);
         else if (randomVariant >= 76)
             setVariant(7);
+    }
+
+    @Nullable
+    @Override
+    public ILivingEntityData finalizeSpawn(IServerWorld serverWorld, DifficultyInstance difficultyInstance, SpawnReason spawnReason, @Nullable ILivingEntityData entityData, @Nullable CompoundNBT nbt) {
+        ModifiableAttributeInstance healthAttribute = this.getAttribute(Attributes.MAX_HEALTH);
+        ModifiableAttributeInstance attackAttribute = this.getAttribute(Attributes.ATTACK_DAMAGE);
+        if (this.isLevel2() || this.isLevel3()) {
+            if (healthAttribute != null) {
+                healthAttribute.addPermanentModifier(new AttributeModifier(MAX_HEALTH_UUID, LegendaryCreatures.MOD_ID + ":peacock_spider_level2", 18, AttributeModifier.Operation.ADDITION));
+                this.setHealth(1000);
+            }
+            if (attackAttribute != null) {
+                if (this.isLevel3())
+                    attackAttribute.addPermanentModifier(new AttributeModifier(ATTACK_DAMAGE_UUID, LegendaryCreatures.MOD_ID + ":peacock_spider_level3", 12, AttributeModifier.Operation.ADDITION));
+                else
+                    attackAttribute.addPermanentModifier(new AttributeModifier(ATTACK_DAMAGE_UUID, LegendaryCreatures.MOD_ID + ":peacock_spider_level2", 4, AttributeModifier.Operation.ADDITION));
+            }
+        }
+
+        return super.finalizeSpawn(serverWorld, difficultyInstance, spawnReason, entityData, nbt);
     }
 
     @Override

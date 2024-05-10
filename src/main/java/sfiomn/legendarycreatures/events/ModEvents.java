@@ -33,50 +33,6 @@ import java.util.UUID;
 @Mod.EventBusSubscriber(modid = LegendaryCreatures.MOD_ID)
 public class ModEvents {
 
-    protected static final UUID MAX_HEALTH_UUID = UUID.fromString("4133085c-5129-4018-9ea1-de2b2190ecc1");
-    protected static final UUID ATTACK_DAMAGE_UUID = UUID.fromString("1d16a9ed-6ef2-4547-b14c-f3e3e7ec273e");
-    @SubscribeEvent
-    public static void onEntitySpawned(LivingSpawnEvent.SpecialSpawn event) {
-        if (event.getEntity() instanceof PeacockSpiderEntity) {
-            PeacockSpiderEntity entity = (PeacockSpiderEntity) event.getEntity();
-            ModifiableAttributeInstance healthAttribute = entity.getAttribute(Attributes.MAX_HEALTH);
-            ModifiableAttributeInstance attackAttribute = entity.getAttribute(Attributes.ATTACK_DAMAGE);
-            if (entity.isLevel2() || entity.isLevel3()) {
-                if (healthAttribute != null) {
-                    healthAttribute.addPermanentModifier(new AttributeModifier(MAX_HEALTH_UUID, LegendaryCreatures.MOD_ID + ":peacock_spider_level2", 18, AttributeModifier.Operation.ADDITION));
-                    entity.setHealth(1000);
-                }
-                if (attackAttribute != null) {
-                    if (entity.isLevel3())
-                        attackAttribute.addPermanentModifier(new AttributeModifier(ATTACK_DAMAGE_UUID, LegendaryCreatures.MOD_ID + ":peacock_spider_level3", 12, AttributeModifier.Operation.ADDITION));
-                    else
-                        attackAttribute.addPermanentModifier(new AttributeModifier(ATTACK_DAMAGE_UUID, LegendaryCreatures.MOD_ID + ":peacock_spider_level2", 4, AttributeModifier.Operation.ADDITION));
-                }
-            }
-        } else if (event.getEntity() instanceof BullfrogEntity) {
-            BullfrogEntity entity = (BullfrogEntity) event.getEntity();
-            ModifiableAttributeInstance healthAttribute = entity.getAttribute(Attributes.MAX_HEALTH);
-            ModifiableAttributeInstance attackAttribute = entity.getAttribute(Attributes.ATTACK_DAMAGE);
-            if (entity.isLevel2()) {
-                if (attackAttribute != null) {
-                    attackAttribute.addPermanentModifier(new AttributeModifier(ATTACK_DAMAGE_UUID, LegendaryCreatures.MOD_ID + ":bullfrog_level2", 5, AttributeModifier.Operation.ADDITION));
-                }
-                if (healthAttribute != null) {
-                    healthAttribute.addPermanentModifier(new AttributeModifier(MAX_HEALTH_UUID, LegendaryCreatures.MOD_ID + ":bullfrog_level2", 15, AttributeModifier.Operation.ADDITION));
-                    entity.setHealth(1000);
-                }
-            } else if (entity.isLevel3()) {
-                if (attackAttribute != null) {
-                    attackAttribute.addPermanentModifier(new AttributeModifier(ATTACK_DAMAGE_UUID, LegendaryCreatures.MOD_ID + ":bullfrog_level3", 10, AttributeModifier.Operation.ADDITION));
-                }
-                if (healthAttribute != null) {
-                    healthAttribute.addPermanentModifier(new AttributeModifier(MAX_HEALTH_UUID, LegendaryCreatures.MOD_ID + ":bullfrog_level3", 35, AttributeModifier.Operation.ADDITION));
-                    entity.setHealth(1000);
-                }
-            }
-        }
-    }
-
     @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
          if (event.getPlayer().isCreative() ||
