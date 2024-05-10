@@ -37,8 +37,7 @@ import javax.annotation.Nullable;
 public class PeacockSpiderEntity extends AnimatedCreatureEntity {
     private final int baseAttackDuration = 16;
     private final int baseAttackActionPoint = 10;
-    private final int minAttackDelayTicks = 40;
-    private final int maxAttackDelayTicks = 40;
+    private final int attackDelayTicks = 40;
     private int hissSoundTick = 40;
 
     public PeacockSpiderEntity(EntityType<? extends CreatureEntity> type, World world) {
@@ -114,7 +113,7 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
 
         this.goalSelector.addGoal(1, new SwimGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
-        this.goalSelector.addGoal(4, new DelayedMeleeAttackGoal(this, minAttackDelayTicks, maxAttackDelayTicks, baseAttackDuration, baseAttackActionPoint, 20, 1.0, true){
+        this.goalSelector.addGoal(4, new DelayedMeleeAttackGoal(this, attackDelayTicks, baseAttackDuration, baseAttackActionPoint, 20, 1.0, true){
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());

@@ -2,16 +2,12 @@ package sfiomn.legendarycreatures.entities.goals;
 
 import net.minecraft.command.arguments.EntityAnchorArgument;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Tuple;
-import org.apache.commons.lang3.tuple.Pair;
-import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
 
 import java.util.EnumSet;
 
 public class DelayedMeleeAttackGoal extends MoveToTargetGoal {
-    private final int minAttackDelayTime;
-    private final int maxAttackDelayTime;
+    private final int attackDelayTime;
     private final int attackDuration;
     private final int actionPoint;
     private final int coolDown;
@@ -21,10 +17,9 @@ public class DelayedMeleeAttackGoal extends MoveToTargetGoal {
     private int ticksUntilNextAttack;
     private boolean isReset;
 
-    public DelayedMeleeAttackGoal(AnimatedCreatureEntity mob, int minAttackDelayTime, int maxAttackDelayTime, int attackDuration, int hurtTick, int attackCoolDown, double speedModifier, boolean followingEvenIfNotSeen ) {
+    public DelayedMeleeAttackGoal(AnimatedCreatureEntity mob, int attackDelayTime, int attackDuration, int hurtTick, int attackCoolDown, double speedModifier, boolean followingEvenIfNotSeen ) {
         super(mob, speedModifier, followingEvenIfNotSeen);
-        this.minAttackDelayTime = minAttackDelayTime;
-        this.maxAttackDelayTime = maxAttackDelayTime;
+        this.attackDelayTime = attackDelayTime;
         this.attackDuration = attackDuration;
         this.actionPoint = hurtTick;
         this.coolDown = attackCoolDown;
@@ -57,7 +52,7 @@ public class DelayedMeleeAttackGoal extends MoveToTargetGoal {
     public void start() {
         super.start();
         this.mob.setAggressive(true);
-        this.ticksUntilFirstAttack = this.mob.getRandom().nextInt(Math.abs(maxAttackDelayTime - minAttackDelayTime)) + minAttackDelayTime;
+        this.ticksUntilFirstAttack = attackDelayTime;
         this.attackAnimationTick = 0;
         this.ticksUntilNextAttack = 0;
     }
