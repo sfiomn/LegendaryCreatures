@@ -17,6 +17,8 @@ import net.minecraft.potion.Effects;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
@@ -101,6 +103,16 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
     @Override
     protected BodyController createBodyControl() {
         return new BullfrogEntity.BodyHelperController(this);
+    }
+
+    @Override
+    protected ITextComponent getTypeName() {
+        String descriptionId = "entity." + LegendaryCreatures.MOD_ID + ".bullfrog";
+        if (isLevel2())
+            descriptionId = "entity." + LegendaryCreatures.MOD_ID + ".bullfrog2";
+        else if (isLevel3())
+            descriptionId = "entity." + LegendaryCreatures.MOD_ID + ".bullfrog3";
+        return new TranslationTextComponent(descriptionId);
     }
 
     @Override

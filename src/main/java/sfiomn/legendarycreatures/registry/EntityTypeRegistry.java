@@ -98,7 +98,7 @@ public class EntityTypeRegistry {
                     .clientTrackingRange(10)
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)
-                    .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "peacock_spider").toString()));
+                    .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "bullfrog").toString()));
 
 
     public static void register(IEventBus eventBus) {

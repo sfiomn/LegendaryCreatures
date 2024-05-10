@@ -16,6 +16,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
@@ -89,6 +91,16 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
         }
 
         return super.finalizeSpawn(serverWorld, difficultyInstance, spawnReason, entityData, nbt);
+    }
+
+    @Override
+    protected ITextComponent getTypeName() {
+        String descriptionId = "entity." + LegendaryCreatures.MOD_ID + ".peacock_spider";
+        if (isLevel2())
+            descriptionId = "entity." + LegendaryCreatures.MOD_ID + ".peacock_spider2";
+        else if (isLevel3())
+            descriptionId = "entity." + LegendaryCreatures.MOD_ID + ".peacock_spider3";
+        return new TranslationTextComponent(descriptionId);
     }
 
     @Override

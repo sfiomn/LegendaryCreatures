@@ -24,7 +24,11 @@
   "entity.legendarycreatures.wisp": "Wisp",
   "entity.legendarycreatures.corpse_eater": "Corpse Eater",
   "entity.legendarycreatures.peacock_spider": "Peacock Spider",
+  "entity.legendarycreatures.peacock_spider2": "Leaf Peacock Spider",
+  "entity.legendarycreatures.peacock_spider3": "Lethal Peacock Spider",
   "entity.legendarycreatures.bullfrog": "Bullfrog",
+  "entity.legendarycreatures.bullfrog2": "Earth Bullfrog",
+  "entity.legendarycreatures.bullfrog3": "Crimson Bullfrog",
 
   "sounds.legendarycreatures.geonach_idle": "Geonach Idle Sound",
   "sounds.legendarycreatures.geonach_hurt": "Geonach Hurt Sound",
