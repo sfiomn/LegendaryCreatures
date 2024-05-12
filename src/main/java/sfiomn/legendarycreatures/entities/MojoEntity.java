@@ -54,7 +54,7 @@ public abstract class MojoEntity extends AnimatedCreatureEntity {
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(1, new SwimGoal(this));
-        this.goalSelector.addGoal(2, new BaseMeleeAttackGoal(this, getBaseAttackDuration(), getBaseAttackActionPoint(), 20, 1.0, true) {
+        this.goalSelector.addGoal(2, new BaseMeleeAttackGoal(this, getBaseAttackDuration(), getBaseAttackActionPoint(), 5, 1.0, true) {
             @Override
             protected boolean executeAttack(LivingEntity target) {
                 this.mob.playSound(SoundRegistry.MOJO_BASE_ATTACK_HIT.get(), 1.0f, 1.0f);

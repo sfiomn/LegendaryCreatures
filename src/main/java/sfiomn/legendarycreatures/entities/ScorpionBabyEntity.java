@@ -51,7 +51,7 @@ public class ScorpionBabyEntity extends AnimatedCreatureEntity {
         this.goalSelector.addGoal(1, new SwimGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(3, new LookAtGoal(this, PlayerEntity.class, (float) 12));
-        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, 1.0, true) {
+        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 5, 1.0, true) {
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (0.5 * 2.0F * 0.5 * 2.0F + entity.getBbWidth());

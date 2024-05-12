@@ -13,7 +13,9 @@
   "item.legendarycreatures.bullfrog_spawn_egg": "Bullfrog Spawn Egg",
 
   "effect.legendarycreatures.root": "Root",
+  "effect.legendarycreatures.root.description": "Hinder player's movements",
   "effect.legendarycreatures.convulsion": "Convulsion",
+  "effect.legendarycreatures.convulsion.description": "Force the player to move erratically",
 
   "entity.legendarycreatures.desert_mojo": "Desert Mojo",
   "entity.legendarycreatures.forest_mojo": "Forest Mojo",

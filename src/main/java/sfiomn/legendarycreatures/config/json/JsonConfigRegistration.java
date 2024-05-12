@@ -39,34 +39,41 @@ public class JsonConfigRegistration
 	{
 		JsonConfig.registerBreakingBlockTagSpawn(MobEntityEnum.DESERT_MOJO.mobId, "minecraft:cactus", 0.1);
 
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.DESERT_MOJO.mobId, "minecraft:desert", 100, 1, 1);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.DESERT_MOJO.mobId, "minecraft:desert_hills", 100, 1, 1);
+		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.DESERT_MOJO.mobId, "minecraft:desert", 10, 1, 1);
+		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.DESERT_MOJO.mobId, "minecraft:desert_hills", 10, 1, 1);
 
 		JsonConfig.registerBreakingBlockTagSpawn(MobEntityEnum.FOREST_MOJO.mobId, "minecraft:flowers", 0.1);
 
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:forest", 100, 1, 2);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:birch_forest", 100, 1, 2);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:birch_forest_hills", 100, 1, 2);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:dark_forest", 100, 1, 2);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:dark_forest_hills", 100, 1, 2);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:flower_forest", 100, 1, 2);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:wooded_hills", 100, 1, 2);
+		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:forest", 10, 1, 2);
+		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:birch_forest", 10, 1, 2);
+		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:birch_forest_hills", 10, 1, 2);
+		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:dark_forest", 10, 1, 2);
+		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:dark_forest_hills", 10, 1, 2);
+		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:flower_forest", 10, 1, 2);
+		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:wooded_hills", 10, 1, 2);
 
-		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.SCARECROW.mobId, "plains", 100, 1, 1);
+		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.SCARECROW.mobId, "plains", 10, 1, 1);
 		JsonConfig.registerBiomeNameBlackList(MobEntityEnum.SCARECROW.mobId, Collections.singletonList("minecraft:snowy_tundra"));
 		JsonConfig.registerBreakingBlockNameSpawn(MobEntityEnum.SCARECROW.mobId, "minecraft:wheat", 0.1);
 		JsonConfig.registerKillingEntityNameSpawn(MobEntityEnum.SCARECROW.mobId, "minecraft:chicken", 0.3);
 
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.SCORPION.mobId, "minecraft:desert", 100, 1, 1);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.SCORPION.mobId, "minecraft:desert_hills", 100, 1, 1);
+		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.SCORPION.mobId, "minecraft:desert", 10, 2, 2);
+		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.SCORPION.mobId, "minecraft:desert_hills", 10, 2, 2);
 
-		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.WISP.mobId, "plains", 20, 1, 1);
-		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.WISP.mobId, "forest", 20, 1, 1);
-		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.WISP.mobId, "taiga", 20, 1, 1);
+		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.WISP.mobId, "plains", 10, 1, 1);
+		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.WISP.mobId, "forest", 10, 1, 1);
+		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.WISP.mobId, "taiga", 10, 1, 1);
 
 		JsonConfig.registerKillingEntityNameSpawn(MobEntityEnum.CORPSE_EATER.mobId, "default", 0.1);
 		JsonConfig.registerKillingEntityTagSpawn(MobEntityEnum.CORPSE_EATER.mobId, "minecraft:raiders", 0.4);
 		JsonConfig.registerKillingEntityNameBlackList(MobEntityEnum.CORPSE_EATER.mobId, Arrays.asList("minecraft:bee", "minecraft:cow", "minecraft:pillager", LegendaryCreatures.MOD_ID +":"+ MobEntityEnum.CORPSE_EATER.mobId));
+
+		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.PEACOCK_SPIDER.mobId,"minecraft:beach", 10, 1, 1);
+		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.PEACOCK_SPIDER.mobId,"minecraft:forest", 10, 1, 1);
+		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.PEACOCK_SPIDER.mobId,"minecraft:jungle", 10, 1, 1);
+
+		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.BULLFROG.mobId,"minecraft:swamp", 10, 2, 2);
+		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.BULLFROG.mobId,"minecraft:swamp_hills", 10, 2, 2);
 	}
 	
 	public static void clearContainers()

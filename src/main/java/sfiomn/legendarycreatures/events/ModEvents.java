@@ -2,6 +2,7 @@ package sfiomn.legendarycreatures.events;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
@@ -10,6 +11,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -32,6 +34,12 @@ import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = LegendaryCreatures.MOD_ID)
 public class ModEvents {
+
+    @SubscribeEvent
+    public static void onMobSpawn(LivingSpawnEvent.CheckSpawn event) {
+        LegendaryCreatures.LOGGER.debug(event.getEntity().getName() + " spawn at " + event.getEntity().position());
+        LegendaryCreatures.LOGGER.debug(event.getSpawnReason() + " spawn, result " + event.getResult());
+    }
 
     @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {

@@ -10,10 +10,14 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import sfiomn.legendarycreatures.LegendaryCreatures;
+import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -167,6 +171,16 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
             }
         }
         super.tick();
+    }
+
+    public static boolean checkCreatureSpawnRules(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+        BlockPos blockpos = pos.below();
+        LegendaryCreatures.LOGGER.debug(entityType + " is face sturdy : " + world.getBlockState(blockpos).isFaceSturdy(world, blockpos, Direction.UP) + " at pos " + blockpos);
+        return spawnReason == SpawnReason.SPAWNER || world.getBlockState(blockpos).isFaceSturdy(world, blockpos, Direction.UP);
+    }
+
+    public static boolean checkFlyingCreatureSpawnRules(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+        return true;
     }
 
     @Override

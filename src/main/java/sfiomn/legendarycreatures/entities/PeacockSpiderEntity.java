@@ -44,9 +44,9 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
         super(type, world);
         this.xpReward = 5;
         if (isLevel3())
-            this.xpReward += 10;
+            this.xpReward = 20;
         else if (isLevel2())
-            this.xpReward += 5;
+            this.xpReward = 10;
         this.maxUpStep = 1.0F;
     }
 
@@ -56,7 +56,7 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
                 .add(Attributes.MOVEMENT_SPEED, 0.3)
                 .add(Attributes.ARMOR, 0)
                 .add(Attributes.ATTACK_DAMAGE, 4)
-                .add(Attributes.FOLLOW_RANGE, 16)
+                .add(Attributes.FOLLOW_RANGE, 32)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.5);
     }
 
@@ -113,7 +113,7 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
 
         this.goalSelector.addGoal(1, new SwimGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
-        this.goalSelector.addGoal(4, new DelayedMeleeAttackGoal(this, attackDelayTicks, baseAttackDuration, baseAttackActionPoint, 20, 1.0, true){
+        this.goalSelector.addGoal(4, new DelayedMeleeAttackGoal(this, attackDelayTicks, baseAttackDuration, baseAttackActionPoint, 5, 1.0, true){
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
@@ -142,10 +142,13 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
     public <E extends IAnimatable> PlayState attackingPredicate(AnimationEvent<E> event) {
         if (getAttackAnimation() == BASE_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
             event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("run", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("attack", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
         } else if (getAttackAnimation() == DELAY_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
             event.getController().markNeedsReload();
             event.getController().setAnimation(new AnimationBuilder().addAnimation("startle", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+        } else if (getAttackAnimation() == NO_ANIMATION && event.getController().getAnimationState() == AnimationState.Running) {
+            event.getController().markNeedsReload();
+            event.getController().setAnimation(new AnimationBuilder());
         }
         return PlayState.CONTINUE;
     }

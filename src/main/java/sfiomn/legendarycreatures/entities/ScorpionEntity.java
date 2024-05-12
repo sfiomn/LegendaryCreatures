@@ -58,7 +58,7 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        EffectMeleeAttackGoal effectMeleeAttackGoal = new EffectMeleeAttackGoal(this, 200, 0, tailAttackDuration, tailAttackActionPoint, 20, 1.0, true, 200){
+        EffectMeleeAttackGoal effectMeleeAttackGoal = new EffectMeleeAttackGoal(this, 200, 0, tailAttackDuration, tailAttackActionPoint, 5, 1.0, true, 200){
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());

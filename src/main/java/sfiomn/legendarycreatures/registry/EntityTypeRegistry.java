@@ -85,7 +85,7 @@ public class EntityTypeRegistry {
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "corpse_eater").toString()));
 
     public static final RegistryObject<EntityType<PeacockSpiderEntity>> PEACOCK_SPIDER = ENTITY_TYPES.register("peacock_spider",
-            () -> EntityType.Builder.of(PeacockSpiderEntity::new, EntityClassification.MONSTER)
+            () -> EntityType.Builder.of(PeacockSpiderEntity::new, EntityClassification.CREATURE)
                     .sized(0.9F, 0.5F)
                     .clientTrackingRange(10)
                     .setShouldReceiveVelocityUpdates(true)
@@ -93,7 +93,7 @@ public class EntityTypeRegistry {
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "peacock_spider").toString()));
 
     public static final RegistryObject<EntityType<BullfrogEntity>> BULLFROG = ENTITY_TYPES.register("bullfrog",
-            () -> EntityType.Builder.of(BullfrogEntity::new, EntityClassification.MONSTER)
+            () -> EntityType.Builder.of(BullfrogEntity::new, EntityClassification.CREATURE)
                     .sized(1.2F, 1.0F)
                     .clientTrackingRange(10)
                     .setShouldReceiveVelocityUpdates(true)

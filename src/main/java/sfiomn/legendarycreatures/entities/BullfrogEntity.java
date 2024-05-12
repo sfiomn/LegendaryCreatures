@@ -50,6 +50,10 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
     public BullfrogEntity(EntityType<? extends CreatureEntity> type, World world) {
         super(type, world);
         this.xpReward = 12;
+        if (isLevel3())
+            this.xpReward = 20;
+        else if (isLevel2())
+            this.xpReward = 10;
         this.maxUpStep = 1.0F;
     }
 
@@ -59,7 +63,7 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
                 .add(Attributes.MOVEMENT_SPEED, 0.25)
                 .add(Attributes.ARMOR, 0)
                 .add(Attributes.ATTACK_DAMAGE, 5)
-                .add(Attributes.FOLLOW_RANGE, 16)
+                .add(Attributes.FOLLOW_RANGE, 20)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.5);
     }
 
@@ -162,7 +166,7 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
         this.goalSelector.addGoal(1, new SwimGoal(this));
         this.targetSelector.addGoal(4, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(7, rangedMeleeAttackGoal);
-        this.goalSelector.addGoal(8, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, 1.0, true) {
+        this.goalSelector.addGoal(8, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 5, 1.0, true) {
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());

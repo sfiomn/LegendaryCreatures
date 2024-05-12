@@ -33,7 +33,8 @@ public class DelayedMeleeAttackGoal extends MoveToTargetGoal {
     }
 
     public boolean isAttacking() {
-        return this.mob.getAttackAnimation() == AnimatedCreatureEntity.BASE_ATTACK;
+        return this.mob.getAttackAnimation() == AnimatedCreatureEntity.BASE_ATTACK ||
+                this.mob.getAttackAnimation() == AnimatedCreatureEntity.DELAY_ATTACK;
     }
 
     public boolean canUse() {

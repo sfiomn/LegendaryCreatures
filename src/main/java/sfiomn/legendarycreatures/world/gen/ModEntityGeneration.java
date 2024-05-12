@@ -66,7 +66,7 @@ public class ModEntityGeneration {
             }
 
             if (canMobIdSpawn) {
-                LegendaryCreatures.LOGGER.debug("Add " + mobId + " in biome " + biomeName + " with category " + biomeCategory.getName());
+                LegendaryCreatures.LOGGER.debug("Add " + mobId + " [" + jsonBiomeSpawn.weight + ":" + jsonBiomeSpawn.minGroup + "-"+ jsonBiomeSpawn.maxGroup + "] in biome " + biomeName + " with category " + biomeCategory.getName());
                 addEntityToBiome(event.getSpawns(), mobId, jsonBiomeSpawn.weight, jsonBiomeSpawn.minGroup, jsonBiomeSpawn.maxGroup);
             }
         }
