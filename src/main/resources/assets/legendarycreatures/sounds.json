@@ -94,6 +94,14 @@
       {
         "name": "legendarycreatures:hound/hurt",
         "stream": false
+      },
+      {
+        "name": "legendarycreatures:hound/hurt2",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:hound/hurt3",
+        "stream": false
       }
     ]
   },
