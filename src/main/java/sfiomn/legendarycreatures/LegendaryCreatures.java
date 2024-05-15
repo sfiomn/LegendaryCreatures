@@ -48,6 +48,7 @@ public class LegendaryCreatures
 
     // Check if shaders are loaded or not. Necessary for the glowing effect. If shader loaded, shaderpack will manage the glowing effect.
     public static boolean optifineLoaded = false;
+    public static boolean atmosphericLoaded = false;
 
     public static Path configPath = FMLPaths.CONFIGDIR.get();
     public static Path modConfigPath = Paths.get(configPath.toAbsolutePath().toString(), "legendarycreatures");
@@ -89,6 +90,7 @@ public class LegendaryCreatures
 
     private void modIntegration() {
 
+        atmosphericLoaded = ModList.get().isLoaded("atmospheric");
         try {
             Class.forName("net.optifine.Config");
             optifineLoaded = true;
@@ -98,6 +100,9 @@ public class LegendaryCreatures
 
         if (optifineLoaded)
             LOGGER.debug("Optifine is loaded, disabling custom glowing shader");
+
+        if (atmosphericLoaded)
+            LOGGER.debug("Atmospheric is loaded, enabling compatibility");
     }
 
     private void setup(final FMLCommonSetupEvent event)

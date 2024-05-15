@@ -1,5 +1,6 @@
 package sfiomn.legendarycreatures.entities;
 
+import com.minecraftabnormals.atmospheric.core.other.AtmosphericDamageSources;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
@@ -104,8 +105,28 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
     public boolean hurt(DamageSource source, float amount) {
         if (source == DamageSource.FALL)
             return false;
-        if (source == DamageSource.DROWN)
+        else if (source == DamageSource.DROWN)
             return false;
+        else if (source == DamageSource.CACTUS)
+            return false;
+        else if (source == DamageSource.IN_WALL)
+            return false;
+        else if (source == DamageSource.SWEET_BERRY_BUSH)
+            return false;
+        else if (LegendaryCreatures.atmosphericLoaded) {
+            if (source == AtmosphericDamageSources.ALOE_LEAVES)
+                return false;
+            else if (source == AtmosphericDamageSources.BARREL_CACTUS)
+                return false;
+            else if (source == AtmosphericDamageSources.YUCCA_BRANCH)
+                return false;
+            else if (source == AtmosphericDamageSources.YUCCA_FLOWER)
+                return false;
+            else if (source == AtmosphericDamageSources.YUCCA_LEAVES)
+                return false;
+            else if (source == AtmosphericDamageSources.YUCCA_SAPLING)
+                return false;
+        }
         return super.hurt(source, amount);
     }
 
