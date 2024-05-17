@@ -113,6 +113,10 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
             return false;
         else if (source == DamageSource.SWEET_BERRY_BUSH)
             return false;
+        else if (source == DamageSource.ANVIL)
+            return false;
+        else if (source == DamageSource.DRAGON_BREATH)
+            return false;
         else if (LegendaryCreatures.atmosphericLoaded) {
             if (source == AtmosphericDamageSources.ALOE_LEAVES)
                 return false;
@@ -179,7 +183,7 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
 
     @Override
     public void tick() {
-        if (getSpawnTimer() > 10 && level != null) {
+        if (getSpawnTimer() > 5 && level != null) {
             Random random = this.getRandom();
             for(int i = 0; i < 6; ++i) {
                 double x = this.getX() + 0.5 + (double) ((random.nextFloat() * 0.5F) - 1.0);

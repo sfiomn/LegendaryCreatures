@@ -37,6 +37,7 @@
   "sounds.legendarycreatures.geonach_death": "Geonach Death Sound",
   "sounds.legendarycreatures.mojo_step": "Mojo Step Sound",
   "sounds.legendarycreatures.mojo_death": "Mojo Death Sound",
+  "sounds.legendarycreatures.mojo_spawn": "Mojo Spawn Sound",
   "sounds.legendarycreatures.mojo_idle": "Mojo Idle Sound",
   "sounds.legendarycreatures.mojo_hurt": "Mojo Hurt Sound",
   "sounds.legendarycreatures.mojo_base_attack_hit": "Mojo Attack Sound",

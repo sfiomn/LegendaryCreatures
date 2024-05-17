@@ -16,6 +16,7 @@ public class SoundRegistry {
     public static final RegistryObject<SoundEvent> MOJO_IDLE = registerSoundEvent("mojo_idle");
     public static final RegistryObject<SoundEvent> MOJO_STEP = registerSoundEvent("mojo_step");
     public static final RegistryObject<SoundEvent> MOJO_DEATH = registerSoundEvent("mojo_death");
+    public static final RegistryObject<SoundEvent> MOJO_SPAWN = registerSoundEvent("mojo_spawn");
     public static final RegistryObject<SoundEvent> MOJO_BASE_ATTACK_HIT = registerSoundEvent("mojo_base_attack_hit");
     public static final RegistryObject<SoundEvent> GEONACH_IDLE = registerSoundEvent("geonach_idle");
     public static final RegistryObject<SoundEvent> GEONACH_HURT = registerSoundEvent("geonach_hurt");

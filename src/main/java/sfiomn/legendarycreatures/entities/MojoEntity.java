@@ -7,6 +7,7 @@ import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
@@ -25,7 +26,7 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import javax.annotation.Nullable;
 
 public abstract class MojoEntity extends AnimatedCreatureEntity {
-    private final int spawnTimerInTicks = 10;
+    private final int spawnTimerInTicks = 20;
 
     public MojoEntity(EntityType<? extends CreatureEntity> type, World world) {
         super(type, world);
@@ -84,6 +85,15 @@ public abstract class MojoEntity extends AnimatedCreatureEntity {
         return PlayState.CONTINUE;
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+
+        if (getSpawnTimer() == spawnTimerInTicks - 1) {
+            this.level.playSound(null, new BlockPos(this.position()), SoundRegistry.MOJO_SPAWN.get(), SoundCategory.HOSTILE, 10.0F, 1.0F);
+        }
+    }
+
     protected float getStandingEyeHeight(Pose p_213348_1_, EntitySize p_213348_2_) {
         return 0.7F;
     }
@@ -118,16 +128,5 @@ public abstract class MojoEntity extends AnimatedCreatureEntity {
     @Override
     public AnimationBuilder getSpawnAnimation() {
         return new AnimationBuilder().addAnimation("spawn", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
-    }
-
-    @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (source == DamageSource.ANVIL)
-            return false;
-        if (source == DamageSource.DRAGON_BREATH)
-            return false;
-        if (source == DamageSource.CACTUS)
-            return false;
-        return super.hurt(source, amount);
     }
 }

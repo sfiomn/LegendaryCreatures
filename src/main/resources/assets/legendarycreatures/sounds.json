@@ -49,6 +49,16 @@
       }
     ]
   },
+  "mojo_spawn": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.mojo_spawn",
+    "sounds": [
+      {
+        "name": "legendarycreatures:mojo_spawn",
+        "stream": false
+      }
+    ]
+  },
   "mojo_idle": {
     "category": "hostile",
     "subtitle": "sounds.legendarycreatures.mojo_idle",
