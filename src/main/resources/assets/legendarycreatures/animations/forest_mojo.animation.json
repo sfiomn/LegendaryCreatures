@@ -254,10 +254,12 @@
 							"easing": "easeInOutQuad"
 						},
 						"0.75": {
-							"vector": [5, -1.15385, 0.15385]
+							"vector": [5, -1.15385, 0.15385],
+							"easing": "easeInOutQuad"
 						},
 						"1.0": {
-							"vector": [10, -15, -4]
+							"vector": [10, -15, -4],
+							"easing": "easeInOutQuad"
 						}
 					},
 					"position": {
@@ -362,19 +364,24 @@
 							"vector": [0, 0, 0]
 						},
 						"0.0833": {
-							"vector": [-1.66, -37.75, 15.46]
+							"vector": [-1.66, -37.75, 15.46],
+							"easing": "easeInOutSine"
 						},
 						"0.125": {
-							"vector": [-2.21674, -50.33816, 20.60924]
+							"vector": [-2.21674, -50.33816, 20.60924],
+							"easing": "easeInOutSine"
 						},
 						"0.2917": {
-							"vector": [36.44813, 39.08571, -8.92383]
+							"vector": [36.44813, 39.08571, -8.92383],
+							"easing": "easeInOutBack"
 						},
 						"0.4167": {
-							"vector": [30.37, 32.57, -7.44]
+							"vector": [30.37, 32.57, -7.44],
+							"easing": "easeInOutSine"
 						},
-						"0.5": {
-							"vector": [0, 0, 0]
+						"0.625": {
+							"vector": [0, 0, 0],
+							"easing": "easeInOutSine"
 						}
 					},
 					"position": {
@@ -382,24 +389,63 @@
 							"vector": [0, 0, 0]
 						},
 						"0.125": {
-							"vector": [0, 1.16, -1.74]
+							"vector": [0, 1.16, -1.74],
+							"easing": "easeInOutSine"
 						},
 						"0.2917": {
-							"vector": [0, 4, -6]
+							"vector": [0, 4, -6],
+							"easing": "easeInOutBack"
 						},
 						"0.4167": {
-							"vector": [0, 3.33, -5]
+							"vector": [0, 3.33, -5],
+							"easing": "easeInOutSine"
 						},
-						"0.5": {
-							"vector": [0, 0, 0]
+						"0.625": {
+							"vector": [0, 0, 0],
+							"easing": "easeInOutSine"
 						}
 					},
 					"scale": {
 						"0.0": {
 							"vector": [1, 1, 1]
 						},
+						"0.625": {
+							"vector": [1, 1, 1],
+							"easing": "easeInOutSine"
+						}
+					}
+				}
+			}
+		},
+		"spawn": {
+			"animation_length": 0.5,
+			"bones": {
+				"mojo": {
+					"rotation": {
+						"0.0": {
+							"vector": [50, 720, 30]
+						},
 						"0.5": {
-							"vector": [1, 1, 1]
+							"vector": [0, 0, 0],
+							"easing": "easeInOutBack"
+						}
+					},
+					"position": {
+						"0.0": {
+							"vector": [0, -13, 0]
+						},
+						"0.5": {
+							"vector": [0, 0, 0],
+							"easing": "easeInOutBack"
+						}
+					},
+					"scale": {
+						"0.0": {
+							"vector": [0.3, 0.3, 0.3]
+						},
+						"0.5": {
+							"vector": [1, 1, 1],
+							"easing": "easeInOutBack"
 						}
 					}
 				}

@@ -25,6 +25,7 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import javax.annotation.Nullable;
 
 public abstract class MojoEntity extends AnimatedCreatureEntity {
+    private final int spawnTimerInTicks = 10;
 
     public MojoEntity(EntityType<? extends CreatureEntity> type, World world) {
         super(type, world);
@@ -40,6 +41,13 @@ public abstract class MojoEntity extends AnimatedCreatureEntity {
                 .add(Attributes.ATTACK_DAMAGE, 3)
                 .add(Attributes.FOLLOW_RANGE, 16)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.5);
+    }
+
+    @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+
+        setSpawnTimer(spawnTimerInTicks);
     }
 
     protected int getBaseAttackDuration() {
@@ -105,6 +113,11 @@ public abstract class MojoEntity extends AnimatedCreatureEntity {
     @Override
     public AnimationBuilder getSprintAnimation() {
         return new AnimationBuilder().addAnimation("run", ILoopType.EDefaultLoopTypes.LOOP);
+    }
+
+    @Override
+    public AnimationBuilder getSpawnAnimation() {
+        return new AnimationBuilder().addAnimation("spawn", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
     }
 
     @Override

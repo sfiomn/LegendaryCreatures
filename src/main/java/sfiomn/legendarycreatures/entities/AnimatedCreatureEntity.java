@@ -196,7 +196,6 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
 
     public static boolean checkCreatureSpawnRules(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
         BlockPos blockpos = pos.below();
-        LegendaryCreatures.LOGGER.debug(entityType + " is face sturdy : " + world.getBlockState(blockpos).isFaceSturdy(world, blockpos, Direction.UP) + " at pos " + blockpos);
         return spawnReason == SpawnReason.SPAWNER || world.getBlockState(blockpos).isFaceSturdy(world, blockpos, Direction.UP);
     }
 
