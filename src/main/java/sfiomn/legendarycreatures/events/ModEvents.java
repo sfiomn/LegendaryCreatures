@@ -36,12 +36,6 @@ import java.util.UUID;
 public class ModEvents {
 
     @SubscribeEvent
-    public static void onMobSpawn(LivingSpawnEvent.CheckSpawn event) {
-        LegendaryCreatures.LOGGER.debug(event.getEntity().getName() + " spawn at " + event.getEntity().position());
-        LegendaryCreatures.LOGGER.debug(event.getSpawnReason() + " spawn, result " + event.getResult());
-    }
-
-    @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
          if (event.getPlayer().isCreative() ||
                  event.getPlayer().isSpectator() ||
