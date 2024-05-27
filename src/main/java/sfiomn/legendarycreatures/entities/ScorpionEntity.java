@@ -39,7 +39,7 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
     public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
         return MobEntity.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 18)
-                .add(Attributes.MOVEMENT_SPEED, 0.3)
+                .add(Attributes.MOVEMENT_SPEED, 0.35)
                 .add(Attributes.ARMOR, 0)
                 .add(Attributes.ATTACK_DAMAGE, 4)
                 .add(Attributes.FOLLOW_RANGE, 16)
@@ -58,7 +58,7 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        EffectMeleeAttackGoal effectMeleeAttackGoal = new EffectMeleeAttackGoal(this, 200, 0, tailAttackDuration, tailAttackActionPoint, 5, 1.0, true, 200){
+        EffectMeleeAttackGoal effectMeleeAttackGoal = new EffectMeleeAttackGoal(this, 200, 0, 3, tailAttackDuration, tailAttackActionPoint, 5, 1.0, true, 200){
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
@@ -74,7 +74,7 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
         this.goalSelector.addGoal(1, new SwimGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(3, effectMeleeAttackGoal);
-        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 20, 1.0, true){
+        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 5, 1.0, true){
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
@@ -99,7 +99,7 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
     }
 
     private float getMobLength() {
-        return 1.2f;
+        return 1.5f;
     }
 
     @Override

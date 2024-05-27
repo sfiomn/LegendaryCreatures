@@ -18,14 +18,17 @@ public class EffectMeleeAttackGoal extends MoveToTargetGoal {
     private long lastUseTime;
     private int ticksUntilNextAttack;
     protected boolean isEffectApplied;
+    protected final int tentative;
+    protected int tentativeCount;
 
-    public EffectMeleeAttackGoal(AnimatedCreatureEntity mob, int effectDuration, int effectStrength, int attackDuration, int hurtTick, int attackCoolDown, double speedModifier, boolean followingEvenIfNotSeen, int goalCoolDown) {
+    public EffectMeleeAttackGoal(AnimatedCreatureEntity mob, int effectDuration, int effectStrength, int tentative, int attackDuration, int hurtTick, int attackCoolDown, double speedModifier, boolean followingEvenIfNotSeen, int goalCoolDown) {
         super(mob, speedModifier, followingEvenIfNotSeen);
         this.effectDuration = effectDuration;
         this.effectStrength = effectStrength;
         this.attackDuration = attackDuration;
         this.actionPoint = hurtTick;
         this.attackCoolDown = attackCoolDown;
+        this.tentative = tentative;
         this.coolDown = goalCoolDown;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
@@ -53,7 +56,7 @@ public class EffectMeleeAttackGoal extends MoveToTargetGoal {
 
     public boolean canContinueToUse() {
         if (super.canContinueToUse())
-            return !isEffectApplied;
+            return !isEffectApplied || this.tentativeCount < this.tentative;
         else
             return false;
     }
@@ -64,6 +67,7 @@ public class EffectMeleeAttackGoal extends MoveToTargetGoal {
         this.attackAnimationTick = 0;
         this.isEffectApplied = false;
         this.ticksUntilNextAttack = 0;
+        this.tentativeCount = 0;
     }
 
     public void stop() {
@@ -87,10 +91,10 @@ public class EffectMeleeAttackGoal extends MoveToTargetGoal {
             this.mob.getLookControl().setLookAt(target.position());
 
             // Move to target
-            double distToTargetSqr = this.mob.distanceToSqr(target);
             super.tick();
 
             // Attack target
+            double distToTargetSqr = this.mob.distanceToSqr(target);
             if (this.ticksUntilNextAttack == 0 && getAttackReachSqr(target) >= distToTargetSqr && !isAttacking())
                 this.startAttack();
 
@@ -116,6 +120,7 @@ public class EffectMeleeAttackGoal extends MoveToTargetGoal {
         if (target != null) {
             if (mob.doHurtTarget(target)) {
                 applyEffect(target);
+                this.tentativeCount += 1;
             }
         }
     }

@@ -91,15 +91,6 @@ public class LegendaryCreatures
     private void modIntegration() {
 
         atmosphericLoaded = ModList.get().isLoaded("atmospheric");
-        try {
-            Class.forName("net.optifine.Config");
-            optifineLoaded = true;
-        } catch (ClassNotFoundException e) {
-            optifineLoaded = false;
-        }
-
-        if (optifineLoaded)
-            LOGGER.debug("Optifine is loaded, disabling custom glowing shader");
 
         if (atmosphericLoaded)
             LOGGER.debug("Atmospheric is loaded, enabling compatibility");
@@ -111,6 +102,16 @@ public class LegendaryCreatures
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
+        try {
+            Class.forName("net.optifine.Config");
+            optifineLoaded = true;
+        } catch (ClassNotFoundException e) {
+            optifineLoaded = false;
+        }
+
+        if (optifineLoaded)
+            LOGGER.debug("Optifine is loaded, disabling custom glowing shader");
+
         event.enqueueWork(() ->
         {
             RenderTypeLookup.setRenderLayer(BlockRegistry.DOOM_FIRE_BLOCK.get(), RenderType.cutout());
