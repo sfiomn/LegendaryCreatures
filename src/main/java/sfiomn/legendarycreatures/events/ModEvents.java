@@ -1,8 +1,6 @@
 package sfiomn.legendarycreatures.events;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
@@ -11,7 +9,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -27,13 +28,24 @@ import sfiomn.legendarycreatures.entities.BullfrogEntity;
 import sfiomn.legendarycreatures.entities.PeacockSpiderEntity;
 import sfiomn.legendarycreatures.util.WorldUtil;
 
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Mod.EventBusSubscriber(modid = LegendaryCreatures.MOD_ID)
 public class ModEvents {
+
+    @SubscribeEvent
+    public static void onMobSpawn(EntityJoinWorldEvent event) {
+        Entity ent = event.getEntity();
+        if (ent instanceof CreatureEntity) {
+            LegendaryCreatures.LOGGER.debug("spawn mob : " + ent.getType().getRegistryName());
+            World world = event.getWorld();
+            Biome bio = world.getBiome(ent.blockPosition());
+            List<MobSpawnInfo.Spawners> spawners = bio.getMobSettings().getMobs(EntityClassification.CREATURE);
+            for (MobSpawnInfo.Spawners spawner : spawners) {
+                LegendaryCreatures.LOGGER.debug("spawn list : " + spawner.type.getRegistryName() + ", " + spawner.weight);
+            }
+        }
+    }
 
     @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {

@@ -1,5 +1,6 @@
 package sfiomn.legendarycreatures.world.gen;
 
+import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
@@ -77,8 +78,7 @@ public class ModEntityGeneration {
         MobEntityEnum mobEntityEnum = MobEntityEnum.valueOfMobId(mobId);
         if (mobEntityEnum != null && weight > 0) {
             EntityType<?> entityType = (EntityType<?>) mobEntityEnum.entityRegistry.get();
-            List<MobSpawnInfo.Spawners> base = spawns.getSpawner(entityType.getCategory());
-            base.add(new MobSpawnInfo.Spawners(entityType, weight, minCount, maxCount));
+            spawns.addSpawn(entityType.getCategory(), new MobSpawnInfo.Spawners(entityType, weight, minCount, maxCount));
         }
     }
 }

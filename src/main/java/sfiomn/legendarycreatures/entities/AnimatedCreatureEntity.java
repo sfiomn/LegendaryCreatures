@@ -198,9 +198,12 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
         super.tick();
     }
 
-    public static boolean checkCreatureSpawnRules(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
-        BlockPos blockpos = pos.below();
-        return spawnReason == SpawnReason.SPAWNER || world.getBlockState(blockpos).isFaceSturdy(world, blockpos, Direction.UP);
+    public static boolean checkCreatureDaySpawnRules(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+        return world.getRawBrightness(pos, 0) > 8;
+    }
+
+    public static boolean checkCreatureNoSpawnRules(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+        return true;
     }
 
     public static boolean checkFlyingCreatureSpawnRules(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
