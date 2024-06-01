@@ -34,20 +34,6 @@ import java.util.*;
 public class ModEvents {
 
     @SubscribeEvent
-    public static void onMobSpawn(EntityJoinWorldEvent event) {
-        Entity ent = event.getEntity();
-        if (ent instanceof CreatureEntity) {
-            LegendaryCreatures.LOGGER.debug("spawn mob : " + ent.getType().getRegistryName());
-            World world = event.getWorld();
-            Biome bio = world.getBiome(ent.blockPosition());
-            List<MobSpawnInfo.Spawners> spawners = bio.getMobSettings().getMobs(EntityClassification.CREATURE);
-            for (MobSpawnInfo.Spawners spawner : spawners) {
-                LegendaryCreatures.LOGGER.debug("spawn list : " + spawner.type.getRegistryName() + ", " + spawner.weight);
-            }
-        }
-    }
-
-    @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
          if (event.getPlayer().isCreative() ||
                  event.getPlayer().isSpectator() ||
