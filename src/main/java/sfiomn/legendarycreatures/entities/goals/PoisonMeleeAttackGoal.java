@@ -7,9 +7,9 @@ import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
 
 import java.util.EnumSet;
 
-public class EffectMeleeAttackGoal extends MoveToTargetGoal {
-    protected final int effectDuration;
-    protected final int effectStrength;
+public class PoisonMeleeAttackGoal extends MoveToTargetGoal {
+    protected final int poisonDuration;
+    protected final int poisonStrength;
     private final int attackDuration;
     private final int actionPoint;
     private final int attackCoolDown;
@@ -17,14 +17,14 @@ public class EffectMeleeAttackGoal extends MoveToTargetGoal {
     private int attackAnimationTick;
     private long lastUseTime;
     private int ticksUntilNextAttack;
-    protected boolean isEffectApplied;
+    protected boolean isPoisonApplied;
     protected final int tentative;
     protected int tentativeCount;
 
-    public EffectMeleeAttackGoal(AnimatedCreatureEntity mob, int effectDuration, int effectStrength, int tentative, int attackDuration, int hurtTick, int attackCoolDown, double speedModifier, boolean followingEvenIfNotSeen, int goalCoolDown) {
+    public PoisonMeleeAttackGoal(AnimatedCreatureEntity mob, int poisonDuration, int poisonStrength, int tentative, int attackDuration, int hurtTick, int attackCoolDown, double speedModifier, boolean followingEvenIfNotSeen, int goalCoolDown) {
         super(mob, speedModifier, followingEvenIfNotSeen);
-        this.effectDuration = effectDuration;
-        this.effectStrength = effectStrength;
+        this.poisonDuration = poisonDuration;
+        this.poisonStrength = poisonStrength;
         this.attackDuration = attackDuration;
         this.actionPoint = hurtTick;
         this.attackCoolDown = attackCoolDown;
@@ -56,7 +56,7 @@ public class EffectMeleeAttackGoal extends MoveToTargetGoal {
 
     public boolean canContinueToUse() {
         if (super.canContinueToUse())
-            return !isEffectApplied || this.tentativeCount < this.tentative;
+            return !isPoisonApplied && this.tentativeCount < this.tentative;
         else
             return false;
     }
@@ -65,7 +65,7 @@ public class EffectMeleeAttackGoal extends MoveToTargetGoal {
         super.start();
         this.mob.setAggressive(true);
         this.attackAnimationTick = 0;
-        this.isEffectApplied = false;
+        this.isPoisonApplied = false;
         this.ticksUntilNextAttack = 0;
         this.tentativeCount = 0;
     }
@@ -119,15 +119,15 @@ public class EffectMeleeAttackGoal extends MoveToTargetGoal {
     protected void executeAttack(LivingEntity target) {
         if (target != null) {
             if (mob.doHurtTarget(target)) {
-                applyEffect(target);
+                applyPoison(target);
                 this.tentativeCount += 1;
             }
         }
     }
 
-    protected void applyEffect(LivingEntity target) {
-        target.addEffect(new EffectInstance(Effects.POISON, this.effectDuration, this.effectStrength, false, true));
-        this.isEffectApplied = target.hasEffect(Effects.POISON);
+    protected void applyPoison(LivingEntity target) {
+        target.addEffect(new EffectInstance(Effects.POISON, this.poisonDuration, this.poisonStrength, false, true));
+        this.isPoisonApplied = target.hasEffect(Effects.POISON);
     }
 
     protected  boolean isActionPoint() {

@@ -13,7 +13,7 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
-import sfiomn.legendarycreatures.entities.goals.EffectMeleeAttackGoal;
+import sfiomn.legendarycreatures.entities.goals.PoisonMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
 import software.bernie.geckolib3.core.AnimationState;
@@ -58,7 +58,7 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        EffectMeleeAttackGoal effectMeleeAttackGoal = new EffectMeleeAttackGoal(this, 200, 0, 3, tailAttackDuration, tailAttackActionPoint, 5, 1.0, true, 200){
+        PoisonMeleeAttackGoal poisonMeleeAttackGoal = new PoisonMeleeAttackGoal(this, 200, 0, 3, tailAttackDuration, tailAttackActionPoint, 5, 1.0, true, 200){
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
@@ -73,7 +73,7 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
 
         this.goalSelector.addGoal(1, new SwimGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
-        this.goalSelector.addGoal(3, effectMeleeAttackGoal);
+        this.goalSelector.addGoal(3, poisonMeleeAttackGoal);
         this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 5, 1.0, true){
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
@@ -88,7 +88,7 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
 
             @Override
             public boolean canContinueToUse() {
-                if (effectMeleeAttackGoal.canUse())
+                if (poisonMeleeAttackGoal.canUse())
                     return false;
                 return super.canContinueToUse();
             }
