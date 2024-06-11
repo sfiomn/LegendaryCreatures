@@ -2,16 +2,22 @@ package sfiomn.legendarycreatures.entities;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
+import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
 import sfiomn.legendarycreatures.entities.goals.PoisonMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
@@ -33,6 +39,9 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
     public ScorpionEntity(EntityType<? extends CreatureEntity> type, World world) {
         super(type, world);
         this.xpReward = 5;
+        if (isLevel2())
+            this.xpReward = 10;
+
         this.maxUpStep = 1.0F;
     }
 
@@ -49,10 +58,19 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-
         // 70% to have babies
-        if (getRandom().nextInt(100) >= 70)
-            this.setVariant(7);
+        boolean hasBabies = getRandom().nextInt(100) >= 70;
+
+        // 10% to be level 2 scorpion
+        if (getRandom().nextInt(100) >= 90)
+            if (hasBabies)
+                this.setVariant(8);
+            else
+                this.setVariant(2);
+        else
+            if (hasBabies)
+                this.setVariant(7);
+
     }
 
     @Override
@@ -112,6 +130,28 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
             event.getController().setAnimation(new AnimationBuilder().addAnimation("tail", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
         }
         return PlayState.CONTINUE;
+    }
+
+    @Nullable
+    @Override
+    public ILivingEntityData finalizeSpawn(IServerWorld serverWorld, DifficultyInstance difficultyInstance, SpawnReason spawnReason, @Nullable ILivingEntityData entityData, @Nullable CompoundNBT nbt) {
+        ModifiableAttributeInstance healthAttribute = this.getAttribute(Attributes.MAX_HEALTH);
+        ModifiableAttributeInstance attackAttribute = this.getAttribute(Attributes.ATTACK_DAMAGE);
+        if (this.isLevel2()) {
+            if (healthAttribute != null) {
+                healthAttribute.addPermanentModifier(new AttributeModifier(MAX_HEALTH_UUID, LegendaryCreatures.MOD_ID + ":scorpion_level2", healthAttribute.getBaseValue() * 2, AttributeModifier.Operation.ADDITION));
+                this.setHealth(1000);
+            }
+            if (attackAttribute != null) {
+                attackAttribute.addPermanentModifier(new AttributeModifier(ATTACK_DAMAGE_UUID, LegendaryCreatures.MOD_ID + ":scorpion_level2", attackAttribute.getBaseValue() * 2, AttributeModifier.Operation.ADDITION));
+            }
+        }
+
+        return super.finalizeSpawn(serverWorld, difficultyInstance, spawnReason, entityData, nbt);
+    }
+
+    public boolean isLevel2() {
+        return getVariant() == 2 || getVariant() == 8;
     }
 
     @Override

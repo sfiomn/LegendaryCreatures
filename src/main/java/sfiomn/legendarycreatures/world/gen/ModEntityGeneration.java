@@ -9,6 +9,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraftforge.common.world.MobSpawnInfoBuilder;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.config.json.JsonBiomeSpawn;
 import sfiomn.legendarycreatures.config.json.JsonBlackLists;
@@ -64,6 +65,12 @@ public class ModEntityGeneration {
                 canMobIdSpawn = biomeNameSpawns.containsKey("default");
                 if (canMobIdSpawn)
                     jsonBiomeSpawn = biomeNameSpawns.get("default");
+            }
+
+            if (!canMobIdSpawn) {
+                canMobIdSpawn = biomeNameSpawns.containsKey("default:overworld");
+                if (canMobIdSpawn && biomeCategory != Biome.Category.NETHER && biomeCategory != Biome.Category.THEEND)
+                    jsonBiomeSpawn = biomeNameSpawns.get("default:overworld");
             }
 
             if (canMobIdSpawn) {

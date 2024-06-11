@@ -75,6 +75,32 @@ public class EntityTypeRegistry {
                     .clientTrackingRange(64)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "wisp_purse").toString()));
+    public static final RegistryObject<EntityType<NetherWispEntity>> NETHER_WISP = ENTITY_TYPES.register("nether_wisp",
+            () -> EntityType.Builder.of(NetherWispEntity::new, EntityClassification.CREATURE)
+                    .sized(1.0F, 1.2F)
+                    .clientTrackingRange(64)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .setUpdateInterval(3)
+                    .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "nether_wisp").toString()));
+    public static final RegistryObject<EntityType<NetherWispPurseEntity>> NETHER_WISP_PURSE = ENTITY_TYPES.register("nether_wisp_purse",
+            () -> EntityType.Builder.<NetherWispPurseEntity>of(NetherWispPurseEntity::new, EntityClassification.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(64)
+                    .setUpdateInterval(3)
+                    .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "nether_wisp_purse").toString()));
+    public static final RegistryObject<EntityType<EnderWispEntity>> ENDER_WISP = ENTITY_TYPES.register("ender_wisp",
+            () -> EntityType.Builder.of(EnderWispEntity::new, EntityClassification.CREATURE)
+                    .sized(1.0F, 1.2F)
+                    .clientTrackingRange(64)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .setUpdateInterval(3)
+                    .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "ender_wisp").toString()));
+    public static final RegistryObject<EntityType<EnderWispPurseEntity>> ENDER_WISP_PURSE = ENTITY_TYPES.register("ender_wisp_purse",
+            () -> EntityType.Builder.<EnderWispPurseEntity>of(EnderWispPurseEntity::new, EntityClassification.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(64)
+                    .setUpdateInterval(3)
+                    .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "ender_wisp_purse").toString()));
 
     public static final RegistryObject<EntityType<CorpseEaterEntity>> CORPSE_EATER = ENTITY_TYPES.register("corpse_eater",
             () -> EntityType.Builder.of(CorpseEaterEntity::new, EntityClassification.MONSTER)

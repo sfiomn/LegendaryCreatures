@@ -63,6 +63,8 @@ public class JsonConfigRegistration
 		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.WISP.mobId, "plains", 10, 1, 1);
 		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.WISP.mobId, "forest", 10, 1, 1);
 		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.WISP.mobId, "taiga", 10, 1, 1);
+		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.NETHER_WISP.mobId, "nether", 10, 1, 1);
+		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.ENDER_WISP.mobId, "theend", 10, 1, 1);
 
 		JsonConfig.registerKillingEntityNameSpawn(MobEntityEnum.CORPSE_EATER.mobId, "default", 0.1);
 		JsonConfig.registerKillingEntityTagSpawn(MobEntityEnum.CORPSE_EATER.mobId, "minecraft:raiders", 0.4);

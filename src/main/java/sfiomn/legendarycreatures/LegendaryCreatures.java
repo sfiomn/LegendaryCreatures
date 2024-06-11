@@ -136,7 +136,11 @@ public class LegendaryCreatures
                 RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.SCORPION.get(), ScorpionRenderer::new);
                 RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.SCORPION_BABY.get(), ScorpionBabyRenderer::new);
                 RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.WISP.get(), WispRenderer::new);
+                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.NETHER_WISP.get(), NetherWispRenderer::new);
+                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.ENDER_WISP.get(), EnderWispRenderer::new);
                 RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.WISP_PURSE.get(), WispPurseRenderer::new);
+                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.NETHER_WISP_PURSE.get(), NetherWispPurseRenderer::new);
+                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.ENDER_WISP_PURSE.get(), EnderWispPurseRenderer::new);
                 RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.CORPSE_EATER.get(), CorpseEaterRenderer::new);
                 RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.PEACOCK_SPIDER.get(), PeacockSpiderRenderer::new);
                 RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.BULLFROG.get(), BullfrogRenderer::new);

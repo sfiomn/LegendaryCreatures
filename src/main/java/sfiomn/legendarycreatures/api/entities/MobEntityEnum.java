@@ -14,6 +14,8 @@ public enum MobEntityEnum {
     SCORPION("scorpion", EntityTypeRegistry.SCORPION, ScorpionEntity.class, Config.Baked.scorpionNaturalSpawn, Config.Baked.scorpionBreakingBlockSpawn, Config.Baked.scorpionKillingEntitySpawn),
     SCORPION_BABY("scorpion_baby", EntityTypeRegistry.SCORPION_BABY, ScorpionBabyEntity.class, Config.Baked.scorpionNaturalSpawn, Config.Baked.scorpionBreakingBlockSpawn, Config.Baked.scorpionBabyKillingEntitySpawn),
     WISP("wisp", EntityTypeRegistry.WISP, WispEntity.class, Config.Baked.wispNaturalSpawn, Config.Baked.wispBreakingBlockSpawn, Config.Baked.wispKillingEntitySpawn),
+    NETHER_WISP("nether_wisp", EntityTypeRegistry.NETHER_WISP, NetherWispEntity.class, Config.Baked.netherWispNaturalSpawn, Config.Baked.netherWispBreakingBlockSpawn, Config.Baked.netherWispKillingEntitySpawn),
+    ENDER_WISP("ender_wisp", EntityTypeRegistry.ENDER_WISP, EnderWispEntity.class, Config.Baked.enderWispNaturalSpawn, Config.Baked.enderWispBreakingBlockSpawn, Config.Baked.enderWispKillingEntitySpawn),
     CORPSE_EATER("corpse_eater", EntityTypeRegistry.CORPSE_EATER, CorpseEaterEntity.class, Config.Baked.corpseEaterNaturalSpawn, Config.Baked.corpseEaterBreakingBlockSpawn, Config.Baked.corpseEaterKillingEntitySpawn),
     PEACOCK_SPIDER("peacock_spider", EntityTypeRegistry.PEACOCK_SPIDER, PeacockSpiderEntity.class, Config.Baked.peacockSpiderNaturalSpawn, Config.Baked.peacockSpiderBreakingBlockSpawn, Config.Baked.peacockSpiderKillingEntitySpawn),
     BULLFROG("bullfrog", EntityTypeRegistry.BULLFROG, BullfrogEntity.class, Config.Baked.bullfrogNaturalSpawn, Config.Baked.bullfrogBreakingBlockSpawn, Config.Baked.bullfrogKillingEntitySpawn);

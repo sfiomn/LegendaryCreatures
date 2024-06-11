@@ -36,6 +36,10 @@ public class ModEventBusEvents {
         event.put(EntityTypeRegistry.SCORPION_BABY.get(), ScorpionBabyEntity.setCustomAttributes().build());
         event.put(EntityTypeRegistry.WISP.get(), WispEntity.setCustomAttributes().build());
         event.put(EntityTypeRegistry.WISP_PURSE.get(), WispPurseEntity.setCustomAttributes().build());
+        event.put(EntityTypeRegistry.NETHER_WISP.get(), NetherWispEntity.setCustomAttributes().build());
+        event.put(EntityTypeRegistry.NETHER_WISP_PURSE.get(), NetherWispPurseEntity.setCustomAttributes().build());
+        event.put(EntityTypeRegistry.ENDER_WISP.get(), EnderWispEntity.setCustomAttributes().build());
+        event.put(EntityTypeRegistry.ENDER_WISP_PURSE.get(), EnderWispPurseEntity.setCustomAttributes().build());
         event.put(EntityTypeRegistry.CORPSE_EATER.get(), CorpseEaterEntity.setCustomAttributes().build());
         event.put(EntityTypeRegistry.PEACOCK_SPIDER.get(), PeacockSpiderEntity.setCustomAttributes().build());
         event.put(EntityTypeRegistry.BULLFROG.get(), BullfrogEntity.setCustomAttributes().build());

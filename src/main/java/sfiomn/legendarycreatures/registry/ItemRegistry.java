@@ -42,6 +42,14 @@ public class ItemRegistry {
             () -> new ForgeSpawnEggItem(EntityTypeRegistry.WISP, -10289350, -10533588,
                     new Item.Properties().tab(ModItemGroup.LEGENDARY_CREATURES_GROUP)));
 
+    public static final RegistryObject<SpawnEggItem> NETHER_WISP_SPAWN_EGG = ITEMS.register("nether_wisp_spawn_egg",
+            () -> new ForgeSpawnEggItem(EntityTypeRegistry.NETHER_WISP, 0xba3519, 0x393939,
+                    new Item.Properties().tab(ModItemGroup.LEGENDARY_CREATURES_GROUP)));
+
+    public static final RegistryObject<SpawnEggItem> ENDER_WISP_SPAWN_EGG = ITEMS.register("ender_wisp_spawn_egg",
+            () -> new ForgeSpawnEggItem(EntityTypeRegistry.ENDER_WISP, 0xfe95e0, 0xe86ad6,
+                    new Item.Properties().tab(ModItemGroup.LEGENDARY_CREATURES_GROUP)));
+
     public static final RegistryObject<SpawnEggItem> CORPSE_EATER_SPAWN_EGG = ITEMS.register("corpse_eater_spawn_egg",
             () -> new ForgeSpawnEggItem(EntityTypeRegistry.CORPSE_EATER, 0x0F1F27, 0x137FC2,
                     new Item.Properties().tab(ModItemGroup.LEGENDARY_CREATURES_GROUP)));

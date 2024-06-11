@@ -65,6 +65,14 @@ public class Config
 		public final ForgeConfigSpec.ConfigValue<Boolean> wispBreakingBlockSpawn;
 		public final ForgeConfigSpec.ConfigValue<Boolean> wispKillingEntitySpawn;
 		public final ForgeConfigSpec.ConfigValue<List<Integer>> wispPurseXpReward;
+		public final ForgeConfigSpec.ConfigValue<Boolean> netherWispNaturalSpawn;
+		public final ForgeConfigSpec.ConfigValue<Boolean> netherWispBreakingBlockSpawn;
+		public final ForgeConfigSpec.ConfigValue<Boolean> netherWispKillingEntitySpawn;
+		public final ForgeConfigSpec.ConfigValue<List<Integer>> netherWispPurseXpReward;
+		public final ForgeConfigSpec.ConfigValue<Boolean> enderWispNaturalSpawn;
+		public final ForgeConfigSpec.ConfigValue<Boolean> enderWispBreakingBlockSpawn;
+		public final ForgeConfigSpec.ConfigValue<Boolean> enderWispKillingEntitySpawn;
+		public final ForgeConfigSpec.ConfigValue<List<Integer>> enderWispPurseXpReward;
 		public final ForgeConfigSpec.ConfigValue<Boolean> corpseEaterNaturalSpawn;
 		public final ForgeConfigSpec.ConfigValue<Boolean> corpseEaterBreakingBlockSpawn;
 		public final ForgeConfigSpec.ConfigValue<Boolean> corpseEaterKillingEntitySpawn;
@@ -127,6 +135,20 @@ public class Config
 			wispPurseXpReward = builder.define("Wisp Purse Xp Reward Range ", Arrays.asList(10, 10));
 			builder.pop();
 
+			builder.push("nether_wisp");
+			netherWispNaturalSpawn = builder.define("Nether Wisp Natural Spawn ", true);
+			netherWispBreakingBlockSpawn = builder.define("Nether Wisp Breaking Block Spawn ", true);
+			netherWispKillingEntitySpawn = builder.define("Nether Wisp Killing Entity Spawn ", true);
+			netherWispPurseXpReward = builder.define("Nether Wisp Purse Xp Reward Range ", Arrays.asList(30, 30));
+			builder.pop();
+
+			builder.push("ender_wisp");
+			enderWispNaturalSpawn = builder.define("Ender Wisp Natural Spawn ", true);
+			enderWispBreakingBlockSpawn = builder.define("Ender Wisp Breaking Block Spawn ", true);
+			enderWispKillingEntitySpawn = builder.define("Ender Wisp Killing Entity Spawn ", true);
+			enderWispPurseXpReward = builder.define("Ender Wisp Purse Xp Reward Range ", Arrays.asList(90, 90));
+			builder.pop();
+
 			builder.push("corpse_eater");
 			corpseEaterNaturalSpawn = builder.define("Corpse Eater Natural Spawn ", true);
 			corpseEaterBreakingBlockSpawn = builder.define("Corpse Eater Breaking Block Spawn ", true);
@@ -173,6 +195,14 @@ public class Config
 		public static boolean wispBreakingBlockSpawn;
 		public static boolean wispKillingEntitySpawn;
 		public static List<Integer> wispPurseXpReward;
+		public static boolean netherWispNaturalSpawn;
+		public static boolean netherWispBreakingBlockSpawn;
+		public static boolean netherWispKillingEntitySpawn;
+		public static List<Integer> netherWispPurseXpReward;
+		public static boolean enderWispNaturalSpawn;
+		public static boolean enderWispBreakingBlockSpawn;
+		public static boolean enderWispKillingEntitySpawn;
+		public static List<Integer> enderWispPurseXpReward;
 		public static boolean corpseEaterNaturalSpawn;
 		public static boolean corpseEaterBreakingBlockSpawn;
 		public static boolean corpseEaterKillingEntitySpawn;
@@ -209,6 +239,14 @@ public class Config
 				wispBreakingBlockSpawn = COMMON.wispBreakingBlockSpawn.get();
 				wispKillingEntitySpawn = COMMON.wispKillingEntitySpawn.get();
 				wispPurseXpReward = COMMON.wispPurseXpReward.get();
+				netherWispNaturalSpawn = COMMON.netherWispNaturalSpawn.get();
+				netherWispBreakingBlockSpawn = COMMON.netherWispBreakingBlockSpawn.get();
+				netherWispKillingEntitySpawn = COMMON.netherWispKillingEntitySpawn.get();
+				netherWispPurseXpReward = COMMON.netherWispPurseXpReward.get();
+				enderWispNaturalSpawn = COMMON.enderWispNaturalSpawn.get();
+				enderWispBreakingBlockSpawn = COMMON.enderWispBreakingBlockSpawn.get();
+				enderWispKillingEntitySpawn = COMMON.enderWispKillingEntitySpawn.get();
+				enderWispPurseXpReward = COMMON.enderWispPurseXpReward.get();
 				corpseEaterNaturalSpawn = COMMON.corpseEaterNaturalSpawn.get();
 				corpseEaterBreakingBlockSpawn = COMMON.corpseEaterBreakingBlockSpawn.get();
 				corpseEaterKillingEntitySpawn = COMMON.corpseEaterKillingEntitySpawn.get();

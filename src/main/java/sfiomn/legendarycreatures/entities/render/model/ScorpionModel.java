@@ -28,8 +28,12 @@ public class ScorpionModel extends AnimatedGeoModel<ScorpionEntity> {
     public void setCustomAnimations(ScorpionEntity entity, int instanceId, AnimationEvent animationEvent) {
         super.setCustomAnimations(entity, instanceId, animationEvent);
 
-        if (entity.hasBabies())
+        if (entity.getVariant() == 7)
             texture = new ResourceLocation(LegendaryCreatures.MOD_ID, "textures/entity/scorpion_babies.png");
+        else if (entity.getVariant() == 8)
+            texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/scorpion_babies.png");
+        else if (entity.getVariant() == 2)
+            texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/scorpion_level2.png");
         else
             texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/scorpion.png");
     }

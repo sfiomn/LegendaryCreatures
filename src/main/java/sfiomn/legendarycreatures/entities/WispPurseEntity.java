@@ -48,7 +48,7 @@ public class WispPurseEntity extends MobEntity implements IAnimatable {
 
     public WispPurseEntity(EntityType<? extends MobEntity> entityType, World world) {
         super(entityType, world);
-        List<Integer> xpRewardLimits = Config.Baked.wispPurseXpReward;
+        List<Integer> xpRewardLimits = getRangeXp();
         int xpReward = 0;
         if (xpRewardLimits.size() == 1)
             xpReward = xpRewardLimits.get(0);
@@ -60,6 +60,10 @@ public class WispPurseEntity extends MobEntity implements IAnimatable {
             }
         }
         this.xpReward = xpReward;
+    }
+
+    protected List<Integer> getRangeXp() {
+        return Config.Baked.wispPurseXpReward;
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes() {

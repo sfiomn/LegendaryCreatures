@@ -105,10 +105,14 @@ public class WispEntity extends AnimatedCreatureEntity implements IFlyingAnimal 
         return super.hurt(source, amount);
     }
 
+    protected WispPurseEntity getPurseEntity() {
+        return EntityTypeRegistry.WISP_PURSE.get().create(this.level);
+    }
+
     @Override
     public void remove(boolean keepData) {
         if (!this.level.isClientSide && this.isDeadOrDying() && !this.removed) {
-            WispPurseEntity wispPurseEntity = EntityTypeRegistry.WISP_PURSE.get().create(this.level);
+            WispPurseEntity wispPurseEntity = getPurseEntity();
             if (wispPurseEntity == null)
                 return;
 
