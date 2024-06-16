@@ -208,6 +208,9 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
 
                 this.level.playSound(null, new BlockPos(this.position()), SoundEvents.SILVERFISH_STEP, SoundCategory.HOSTILE, 10.0F, 1.0F);
                 scorpionBabyEntity.setInvulnerable(this.isInvulnerable());
+                if (isLevel2()) {
+                    scorpionBabyEntity.setVariant(2);
+                }
                 scorpionBabyEntity.moveTo(this.getX() + (double)f1, this.getY() + 0.5D, this.getZ() + (double)f2, this.random.nextFloat() * 360.0F, 0.0F);
                 this.level.addFreshEntity(scorpionBabyEntity);
             }
