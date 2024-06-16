@@ -13,6 +13,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -212,5 +213,14 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
             PeacockSpiderEntity.this.yHeadRot = PeacockSpiderEntity.this.yBodyRot;
             PeacockSpiderEntity.this.yBodyRot = PeacockSpiderEntity.this.yRot;
         }
+    }
+
+    @Override
+    protected ResourceLocation getDefaultLootTable() {
+        if (isLevel2())
+            return new ResourceLocation(LegendaryCreatures.MOD_ID, "entities/peacock_spider_level2");
+        else if (isLevel3())
+            return new ResourceLocation(LegendaryCreatures.MOD_ID, "entities/peacock_spider_level3");
+        return super.getDefaultLootTable();
     }
 }

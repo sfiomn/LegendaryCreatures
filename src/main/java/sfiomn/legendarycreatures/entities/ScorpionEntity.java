@@ -9,11 +9,9 @@ import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
@@ -216,5 +214,12 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
         }
 
         super.remove(keepData);
+    }
+
+    @Override
+    protected ResourceLocation getDefaultLootTable() {
+        if (isLevel2())
+            return new ResourceLocation(LegendaryCreatures.MOD_ID, "entities/scorpion_level2");
+        return super.getDefaultLootTable();
     }
 }

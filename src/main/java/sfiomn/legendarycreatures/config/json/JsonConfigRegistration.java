@@ -53,7 +53,6 @@ public class JsonConfigRegistration
 		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:wooded_hills", 10, 1, 2);
 
 		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.SCARECROW.mobId, "plains", 10, 1, 1);
-		JsonConfig.registerBiomeNameBlackList(MobEntityEnum.SCARECROW.mobId, Collections.singletonList("minecraft:snowy_tundra"));
 		JsonConfig.registerBreakingBlockNameSpawn(MobEntityEnum.SCARECROW.mobId, "minecraft:wheat", 0.1);
 		JsonConfig.registerKillingEntityNameSpawn(MobEntityEnum.SCARECROW.mobId, "minecraft:chicken", 0.3);
 

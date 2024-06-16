@@ -31,7 +31,7 @@ public class ScorpionModel extends AnimatedGeoModel<ScorpionEntity> {
         if (entity.getVariant() == 7)
             texture = new ResourceLocation(LegendaryCreatures.MOD_ID, "textures/entity/scorpion_babies.png");
         else if (entity.getVariant() == 8)
-            texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/scorpion_babies.png");
+            texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/scorpion_level2_babies.png");
         else if (entity.getVariant() == 2)
             texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/scorpion_level2.png");
         else
