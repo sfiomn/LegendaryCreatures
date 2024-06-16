@@ -132,21 +132,21 @@ public class Config
 			wispNaturalSpawn = builder.define("Wisp Natural Spawn ", true);
 			wispBreakingBlockSpawn = builder.define("Wisp Breaking Block Spawn ", true);
 			wispKillingEntitySpawn = builder.define("Wisp Killing Entity Spawn ", true);
-			wispPurseXpReward = builder.define("Wisp Purse Xp Reward Range ", Arrays.asList(10, 10));
+			wispPurseXpReward = builder.define("Wisp Purse Xp Reward Range ", Arrays.asList(30, 30));
 			builder.pop();
 
 			builder.push("nether_wisp");
 			netherWispNaturalSpawn = builder.define("Nether Wisp Natural Spawn ", true);
 			netherWispBreakingBlockSpawn = builder.define("Nether Wisp Breaking Block Spawn ", true);
 			netherWispKillingEntitySpawn = builder.define("Nether Wisp Killing Entity Spawn ", true);
-			netherWispPurseXpReward = builder.define("Nether Wisp Purse Xp Reward Range ", Arrays.asList(30, 30));
+			netherWispPurseXpReward = builder.define("Nether Wisp Purse Xp Reward Range ", Arrays.asList(80, 80));
 			builder.pop();
 
 			builder.push("ender_wisp");
 			enderWispNaturalSpawn = builder.define("Ender Wisp Natural Spawn ", true);
 			enderWispBreakingBlockSpawn = builder.define("Ender Wisp Breaking Block Spawn ", true);
 			enderWispKillingEntitySpawn = builder.define("Ender Wisp Killing Entity Spawn ", true);
-			enderWispPurseXpReward = builder.define("Ender Wisp Purse Xp Reward Range ", Arrays.asList(90, 90));
+			enderWispPurseXpReward = builder.define("Ender Wisp Purse Xp Reward Range ", Arrays.asList(240, 240));
 			builder.pop();
 
 			builder.push("corpse_eater");
