@@ -26,6 +26,8 @@
   "entity.legendarycreatures.scorpion": "Scorpion",
   "entity.legendarycreatures.scorpion_baby": "Baby Scorpion",
   "entity.legendarycreatures.wisp": "Wisp",
+  "entity.legendarycreatures.nether_wisp": "Nether Wisp",
+  "entity.legendarycreatures.ender_wisp": "Ender Wisp",
   "entity.legendarycreatures.corpse_eater": "Corpse Eater",
   "entity.legendarycreatures.peacock_spider": "Peacock Spider",
   "entity.legendarycreatures.peacock_spider2": "Leaf Peacock Spider",
