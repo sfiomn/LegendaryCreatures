@@ -2,7 +2,7 @@ package sfiomn.legendarycreatures.config.json;
 
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 public class JsonChanceSpawn
 {
@@ -11,7 +11,7 @@ public class JsonChanceSpawn
 
 	public JsonChanceSpawn(double chance)
 	{
-		this.chance = MathHelper.clamp(chance, 0, 1.0);
+		this.chance = Mth.clamp(chance, 0, 1.0);
 	}
 
 	public JsonChanceSpawn(JsonObject jsonObject) {

@@ -1,5 +1,5 @@
 {
-  "itemGroup.legendary_creatures": "Legendary Creatures",
+  "itemGroup.legendarycreatures": "Legendary Creatures",
 
   "item.legendarycreatures.desert_mojo_spawn_egg": "Desert Mojo Spawn Egg",
   "item.legendarycreatures.forest_mojo_spawn_egg": "Forest Mojo Spawn Egg",
@@ -24,6 +24,7 @@
   "entity.legendarycreatures.hound": "Hound",
   "entity.legendarycreatures.scarecrow": "Scarecrow",
   "entity.legendarycreatures.scorpion": "Scorpion",
+  "entity.legendarycreatures.scorpion2": "Crimson Scorpion",
   "entity.legendarycreatures.scorpion_baby": "Baby Scorpion",
   "entity.legendarycreatures.wisp": "Wisp",
   "entity.legendarycreatures.nether_wisp": "Nether Wisp",

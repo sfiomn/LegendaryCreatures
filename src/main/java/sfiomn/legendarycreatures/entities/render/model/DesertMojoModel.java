@@ -1,25 +1,27 @@
 package sfiomn.legendarycreatures.entities.render.model;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import sfiomn.legendarycreatures.LegendaryCreatures;
-import sfiomn.legendarycreatures.entities.DesertMojoEntity;
 import sfiomn.legendarycreatures.entities.MojoEntity;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib.model.GeoModel;
 
-public class DesertMojoModel extends AnimatedGeoModel<MojoEntity> {
+public class DesertMojoModel extends GeoModel<MojoEntity> {
+    private final ResourceLocation model = new ResourceLocation(LegendaryCreatures.MOD_ID, "geo/desert_mojo.geo.json");
+    private final ResourceLocation texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/mojo.png");
+    private final ResourceLocation animations = new ResourceLocation(LegendaryCreatures.MOD_ID, "animations/desert_mojo.animation.json");
 
     @Override
-    public ResourceLocation getModelLocation(MojoEntity object) {
-        return new ResourceLocation(LegendaryCreatures.MOD_ID,"geo/desert_mojo.geo.json");
+    public ResourceLocation getModelResource(MojoEntity object) {
+        return this.model;
     }
 
     @Override
-    public ResourceLocation getTextureLocation(MojoEntity object) {
-        return new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/mojo.png");
+    public ResourceLocation getTextureResource(MojoEntity object) {
+        return this.texture;
     }
 
     @Override
-    public ResourceLocation getAnimationFileLocation(MojoEntity animatable) {
-        return new ResourceLocation(LegendaryCreatures.MOD_ID,"animations/desert_mojo.animation.json");
+    public ResourceLocation getAnimationResource(MojoEntity animatable) {
+        return this.animations;
     }
 }

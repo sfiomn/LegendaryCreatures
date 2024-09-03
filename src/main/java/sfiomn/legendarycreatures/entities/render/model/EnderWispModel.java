@@ -1,24 +1,27 @@
 package sfiomn.legendarycreatures.entities.render.model;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import sfiomn.legendarycreatures.LegendaryCreatures;
-import sfiomn.legendarycreatures.entities.EnderWispEntity;
 import sfiomn.legendarycreatures.entities.WispEntity;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib.model.GeoModel;
 
-public class EnderWispModel extends AnimatedGeoModel<WispEntity> {
+public class EnderWispModel extends GeoModel<WispEntity> {
+    private final ResourceLocation model = new ResourceLocation(LegendaryCreatures.MOD_ID, "geo/wisp.geo.json");
+    private final ResourceLocation texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/ender_wisp.png");
+    private final ResourceLocation animations = new ResourceLocation(LegendaryCreatures.MOD_ID, "animations/wisp.animation.json");
+
     @Override
-    public ResourceLocation getModelLocation(WispEntity object) {
-        return new ResourceLocation(LegendaryCreatures.MOD_ID, "geo/wisp.geo.json");
+    public ResourceLocation getModelResource(WispEntity object) {
+        return this.model;
     }
 
     @Override
-    public ResourceLocation getTextureLocation(WispEntity object) {
-        return new ResourceLocation(LegendaryCreatures.MOD_ID, "textures/entity/ender_wisp.png");
+    public ResourceLocation getTextureResource(WispEntity object) {
+        return this.texture;
     }
 
     @Override
-    public ResourceLocation getAnimationFileLocation(WispEntity animatable) {
-        return new ResourceLocation(LegendaryCreatures.MOD_ID, "animations/wisp.animation.json");
+    public ResourceLocation getAnimationResource(WispEntity animatable) {
+        return this.animations;
     }
 }

@@ -1,28 +1,27 @@
 package sfiomn.legendarycreatures.effects;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectType;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
-public class RootEffect extends Effect
+public class RootEffect extends MobEffect
 {
 	public RootEffect()
 	{
-		super(EffectType.HARMFUL, 0x947b66);
+		super(MobEffectCategory.HARMFUL, 0x947b66);
 	}
 	
 	@Override
 	public void applyEffectTick(LivingEntity entity, int amplifier)
 	{
-		if(entity instanceof PlayerEntity)
+		if(entity instanceof Player player)
 		{
-			World world = entity.getCommandSenderWorld();
-			PlayerEntity player = (PlayerEntity) entity;
+			Level level = entity.getCommandSenderWorld();
 
-			player.makeStuckInBlock(world.getBlockState(player.blockPosition()), new Vector3d(0.01, 0.01, 0.01));
+			player.makeStuckInBlock(level.getBlockState(player.blockPosition()), new Vec3(0.01, 0.01, 0.01));
 		}
 	}
 	

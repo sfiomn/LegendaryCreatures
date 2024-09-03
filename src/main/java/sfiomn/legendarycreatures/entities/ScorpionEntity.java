@@ -1,31 +1,38 @@
 package sfiomn.legendarycreatures.entities;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.World;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
 import sfiomn.legendarycreatures.entities.goals.PoisonMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
-import software.bernie.geckolib3.core.AnimationState;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.builder.ILoopType;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 
 import javax.annotation.Nullable;
 
@@ -34,17 +41,20 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
     private final int baseAttackActionPoint = 10;
     private final int tailAttackDuration = 20;
     private final int tailAttackActionPoint = 7;
-    public ScorpionEntity(EntityType<? extends CreatureEntity> type, World world) {
-        super(type, world);
+
+    private final RawAnimation RUN_ANIM = RawAnimation.begin().thenPlay("run");
+    private final RawAnimation CLAWS_ANIM = RawAnimation.begin().thenPlay("claws");
+    private final RawAnimation TAIL_ANIM = RawAnimation.begin().thenPlay("tail");
+
+    public ScorpionEntity(EntityType<? extends PathfinderMob> type, Level level) {
+        super(type, level);
         this.xpReward = 5;
         if (isLevel2())
             this.xpReward = 10;
-
-        this.maxUpStep = 1.0F;
     }
 
-    public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
-        return MobEntity.createMobAttributes()
+    public static AttributeSupplier.Builder setCustomAttributes() {
+        return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 18)
                 .add(Attributes.MOVEMENT_SPEED, 0.35)
                 .add(Attributes.ARMOR, 0)
@@ -87,7 +97,7 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
             }
         };
 
-        this.goalSelector.addGoal(1, new SwimGoal(this));
+        this.goalSelector.addGoal(1, new FloatGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(3, poisonMeleeAttackGoal);
         this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 5, 1.0, true){
@@ -109,9 +119,9 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
                 return super.canContinueToUse();
             }
         });
-        this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false, false));
-        this.goalSelector.addGoal(6, new LookRandomlyGoal(this));
-        this.goalSelector.addGoal(7, new RandomWalkingGoal(this, 0.6, 40));
+        this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Player.class, false, false));
+        this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(7, new RandomStrollGoal(this, 0.6, 40));
     }
 
     private float getMobLength() {
@@ -119,22 +129,20 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    public <E extends IAnimatable> PlayState attackingPredicate(AnimationEvent<E> event) {
-        if (getAttackAnimation() == BASE_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
-            event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("claws", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
-        } else if (getAttackAnimation() == EFFECT_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
-            event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("tail", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> event) {
+        if (getAttackAnimation() == BASE_ATTACK && event.getController().hasAnimationFinished()) {
+            event.getController().setAnimation(CLAWS_ANIM);
+        } else if (getAttackAnimation() == EFFECT_ATTACK && event.getController().hasAnimationFinished()) {
+            event.getController().setAnimation(TAIL_ANIM);
         }
         return PlayState.CONTINUE;
     }
 
     @Nullable
     @Override
-    public ILivingEntityData finalizeSpawn(IServerWorld serverWorld, DifficultyInstance difficultyInstance, SpawnReason spawnReason, @Nullable ILivingEntityData entityData, @Nullable CompoundNBT nbt) {
-        ModifiableAttributeInstance healthAttribute = this.getAttribute(Attributes.MAX_HEALTH);
-        ModifiableAttributeInstance attackAttribute = this.getAttribute(Attributes.ATTACK_DAMAGE);
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, @NotNull DifficultyInstance difficulty, @NotNull MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData, @Nullable CompoundTag nbt) {
+        AttributeInstance healthAttribute = this.getAttribute(Attributes.MAX_HEALTH);
+        AttributeInstance attackAttribute = this.getAttribute(Attributes.ATTACK_DAMAGE);
         if (this.isLevel2()) {
             if (healthAttribute != null) {
                 healthAttribute.addPermanentModifier(new AttributeModifier(MAX_HEALTH_UUID, LegendaryCreatures.MOD_ID + ":scorpion_level2", healthAttribute.getBaseValue() * 2, AttributeModifier.Operation.ADDITION));
@@ -145,7 +153,15 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
             }
         }
 
-        return super.finalizeSpawn(serverWorld, difficultyInstance, spawnReason, entityData, nbt);
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData, nbt);
+    }
+
+    @Override
+    public Component getName() {
+        String descriptionId = "entity." + LegendaryCreatures.MOD_ID + ".scorpion";
+        if (isLevel2())
+            descriptionId = "entity." + LegendaryCreatures.MOD_ID + ".scorpion2";
+        return Component.translatable(descriptionId);
     }
 
     public boolean isLevel2() {
@@ -153,20 +169,20 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    public AnimationBuilder getSprintAnimation() {
-        return new AnimationBuilder().addAnimation("run", ILoopType.EDefaultLoopTypes.LOOP);
+    public RawAnimation getSprintAnimation() {
+        return RUN_ANIM;
     }
 
     public boolean hasBabies() {
         return this.getVariant() >= 7;
     }
 
-    public CreatureAttribute getMobType() {
-        return CreatureAttribute.ARTHROPOD;
+    public @NotNull MobType getMobType() {
+        return MobType.ARTHROPOD;
     }
 
     @Override
-    protected float getStandingEyeHeight(Pose pose, EntitySize entitySize) {
+    protected float getStandingEyeHeight(@NotNull Pose p_21131_, @NotNull EntityDimensions p_21132_) {
         return 0.35F;
     }
 
@@ -192,31 +208,31 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    public void remove(boolean keepData) {
-        if (!this.level.isClientSide && this.isDeadOrDying() && !this.removed && hasBabies()) {
+    public void remove(RemovalReason reason) {
+        if (!this.level().isClientSide && this.isDeadOrDying() && !this.isRemoved() && hasBabies()) {
             int nbBabies = 1 + this.random.nextInt(3);
 
             for(int l = 0; l < nbBabies; ++l) {
                 float f1 = ((float)(l % 2) - 0.5F);
                 float f2 = ((float)(l / 2) - 0.5F);
-                ScorpionBabyEntity scorpionBabyEntity = EntityTypeRegistry.SCORPION_BABY.get().create(this.level);
+                ScorpionBabyEntity scorpionBabyEntity = EntityTypeRegistry.SCORPION_BABY.get().create(this.level());
                 if (scorpionBabyEntity == null)
                     return;
                 if (this.isPersistenceRequired()) {
                     scorpionBabyEntity.setPersistenceRequired();
                 }
 
-                this.level.playSound(null, new BlockPos(this.position()), SoundEvents.SILVERFISH_STEP, SoundCategory.HOSTILE, 10.0F, 1.0F);
+                this.level().playSound(null, this.blockPosition(), SoundEvents.SILVERFISH_STEP, SoundSource.HOSTILE, 10.0F, 1.0F);
                 scorpionBabyEntity.setInvulnerable(this.isInvulnerable());
                 if (isLevel2()) {
                     scorpionBabyEntity.setVariant(2);
                 }
                 scorpionBabyEntity.moveTo(this.getX() + (double)f1, this.getY() + 0.5D, this.getZ() + (double)f2, this.random.nextFloat() * 360.0F, 0.0F);
-                this.level.addFreshEntity(scorpionBabyEntity);
+                this.level().addFreshEntity(scorpionBabyEntity);
             }
         }
 
-        super.remove(keepData);
+        super.remove(reason);
     }
 
     @Override

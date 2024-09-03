@@ -1,23 +1,27 @@
 package sfiomn.legendarycreatures.entities.render.model;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.HoundEntity;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib.model.GeoModel;
 
-public class HoundModel extends AnimatedGeoModel<HoundEntity> {
+public class HoundModel extends GeoModel<HoundEntity> {
+    private final ResourceLocation model = new ResourceLocation(LegendaryCreatures.MOD_ID, "geo/hound.geo.json");
+    private final ResourceLocation texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/hound.png");
+    private final ResourceLocation animations = new ResourceLocation(LegendaryCreatures.MOD_ID, "animations/hound.animation.json");
+
     @Override
-    public ResourceLocation getModelLocation(HoundEntity object) {
-        return new ResourceLocation(LegendaryCreatures.MOD_ID, "geo/hound.geo.json");
+    public ResourceLocation getModelResource(HoundEntity object) {
+        return this.model;
     }
 
     @Override
-    public ResourceLocation getTextureLocation(HoundEntity object) {
-        return new ResourceLocation(LegendaryCreatures.MOD_ID, "textures/entity/hound.png");
+    public ResourceLocation getTextureResource(HoundEntity object) {
+        return this.texture;
     }
 
     @Override
-    public ResourceLocation getAnimationFileLocation(HoundEntity animatable) {
-        return new ResourceLocation(LegendaryCreatures.MOD_ID, "animations/hound.animation.json");
+    public ResourceLocation getAnimationResource(HoundEntity animatable) {
+        return this.animations;
     }
 }

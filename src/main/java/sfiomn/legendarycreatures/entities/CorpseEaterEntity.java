@@ -1,31 +1,35 @@
 package sfiomn.legendarycreatures.entities;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3i;
-import net.minecraft.world.World;
-import sfiomn.legendarycreatures.LegendaryCreatures;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import sfiomn.legendarycreatures.blocks.DoomFireBlock;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.BlockRegistry;
 import sfiomn.legendarycreatures.registry.ParticleTypeRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
-import software.bernie.geckolib3.core.AnimationState;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.builder.ILoopType;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 
 import javax.annotation.Nullable;
 
@@ -33,14 +37,18 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
     private final int baseAttackDuration = 15;
     private final int baseAttackActionPoint = 7;
     private final int spawnTimerInTicks = 20;
-    public CorpseEaterEntity(EntityType<? extends CreatureEntity> type, World world) {
-        super(type, world);
+
+    private final RawAnimation SPAWN_ANIM = RawAnimation.begin().thenPlayAndHold("spawn");
+    private final RawAnimation RUN_ANIM = RawAnimation.begin().thenPlay("run");
+    private final RawAnimation ATTACK_ANIM = RawAnimation.begin().thenPlayAndHold("attack");
+
+    public CorpseEaterEntity(EntityType<? extends PathfinderMob> type, Level level) {
+        super(type, level);
         this.xpReward = 5;
-        this.maxUpStep = 1.0F;
     }
 
-    public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
-        return MobEntity.createMobAttributes()
+    public static AttributeSupplier.Builder setCustomAttributes() {
+        return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 8)
                 .add(Attributes.MOVEMENT_SPEED, 0.35)
                 .add(Attributes.ARMOR, 0)
@@ -59,9 +67,9 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(1, new SwimGoal(this));
+        this.goalSelector.addGoal(1, new FloatGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
-        this.goalSelector.addGoal(3, new LookAtGoal(this, PlayerEntity.class, (float) 12));
+        this.goalSelector.addGoal(3, new LookAtPlayerGoal(this, Player.class, (float) 12));
         this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 5, 1.5, true) {
             @Override
             protected boolean executeAttack(LivingEntity target) {
@@ -69,17 +77,16 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
                 return super.executeAttack(target);
             }
         });
-        this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false, false));
-        this.goalSelector.addGoal(6, new LookRandomlyGoal(this));
-        this.goalSelector.addGoal(7, new RandomWalkingGoal(this, 0.4, 20));
+        this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Player.class, false, false));
+        this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(7, new RandomStrollGoal(this, 0.4, 20));
     }
 
     @Override
-    public <E extends IAnimatable> PlayState attackingPredicate(AnimationEvent<E> event) {
-        if (getAttackAnimation() == BASE_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
+    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> event) {
+        if (getAttackAnimation() == BASE_ATTACK && event.getController().hasAnimationFinished()) {
             this.playSound(SoundRegistry.CORPSE_EATER_ATTACK.get(), 1.0F, 1.0F);
-            event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("attack", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+            event.getController().setAnimation(ATTACK_ANIM);
         }
         return PlayState.CONTINUE;
     }
@@ -89,19 +96,19 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
         super.tick();
 
         if (getSpawnTimer() == spawnTimerInTicks - 1) {
-            this.level.playSound(null, new BlockPos(this.position()), SoundRegistry.CORPSE_EATER_SPAWN.get(), SoundCategory.HOSTILE, 10.0F, 1.0F);
+            this.level().playSound(null, this.blockPosition(), SoundRegistry.CORPSE_EATER_SPAWN.get(), SoundSource.HOSTILE, 10.0F, 1.0F);
         }
 
-        if (getSpawnTimer() > spawnTimerInTicks - 1 && level != null) {
+        if (getSpawnTimer() > spawnTimerInTicks - 1) {
             for (int i = 0; i < 30; ++i) {
-                double offsetX = (2 * this.level.getRandom().nextFloat() - 1) * 0.2F;
-                double offsetZ = (2 * this.level.getRandom().nextFloat() - 1) * 0.2F;
+                double offsetX = (2 * this.level().getRandom().nextFloat() - 1) * 0.2F;
+                double offsetZ = (2 * this.level().getRandom().nextFloat() - 1) * 0.2F;
 
                 double x = this.position().x + offsetX;
-                double y = this.position().y + 0.1 + (this.level.getRandom().nextFloat() * 0.2F);
+                double y = this.position().y + 0.1 + (this.level().getRandom().nextFloat() * 0.2F);
                 double z = this.position().z + offsetZ;
 
-                this.level.addParticle(ParticleTypeRegistry.CORPSE_SPLATTER.get(), x, y, z, offsetX / 2, 0.23D, offsetZ / 2);
+                this.level().addParticle(ParticleTypeRegistry.CORPSE_SPLATTER.get(), x, y, z, offsetX / 2, 0.23D, offsetZ / 2);
             }
         }
     }
@@ -127,37 +134,43 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
         this.playSound(SoundRegistry.CORPSE_EATER_STEP.get(), 1.0F, 1.0F);
     }
 
-    public AnimationBuilder getSprintAnimation() {
-        return new AnimationBuilder().addAnimation("run", ILoopType.EDefaultLoopTypes.LOOP);
+    public RawAnimation getSprintAnimation() {
+        return RUN_ANIM;
     }
 
     @Override
-    public AnimationBuilder getSpawnAnimation() {
-        return new AnimationBuilder().addAnimation("spawn", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
+    public RawAnimation getSpawnAnimation() {
+        return SPAWN_ANIM;
     }
 
     @Override
-    public void remove(boolean keepData) {
-        if (!this.level.isClientSide && this.isDeadOrDying() && !this.removed) {
+    public void remove(@NotNull RemovalReason reason) {
+        if (!this.level().isClientSide && this.isDeadOrDying() && !this.isRemoved()) {
             for (int i =-2; i<3; i++) {
                 for (int j=-2; j<3; j++) {
                     if (this.random.nextFloat() < 0.5) {
-                        BlockPos pos = this.blockPosition().offset(new Vector3i(i, 0, j));
-                        BlockPos posUp = this.blockPosition().above().offset(new Vector3i(i, 0, j));
-                        BlockPos posDown = this.blockPosition().below().offset(new Vector3i(i, 0, j));
-                        if (DoomFireBlock.checkDoomFireSurvive(this.level.getBlockState(pos.below()), this.level, pos.below()) &&
-                                this.level.getBlockState(pos).getDestroySpeed(this.level, pos) == 0.0f)
-                            this.level.setBlockAndUpdate(pos, BlockRegistry.DOOM_FIRE_BLOCK.get().defaultBlockState());
-                        else if (DoomFireBlock.checkDoomFireSurvive(this.level.getBlockState(posDown.below()), this.level, posDown.below()) &&
-                                this.level.getBlockState(posDown).getDestroySpeed(this.level, posDown) == 0.0f)
-                            this.level.setBlockAndUpdate(posDown, BlockRegistry.DOOM_FIRE_BLOCK.get().defaultBlockState());
-                        else if (DoomFireBlock.checkDoomFireSurvive(this.level.getBlockState(posUp.below()), this.level, posUp.below()) &&
-                                this.level.getBlockState(posUp).getDestroySpeed(this.level, posUp) == 0.0f)
-                            this.level.setBlockAndUpdate(posUp, BlockRegistry.DOOM_FIRE_BLOCK.get().defaultBlockState());
+                        BlockPos pos = this.blockPosition().offset(new Vec3i(i, 0, j));
+                        BlockPos posUp = this.blockPosition().above().offset(new Vec3i(i, 0, j));
+                        BlockPos posDown = this.blockPosition().below().offset(new Vec3i(i, 0, j));
+                        if (applyFireAtPos(this.level(), pos))
+                            return;
+                        if (applyFireAtPos(this.level(), posDown))
+                            return;
+                        if (applyFireAtPos(this.level(), posUp))
+                            return;
                     }
                 }
             }
         }
-        super.remove(keepData);
+        super.remove(reason);
+    }
+
+    private boolean applyFireAtPos(Level level, BlockPos pos) {
+        if (DoomFireBlock.checkDoomFireSurvive(level.getBlockState(pos.below()), level, pos.below()) &&
+                level.getBlockState(pos).getDestroySpeed(level, pos) == 0.0f) {
+            level.setBlockAndUpdate(pos, BlockRegistry.DOOM_FIRE_BLOCK.get().defaultBlockState());
+            return true;
+        }
+        return false;
     }
 }

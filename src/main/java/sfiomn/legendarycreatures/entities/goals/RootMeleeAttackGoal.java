@@ -1,24 +1,23 @@
 package sfiomn.legendarycreatures.entities.goals;
 
-import net.minecraft.command.arguments.EntityAnchorArgument;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.vector.Vector3d;
-import sfiomn.legendarycreatures.api.DamageSources;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.phys.Vec3;
 import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
 import sfiomn.legendarycreatures.registry.EffectRegistry;
+import sfiomn.legendarycreatures.util.DamageSourceUtil;
 
 import java.util.EnumSet;
 
+import static sfiomn.legendarycreatures.api.ModDamageTypes.ROOT_ATTACK;
+
 public class RootMeleeAttackGoal extends MoveToTargetGoal {
     private final AttributeModifier maxKnockBackResistance = new AttributeModifier("maxKnockBackResistance", 1000.0D, AttributeModifier.Operation.ADDITION);
-    private ModifiableAttributeInstance mobKnockBackResAttribute;
+    private AttributeInstance mobKnockBackResAttribute;
     private final int initialAttackDuration;
     private final int initialActionPoint;
     private boolean initialAttackDone;
@@ -54,7 +53,7 @@ public class RootMeleeAttackGoal extends MoveToTargetGoal {
     }
 
     public boolean canUse() {
-        long time = this.mob.level.getGameTime();
+        long time = this.mob.level().getGameTime();
         if (time - this.lastUseTime < coolDown || isAttacking()) {
             return false;
         } else {
@@ -85,7 +84,7 @@ public class RootMeleeAttackGoal extends MoveToTargetGoal {
 
     public void stop() {
         super.stop();
-        this.lastUseTime = this.mob.level.getGameTime();
+        this.lastUseTime = this.mob.level().getGameTime();
 
         if (isAttacking())
             this.stopAttack();
@@ -110,7 +109,7 @@ public class RootMeleeAttackGoal extends MoveToTargetGoal {
             // Attack target
             double distToTargetSqr = this.mob.distanceToSqr(target);
             if (getAttackReachSqr(target) >= distToTargetSqr && !isAttacking()) {
-                this.mob.lookAt(EntityAnchorArgument.Type.EYES, target.position());
+                this.mob.lookAt(EntityAnchorArgument.Anchor.EYES, target.position());
                 this.startAttack();
             }
 
@@ -155,12 +154,12 @@ public class RootMeleeAttackGoal extends MoveToTargetGoal {
     protected void executeInitialAttack(LivingEntity target) {
         if (target != null) {
             if (!this.isDamageSourceBlocked(target)) {
-                target.hurt(DamageSources.ROOT_ATTACK, this.damageEvery20Ticks);
+                target.hurt(DamageSourceUtil.getDamageSource(this.mob.level(), ROOT_ATTACK), this.damageEvery20Ticks);
                 addRootEffect(target);
                 this.rootTarget = target;
                 this.initialAttackDone = true;
             } else {
-                target.hurt(DamageSource.mobAttack(this.mob), this.damageEvery20Ticks);
+                target.hurt(this.mob.damageSources().mobAttack(this.mob), this.damageEvery20Ticks);
                 this.isInitialAttackBlocked = true;
             }
         }
@@ -168,11 +167,11 @@ public class RootMeleeAttackGoal extends MoveToTargetGoal {
 
     protected void executeRootAttack(LivingEntity target) {
         addRootEffect(target);
-        target.hurt(DamageSources.ROOT_ATTACK, this.damageEvery20Ticks);
+        target.hurt(DamageSourceUtil.getDamageSource(this.mob.level(), ROOT_ATTACK), this.damageEvery20Ticks);
     }
 
     protected void addRootEffect(LivingEntity target) {
-        target.addEffect(new EffectInstance(EffectRegistry.ROOT.get(), this.longAttackDuration, 0, false, true));
+        target.addEffect(new MobEffectInstance(EffectRegistry.ROOT.get(), this.longAttackDuration, 0, false, true));
         if (this.mobKnockBackResAttribute != null && !this.mobKnockBackResAttribute.hasModifier(maxKnockBackResistance))
             this.mobKnockBackResAttribute.addTransientModifier(maxKnockBackResistance);
     }
@@ -195,13 +194,11 @@ public class RootMeleeAttackGoal extends MoveToTargetGoal {
 
     protected boolean isDamageSourceBlocked(LivingEntity target) {
         if (target.isBlocking()) {
-            Vector3d vector3d2 = this.mob.position();
-            Vector3d vector3d = target.getViewVector(1.0F);
-            Vector3d vector3d1 = vector3d2.vectorTo(target.position()).normalize();
-            vector3d1 = new Vector3d(vector3d1.x, 0.0D, vector3d1.z);
-            if (vector3d1.dot(vector3d) < 0.0D) {
-                return true;
-            }
+            Vec3 vector3d2 = this.mob.position();
+            Vec3 vector3d = target.getViewVector(1.0F);
+            Vec3 vector3d1 = vector3d2.vectorTo(target.position()).normalize();
+            vector3d1 = new Vec3(vector3d1.x, 0.0D, vector3d1.z);
+            return vector3d1.dot(vector3d) < 0.0D;
         }
         return false;
     }

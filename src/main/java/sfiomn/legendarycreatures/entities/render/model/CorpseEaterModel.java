@@ -1,24 +1,27 @@
 package sfiomn.legendarycreatures.entities.render.model;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.CorpseEaterEntity;
-import sfiomn.legendarycreatures.entities.ScarecrowEntity;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib.model.GeoModel;
 
-public class CorpseEaterModel extends AnimatedGeoModel<CorpseEaterEntity> {
+public class CorpseEaterModel extends GeoModel<CorpseEaterEntity> {
+    private final ResourceLocation model = new ResourceLocation(LegendaryCreatures.MOD_ID, "geo/corpse_eater.geo.json");
+    private final ResourceLocation texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/corpse_eater.png");
+    private final ResourceLocation animations = new ResourceLocation(LegendaryCreatures.MOD_ID, "animations/corpse_eater.animation.json");
+
     @Override
-    public ResourceLocation getModelLocation(CorpseEaterEntity object) {
-        return new ResourceLocation(LegendaryCreatures.MOD_ID, "geo/corpse_eater.geo.json");
+    public ResourceLocation getModelResource(CorpseEaterEntity object) {
+        return this.model;
     }
 
     @Override
-    public ResourceLocation getTextureLocation(CorpseEaterEntity object) {
-        return new ResourceLocation(LegendaryCreatures.MOD_ID, "textures/entity/corpse_eater.png");
+    public ResourceLocation getTextureResource(CorpseEaterEntity object) {
+        return this.texture;
     }
 
     @Override
-    public ResourceLocation getAnimationFileLocation(CorpseEaterEntity animatable) {
-        return new ResourceLocation(LegendaryCreatures.MOD_ID, "animations/corpse_eater.animation.json");
+    public ResourceLocation getAnimationResource(CorpseEaterEntity animatable) {
+        return this.animations;
     }
 }

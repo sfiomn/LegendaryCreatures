@@ -1,41 +1,43 @@
 package sfiomn.legendarycreatures.entities;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
-import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
-import sfiomn.legendarycreatures.util.WorldUtil;
-import software.bernie.geckolib3.core.AnimationState;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.builder.ILoopType;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 
 import javax.annotation.Nullable;
 
 public abstract class MojoEntity extends AnimatedCreatureEntity {
     private final int spawnTimerInTicks = 20;
 
-    public MojoEntity(EntityType<? extends CreatureEntity> type, World world) {
-        super(type, world);
+    private final RawAnimation SPAWN_ANIM = RawAnimation.begin().thenPlayAndHold("spawn");
+    private final RawAnimation RUN_ANIM = RawAnimation.begin().thenPlay("run");
+    private final RawAnimation ATTACK_ANIM = RawAnimation.begin().thenPlayAndHold("attack");
+
+    public MojoEntity(EntityType<? extends PathfinderMob> type, Level level) {
+        super(type, level);
         this.xpReward = 4;
-        this.maxUpStep = 1.0F;
     }
 
-    public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
-        return MobEntity.createMobAttributes()
+    public static AttributeSupplier.Builder setCustomAttributes() {
+        return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 10)
                 .add(Attributes.MOVEMENT_SPEED, 0.35)
                 .add(Attributes.ARMOR, 0)
@@ -62,7 +64,7 @@ public abstract class MojoEntity extends AnimatedCreatureEntity {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(1, new SwimGoal(this));
+        this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(2, new BaseMeleeAttackGoal(this, getBaseAttackDuration(), getBaseAttackActionPoint(), 5, 1.0, true) {
             @Override
             protected boolean executeAttack(LivingEntity target) {
@@ -71,16 +73,15 @@ public abstract class MojoEntity extends AnimatedCreatureEntity {
             }
         });
         this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
-        this.goalSelector.addGoal(4, new RandomWalkingGoal(this, 0.6, 40));
-        this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false, false));
-        this.goalSelector.addGoal(6, new LookRandomlyGoal(this));
+        this.goalSelector.addGoal(4, new RandomStrollGoal(this, 0.6, 40));
+        this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Player.class, false, false));
+        this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
     }
 
     @Override
-    public <E extends IAnimatable> PlayState attackingPredicate(AnimationEvent<E> event) {
-        if (getAttackAnimation() == BASE_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
-            event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("attack", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> event) {
+        if (getAttackAnimation() == BASE_ATTACK && event.getController().hasAnimationFinished()) {
+            event.getController().setAnimation(ATTACK_ANIM);
         }
         return PlayState.CONTINUE;
     }
@@ -90,11 +91,12 @@ public abstract class MojoEntity extends AnimatedCreatureEntity {
         super.tick();
 
         if (getSpawnTimer() == spawnTimerInTicks - 1) {
-            this.level.playSound(null, new BlockPos(this.position()), SoundRegistry.MOJO_SPAWN.get(), SoundCategory.HOSTILE, 10.0F, 1.0F);
+            this.level().playSound(null, this.blockPosition(), SoundRegistry.MOJO_SPAWN.get(), SoundSource.HOSTILE, 10.0F, 1.0F);
         }
     }
 
-    protected float getStandingEyeHeight(Pose p_213348_1_, EntitySize p_213348_2_) {
+    @Override
+    protected float getStandingEyeHeight(Pose p_21131_, EntityDimensions p_21132_) {
         return 0.7F;
     }
 
@@ -121,12 +123,12 @@ public abstract class MojoEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    public AnimationBuilder getSprintAnimation() {
-        return new AnimationBuilder().addAnimation("run", ILoopType.EDefaultLoopTypes.LOOP);
+    public RawAnimation getSprintAnimation() {
+        return RUN_ANIM;
     }
 
     @Override
-    public AnimationBuilder getSpawnAnimation() {
-        return new AnimationBuilder().addAnimation("spawn", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
+    public RawAnimation getSpawnAnimation() {
+        return SPAWN_ANIM;
     }
 }

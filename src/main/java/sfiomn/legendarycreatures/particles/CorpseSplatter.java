@@ -1,19 +1,20 @@
 package sfiomn.legendarycreatures.particles;
 
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particles.BasicParticleType;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.util.Mth;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
 //  Deeply inspired by the tall AloeVera from MinecraftAbnormals
 //  https://github.com/team-abnormals/atmospheric/blob/1.16.x/src/main/java/com/minecraftabnormals/atmospheric/client/particle/AloeBlossomParticle.java
-public class CorpseSplatter extends DeceleratingParticle {
-    protected final IAnimatedSprite animatedSprite;
+public class CorpseSplatter extends TextureSheetParticle {
+    protected final SpriteSet animatedSprite;
     private float angle;
 
-    protected CorpseSplatter(IAnimatedSprite animatedSprite, ClientWorld level, double x, double y, double z, double xd, double yd, double zd) {
+    protected CorpseSplatter(SpriteSet animatedSprite, ClientLevel level, double x, double y, double z, double xd, double yd, double zd) {
         super(level, x, y, z, xd, yd, zd);
 
         this.setSpriteFromAge(animatedSprite);
@@ -66,7 +67,7 @@ public class CorpseSplatter extends DeceleratingParticle {
     @Override
     protected int getLightColor(float partialTick) {
         float f = this.lifetime / (((this.age + (this.lifetime * 0.5F)) + partialTick));
-        f = MathHelper.clamp(f, 0F, 1.0F);
+        f = Mth.clamp(f, 0F, 1.0F);
         int i = super.getLightColor(partialTick);
         int j = i & 255;
         int k = i >> 16 & 255;
@@ -78,21 +79,21 @@ public class CorpseSplatter extends DeceleratingParticle {
     }
 
     @Override
-    public IParticleRenderType getRenderType() {
-        return IParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+    public @NotNull ParticleRenderType getRenderType() {
+        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
-    public static class Factory implements IParticleFactory<BasicParticleType> {
+    public static class Factory implements ParticleProvider<SimpleParticleType> {
 
-        private final IAnimatedSprite animatedSprite;
+        private final SpriteSet animatedSprite;
 
-        public Factory(IAnimatedSprite animatedSprite) {
+        public Factory(SpriteSet animatedSprite) {
             this.animatedSprite = animatedSprite;
         }
 
         @Nullable
         @Override
-        public Particle createParticle(BasicParticleType type, ClientWorld level, double x, double y, double z, double xd, double yd, double zd) {
+        public Particle createParticle(@NotNull SimpleParticleType type, @NotNull ClientLevel level, double x, double y, double z, double xd, double yd, double zd) {
             return new CorpseSplatter(this.animatedSprite, level, x, y, z, xd, yd, zd);
         }
     }

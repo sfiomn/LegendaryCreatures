@@ -1,44 +1,40 @@
 package sfiomn.legendarycreatures.entities;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.RandomPositionGenerator;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.controller.FlyingMovementController;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.item.FallingBlockEntity;
-import net.minecraft.entity.passive.IFlyingAnimal;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.pathfinding.FlyingPathNavigator;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
-import sfiomn.legendarycreatures.LegendaryCreatures;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.FlyingMoveControl;
+import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
+import net.minecraft.world.entity.ai.util.AirAndWaterRandomPos;
+import net.minecraft.world.entity.ai.util.AirRandomPos;
+import net.minecraft.world.entity.animal.Bee;
+import net.minecraft.world.entity.animal.FlyingAnimal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
 import sfiomn.legendarycreatures.registry.ParticleTypeRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
-import sfiomn.legendarycreatures.util.WorldUtil;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
-public class WispEntity extends AnimatedCreatureEntity implements IFlyingAnimal {
-    public WispEntity(EntityType<? extends CreatureEntity> type, World world) {
-        super(type, world);
-        this.maxUpStep = 1.0F;
+public class WispEntity extends AnimatedCreatureEntity implements FlyingAnimal {
+    public WispEntity(EntityType<? extends PathfinderMob> type, Level level) {
+        super(type, level);
 
-        this.moveControl = new FlyingMovementController(this, 10, true);
-        this.navigation = new FlyingPathNavigator(this, world);
+        this.moveControl = new FlyingMoveControl(this, 10, true);
+        this.navigation = new FlyingPathNavigation(this, level);
     }
 
-    public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
-        return MobEntity.createMobAttributes()
+    public static AttributeSupplier.Builder setCustomAttributes() {
+        return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 1)
                 .add(Attributes.MOVEMENT_SPEED, 0.25)
                 .add(Attributes.ARMOR, 0)
@@ -52,13 +48,14 @@ public class WispEntity extends AnimatedCreatureEntity implements IFlyingAnimal 
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(1, new PanicGoal(this, 5));
-        this.goalSelector.addGoal(2, new AvoidEntityGoal<>(this, PlayerEntity.class, (float) 30, 0.8, 1.4));
-        this.goalSelector.addGoal(3, new LookRandomlyGoal(this));
-        this.goalSelector.addGoal(4, new SwimGoal(this));
-        this.goalSelector.addGoal(5, new RandomWalkingGoal(this, 1.0, 20) {
+        this.goalSelector.addGoal(2, new AvoidEntityGoal<>(this, Player.class, (float) 30, 0.8, 1.4));
+        this.goalSelector.addGoal(3, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(4, new FloatGoal(this));
+        this.goalSelector.addGoal(5, new RandomStrollGoal(this, 1.0, 10) {
             @Override
-            protected Vector3d getPosition() {
-                return RandomPositionGenerator.getAirPos(this.mob, 5, 5, 3, null, 0);
+            protected Vec3 getPosition() {
+                Vec3 viewVector = this.mob.getViewVector(0);
+                return AirRandomPos.getPosTowards(this.mob, 8, 4, -2, viewVector, 1.5707963705062866);
             }
         });
     }
@@ -74,8 +71,8 @@ public class WispEntity extends AnimatedCreatureEntity implements IFlyingAnimal 
         double y = this.position().y + (this.getRandom().nextFloat() * 0.05F);
         double z = this.position().z + offsetZ;
 
-        if (this.level.getGameTime() % 3 == 0)
-            this.level.addParticle(ParticleTypeRegistry.WISP_PARTICLE.get(), x, y, z, offsetX / 10, 0.01D, offsetZ / 10);
+        if (this.level().getGameTime() % 3 == 0)
+            this.level().addParticle(ParticleTypeRegistry.WISP_PARTICLE.get(), x, y, z, offsetX / 10, 0.01D, offsetZ / 10);
     }
 
     @Override
@@ -96,22 +93,22 @@ public class WispEntity extends AnimatedCreatureEntity implements IFlyingAnimal 
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (source == DamageSource.ANVIL)
+        if (source.is(DamageTypes.FALLING_ANVIL))
             return false;
-        if (source == DamageSource.DRAGON_BREATH)
+        if (source.is(DamageTypes.DRAGON_BREATH))
             return false;
-        if (source == DamageSource.CACTUS)
+        if (source.is(DamageTypes.CACTUS))
             return false;
         return super.hurt(source, amount);
     }
 
     protected WispPurseEntity getPurseEntity() {
-        return EntityTypeRegistry.WISP_PURSE.get().create(this.level);
+        return EntityTypeRegistry.WISP_PURSE.get().create(this.level());
     }
 
     @Override
-    public void remove(boolean keepData) {
-        if (!this.level.isClientSide && this.isDeadOrDying() && !this.removed) {
+    public void remove(@NotNull RemovalReason reason) {
+        if (!this.level().isClientSide && this.isDeadOrDying() && !this.isRemoved()) {
             WispPurseEntity wispPurseEntity = getPurseEntity();
             if (wispPurseEntity == null)
                 return;
@@ -122,9 +119,14 @@ public class WispEntity extends AnimatedCreatureEntity implements IFlyingAnimal 
 
             wispPurseEntity.setInvulnerable(this.isInvulnerable());
             wispPurseEntity.moveTo(this.getX(), this.getY(), this.getZ(), this.random.nextFloat() * 360.0F, this.random.nextFloat() * 360.0F);
-            this.level.addFreshEntity(wispPurseEntity);
+            this.level().addFreshEntity(wispPurseEntity);
         }
 
-        super.remove(keepData);
+        super.remove(reason);
+    }
+
+    @Override
+    public boolean isFlying() {
+        return true;
     }
 }

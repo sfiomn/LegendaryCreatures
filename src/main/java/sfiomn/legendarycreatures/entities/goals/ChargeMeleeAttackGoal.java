@@ -1,21 +1,19 @@
 package sfiomn.legendarycreatures.entities.goals;
 
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.phys.Vec3;
 import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
 
 import java.util.*;
@@ -35,7 +33,7 @@ public class ChargeMeleeAttackGoal extends Goal {
     private int attackAnimationTick;
     private boolean hasAttacked;
     private long lastUseTime;
-    private Vector3d chargeAxe;
+    private Vec3 chargeAxe;
     private BlockPos targetBlockPos;
 
     public ChargeMeleeAttackGoal(AnimatedCreatureEntity mob, int attackDuration, int hurtTick, int attackCoolDown, double minDistanceAttack, double speedModifier, double chargeCorrectionAngle, boolean mayDisableShield) {
@@ -60,7 +58,7 @@ public class ChargeMeleeAttackGoal extends Goal {
     }
 
     public boolean canUse() {
-        long time = this.mob.level.getGameTime();
+        long time = this.mob.level().getGameTime();
         if (time - this.lastUseTime < coolDown || isAttacking()) {
             return false;
         } else {
@@ -71,7 +69,7 @@ public class ChargeMeleeAttackGoal extends Goal {
                 return false;
             } else {
                 this.path = this.mob.getNavigation().createPath(target, 0);
-                if (path != null && this.mob.canSee(target) && this.mob.distanceToSqr(target) > minDistance * minDistance) {
+                if (path != null && this.mob.getSensing().hasLineOfSight(target) && this.mob.distanceToSqr(target) > minDistance * minDistance) {
                     return true;
                 } else {
                     return false;
@@ -97,12 +95,12 @@ public class ChargeMeleeAttackGoal extends Goal {
         this.hasAttacked = false;
         this.updatePathTick = 0;
         this.pathUpdated = false;
-        this.chargeAxe = Vector3d.ZERO;
+        this.chargeAxe = Vec3.ZERO;
         this.targetBlockPos = BlockPos.ZERO;
     }
 
     public void stop() {
-        this.lastUseTime = this.mob.level.getGameTime();
+        this.lastUseTime = this.mob.level().getGameTime();
 
         if (isAttacking())
             this.stopAttack();
@@ -114,7 +112,7 @@ public class ChargeMeleeAttackGoal extends Goal {
     public void tick() {
         LivingEntity target = this.mob.getTarget();
         if (target != null) {
-            if (this.chargeAxe == Vector3d.ZERO)
+            if (this.chargeAxe == Vec3.ZERO)
                 this.chargeAxe = this.mob.position().subtract(target.position());
             if (this.targetBlockPos == BlockPos.ZERO)
                 this.targetBlockPos = target.blockPosition();
@@ -123,17 +121,17 @@ public class ChargeMeleeAttackGoal extends Goal {
             double angleToTarget = this.getAngleToChargeAxe(target);
 
             // Update next target point
-            if (this.mob.canSee(target) && angleToTarget <= this.chargeCorrectionAngle && target.blockPosition() != this.targetBlockPos && !isAttacking() && !hasAttacked) {
+            if (this.mob.getSensing().hasLineOfSight(target) && angleToTarget <= this.chargeCorrectionAngle && target.blockPosition() != this.targetBlockPos && !isAttacking() && !hasAttacked) {
                 this.targetBlockPos = target.blockPosition();
                 this.pathUpdated = false;
             }
 
             // Move effects
             if (!hasAttacked) {
-                if (!this.mob.level.isClientSide()) {
-                    ((ServerWorld) this.mob.level).sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, this.mob.getX(), this.mob.getY(), this.mob.getZ(), 5, this.mob.getBbWidth() / 4.0F, 0, this.mob.getBbWidth() / 4.0F, 0.01D);
+                if (!this.mob.level().isClientSide()) {
+                    ((ServerLevel) this.mob.level()).sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, this.mob.getX(), this.mob.getY(), this.mob.getZ(), 5, this.mob.getBbWidth() / 4.0F, 0, this.mob.getBbWidth() / 4.0F, 0.01D);
                 }
-                if (this.mob.level.getGameTime() % 2L == 0L) {
+                if (this.mob.level().getGameTime() % 2L == 0L) {
                     this.mob.playSound(SoundEvents.HOGLIN_STEP, 0.5F, (this.mob.getRandom().nextFloat() - this.mob.getRandom().nextFloat()) * 0.2f + 1.0f);
                 }
             }
@@ -196,7 +194,7 @@ public class ChargeMeleeAttackGoal extends Goal {
     }
 
     protected double getAngleToChargeAxe(LivingEntity target) {
-        Vector3d currentPosToTargetVector = this.mob.position().subtract(target.position());
+        Vec3 currentPosToTargetVector = this.mob.position().subtract(target.position());
         return Math.acos((currentPosToTargetVector.dot(this.chargeAxe)) / (currentPosToTargetVector.length() * this.chargeAxe.length())) / Math.PI * 180;
     }
 
@@ -210,26 +208,26 @@ public class ChargeMeleeAttackGoal extends Goal {
 
     protected void doHurt(LivingEntity target) {
         float damage = (float)this.mob.getAttributeValue(Attributes.ATTACK_DAMAGE);
-        float knockBack = MathHelper.clamp(this.mob.getSpeed() / 0.7f, 0.2f, 3.0f);
-        boolean flag = target.hurt(DamageSource.mobAttack(this.mob), damage);
-        if (target instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) target;
+        float knockBack = Mth.clamp(this.mob.getSpeed() / 0.7f, 0.2f, 3.0f);
+        boolean flag = target.hurt(mob.damageSources().mobAttack(mob), damage);
+        if (target instanceof Player player) {
             this.mayDisableShield(player, player.isUsingItem() ? player.getUseItem() : ItemStack.EMPTY);
         }
         if (flag) {
             target.knockback(knockBack, this.chargeAxe.x, this.chargeAxe.z);
             double knockBackResistance = Math.max(0.0, 1.0 - target.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
             target.setDeltaMovement(target.getDeltaMovement().add(0.0, 0.4f * knockBackResistance, 0.0));
+            mob.setLastHurtMob(target);
         }
     }
 
-    protected void mayDisableShield(PlayerEntity player, ItemStack handItem) {
+    protected void mayDisableShield(Player player, ItemStack handItem) {
         if (this.mayDisableShield && !handItem.isEmpty() && handItem.getItem() == Items.SHIELD) {
             float f = 0.25F + (float) EnchantmentHelper.getBlockEfficiency(this.mob) * 0.05F;
             if (this.mob.getRandom().nextFloat() < f) {
                 //player.stopUsingItem();
                 player.getCooldowns().addCooldown(Items.SHIELD, 100);
-                this.mob.level.broadcastEntityEvent(player, (byte)30);
+                this.mob.level().broadcastEntityEvent(player, (byte)30);
             }
         }
     }

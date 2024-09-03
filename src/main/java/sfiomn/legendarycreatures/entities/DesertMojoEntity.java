@@ -1,21 +1,15 @@
 package sfiomn.legendarycreatures.entities;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
-import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
-import sfiomn.legendarycreatures.util.WorldUtil;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.level.Level;
 
 public class DesertMojoEntity extends MojoEntity {
     private final int baseAttackDuration = 11;
     private final int baseAttackActionPoint = 5;
-    public DesertMojoEntity(EntityType<? extends CreatureEntity> type, World world) {
-        super(type, world);
+
+    public DesertMojoEntity(EntityType<? extends PathfinderMob> type, Level level) {
+        super(type, level);
     }
 
     @Override

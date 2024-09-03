@@ -1,39 +1,34 @@
 package sfiomn.legendarycreatures.entities.render.model;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.BullfrogEntity;
-import sfiomn.legendarycreatures.entities.PeacockSpiderEntity;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib.model.GeoModel;
 
-public class BullfrogModel extends AnimatedGeoModel<BullfrogEntity> {
-    private ResourceLocation texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/bullfrog.png");
+public class BullfrogModel extends GeoModel<BullfrogEntity> {
+    private final ResourceLocation model = new ResourceLocation(LegendaryCreatures.MOD_ID, "geo/bullfrog.geo.json");
+    private final ResourceLocation texture_level1 = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/bullfrog.png");
+    private final ResourceLocation texture_level2 = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/bullfrog_level2.png");
+    private final ResourceLocation texture_level3 = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/bullfrog_level3.png");
+    private final ResourceLocation animations = new ResourceLocation(LegendaryCreatures.MOD_ID, "animations/bullfrog.animation.json");
 
     @Override
-    public ResourceLocation getModelLocation(BullfrogEntity object) {
-        return new ResourceLocation(LegendaryCreatures.MOD_ID, "geo/bullfrog.geo.json");
+    public ResourceLocation getModelResource(BullfrogEntity object) {
+        return this.model;
     }
 
     @Override
-    public ResourceLocation getTextureLocation(BullfrogEntity object) {
-        return texture;
-    }
-
-    @Override
-    public ResourceLocation getAnimationFileLocation(BullfrogEntity animatable) {
-        return new ResourceLocation(LegendaryCreatures.MOD_ID, "animations/bullfrog.animation.json");
-    }
-
-    @Override
-    public void setCustomAnimations(BullfrogEntity entity, int instanceId, AnimationEvent animationEvent) {
-        super.setCustomAnimations(entity, instanceId, animationEvent);
-
+    public ResourceLocation getTextureResource(BullfrogEntity entity) {
         if (entity.getVariant() == 9)
-            texture = new ResourceLocation(LegendaryCreatures.MOD_ID, "textures/entity/bullfrog_level3.png");
+            return texture_level3;
         else if (entity.getVariant() == 7)
-            texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/bullfrog_level2.png");
+            return texture_level2;
         else
-            texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/bullfrog.png");
+            return texture_level1;
+    }
+
+    @Override
+    public ResourceLocation getAnimationResource(BullfrogEntity animatable) {
+        return this.animations;
     }
 }

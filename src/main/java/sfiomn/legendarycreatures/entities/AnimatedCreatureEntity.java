@@ -1,46 +1,50 @@
 package sfiomn.legendarycreatures.entities;
 
-import com.minecraftabnormals.atmospheric.core.other.AtmosphericDamageSources;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.*;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.particles.BlockParticleData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
-import sfiomn.legendarycreatures.LegendaryCreatures;
-import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.builder.ILoopType;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.util.GeckoLibUtil;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.Random;
 import java.util.UUID;
 
-public abstract class AnimatedCreatureEntity extends CreatureEntity implements IAnimatable {
+public abstract class AnimatedCreatureEntity extends PathfinderMob implements GeoEntity {
     protected static final UUID MAX_HEALTH_UUID = UUID.fromString("4133085c-5129-4018-9ea1-de2b2190ecc1");
     protected static final UUID ATTACK_DAMAGE_UUID = UUID.fromString("1d16a9ed-6ef2-4547-b14c-f3e3e7ec273e");
 
-    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
+    private final AnimatableInstanceCache instanceCache = GeckoLibUtil.createInstanceCache(this);
 
-    private static final DataParameter<Integer> VARIANT = EntityDataManager.defineId(AnimatedCreatureEntity.class, DataSerializers.INT);
-    private static final DataParameter<Integer> ATTACK_ANIMATION = EntityDataManager.defineId(AnimatedCreatureEntity.class, DataSerializers.INT);
-    private static final DataParameter<Integer> SPAWN_TIMER = EntityDataManager.defineId(AnimatedCreatureEntity.class, DataSerializers.INT);
+    private static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(AnimatedCreatureEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> ATTACK_ANIMATION = SynchedEntityData.defineId(AnimatedCreatureEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> SPAWN_TIMER = SynchedEntityData.defineId(AnimatedCreatureEntity.class, EntityDataSerializers.INT);
+
+    private final RawAnimation WALK_ANIM = RawAnimation.begin().thenPlay("walk");
+    private final RawAnimation IDLE_ANIM = RawAnimation.begin().thenPlay("idle");
 
     public static final int NO_ANIMATION = 0;
     public static final int BASE_ATTACK = 1;
@@ -51,8 +55,9 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
     public static final int DELAY_ATTACK = 6;
     public static final int DISTANCE_ATTACK = 7;
 
-    protected AnimatedCreatureEntity(EntityType<? extends CreatureEntity> type, World world) {
-        super(type, world);
+    protected AnimatedCreatureEntity(EntityType<? extends PathfinderMob> type, Level level) {
+        super(type, level);
+        this.setMaxUpStep(1.0F);
     }
 
     @Override
@@ -89,13 +94,13 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
         entityData.set(VARIANT, variant);
     }
 
-    public void addAdditionalSaveData(CompoundNBT nbt) {
+    public void addAdditionalSaveData(CompoundTag nbt) {
         super.addAdditionalSaveData(nbt);
         nbt.putInt("variant", getVariant());
         nbt.putInt("spawnTimer", getSpawnTimer());
     }
 
-    public void readAdditionalSaveData(CompoundNBT nbt) {
+    public void readAdditionalSaveData(CompoundTag nbt) {
         super.readAdditionalSaveData(nbt);
         setVariant(nbt.getByte("variant"));
         setSpawnTimer(nbt.getInt("spawnTimer"));
@@ -103,46 +108,31 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (source == DamageSource.FALL)
+        if (source.is(DamageTypes.FALL))
             return false;
-        else if (source == DamageSource.DROWN)
+        else if (source.is(DamageTypes.DROWN))
             return false;
-        else if (source == DamageSource.CACTUS)
+        else if (source.is(DamageTypes.CACTUS))
             return false;
-        else if (source == DamageSource.IN_WALL)
+        else if (source.is(DamageTypes.IN_WALL))
             return false;
-        else if (source == DamageSource.SWEET_BERRY_BUSH)
+        else if (source.is(DamageTypes.SWEET_BERRY_BUSH))
             return false;
-        else if (source == DamageSource.ANVIL)
+        else if (source.is(DamageTypes.FALLING_ANVIL))
             return false;
-        else if (source == DamageSource.DRAGON_BREATH)
+        else if (source.is(DamageTypes.DRAGON_BREATH))
             return false;
-        else if (LegendaryCreatures.atmosphericLoaded) {
-            if (source == AtmosphericDamageSources.ALOE_LEAVES)
-                return false;
-            else if (source == AtmosphericDamageSources.BARREL_CACTUS)
-                return false;
-            else if (source == AtmosphericDamageSources.YUCCA_BRANCH)
-                return false;
-            else if (source == AtmosphericDamageSources.YUCCA_FLOWER)
-                return false;
-            else if (source == AtmosphericDamageSources.YUCCA_LEAVES)
-                return false;
-            else if (source == AtmosphericDamageSources.YUCCA_SAPLING)
-                return false;
-        }
         return super.hurt(source, amount);
     }
 
-    public <E extends IAnimatable> PlayState movementPredicate(AnimationEvent<E> event) {
-        boolean isMoving = !(event.getLimbSwingAmount() > -0.15F && event.getLimbSwingAmount() < 0.15F);
+    public <E extends GeoAnimatable> PlayState movementPredicate(AnimationState<E> event) {
         if (getSpawnTimer() > 0)
             return PlayState.CONTINUE;
 
-        if (getDeathAnimation() != null && this.dead) {
+        if (getDeathAnimation() != null && this.isDeadOrDying()) {
             event.getController().setAnimation(getDeathAnimation());
             return PlayState.CONTINUE;
-        } else if (isMoving) {
+        } else if (event.isMoving()) {
             if (this.isInWaterOrBubble()) {
                 if (getSwimAnimation() != null) {
                     event.getController().setAnimation(getSwimAnimation());
@@ -163,50 +153,51 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
         return PlayState.CONTINUE;
     }
 
-    public <E extends IAnimatable> PlayState attackingPredicate(AnimationEvent<E> event) {
+    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> event) {
         return PlayState.CONTINUE;
     }
 
-    public <E extends IAnimatable> PlayState spawnPredicate(AnimationEvent<E> event) {
+    public <E extends GeoAnimatable> PlayState spawnPredicate(AnimationState<E> event) {
         if (getSpawnAnimation() != null && getSpawnTimer() > 0) {
             event.getController().setAnimation(getSpawnAnimation());
+            return PlayState.CONTINUE;
         }
-        return PlayState.CONTINUE;
+        return PlayState.STOP;
     }
 
     @Override
-    public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController<>(this, "movement", 4, this::movementPredicate));
-        data.addAnimationController(new AnimationController<>(this, "attacking", 4, this::attackingPredicate));
-        data.addAnimationController(new AnimationController<>(this, "spawn", 0, this::spawnPredicate));
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
+        controllerRegistrar.add(new AnimationController<>(this, "movement", 4, this::movementPredicate));
+        controllerRegistrar.add(new AnimationController<>(this, "attacking", 4, this::attackingPredicate));
+        controllerRegistrar.add(new AnimationController<>(this, "spawn", 0, this::spawnPredicate));
     }
 
     @Override
     public void tick() {
-        if (getSpawnTimer() > 5 && level != null) {
-            Random random = this.getRandom();
+        if (getSpawnTimer() > 5) {
+            RandomSource random = this.getRandom();
             for(int i = 0; i < 6; ++i) {
-                double x = this.getX() + 0.5 + (double) ((random.nextFloat() * 0.5F) - 1.0);
+                double x = this.getX() + 0.5 + ((random.nextFloat() * 0.5F) - 1.0);
                 double y = this.getY() + 0.1;
-                double z = this.getZ() + 0.5 + (double) ((random.nextFloat() * 0.5F) - 1.0);
-                BlockState blockstate = this.level.getBlockState(new BlockPos(x, y, z).below());
-                if (blockstate.getRenderShape() != BlockRenderType.INVISIBLE && this.level.isClientSide) {
-                    this.level.addParticle(new BlockParticleData(ParticleTypes.BLOCK, blockstate), x, y, z, 0.0D, 0.0D, 0.0D);
+                double z = this.getZ() + 0.5 + ((random.nextFloat() * 0.5F) - 1.0);
+                BlockState blockstate = this.level().getBlockState(new BlockPos((int) x, (int) y, (int) z).below());
+                if (blockstate.getRenderShape() != RenderShape.INVISIBLE && this.level().isClientSide) {
+                    this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockstate), x, y, z, 0.0D, 0.0D, 0.0D);
                 }
             }
         }
         super.tick();
     }
 
-    public static boolean checkCreatureDaySpawnRules(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
-        return world.getRawBrightness(pos, 0) > 8;
+    public static boolean checkCreatureDaySpawnRules(EntityType<? extends Mob> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, Random random) {
+        return level.getLightEmission(pos) > 8;
     }
 
-    public static boolean checkCreatureNoSpawnRules(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean checkCreatureNoSpawnRules(EntityType<? extends Mob> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, Random random) {
         return true;
     }
 
-    public static boolean checkFlyingCreatureSpawnRules(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean checkFlyingCreatureSpawnRules(EntityType<? extends Mob> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, Random random) {
         return true;
     }
 
@@ -216,22 +207,22 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
     }
 
     @Override
-    public AnimationFactory getFactory() {
-        return this.factory;
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.instanceCache;
     }
 
-    public AnimationBuilder getSpawnAnimation() {
+    public RawAnimation getSpawnAnimation() {
         return null;
     }
-    public AnimationBuilder getWalkAnimation() { return new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP);}
-    public AnimationBuilder getIdleAnimation() { return new AnimationBuilder().addAnimation("idle", ILoopType.EDefaultLoopTypes.LOOP);}
-    public AnimationBuilder getDeathAnimation() {
+    public RawAnimation getWalkAnimation() { return WALK_ANIM;}
+    public RawAnimation getIdleAnimation() { return IDLE_ANIM;}
+    public RawAnimation getDeathAnimation() {
         return null;
     }
-    public AnimationBuilder getSwimAnimation() {
+    public RawAnimation getSwimAnimation() {
         return null;
     }
-    public AnimationBuilder getSprintAnimation() {
+    public RawAnimation getSprintAnimation() {
         return null;
     }
 

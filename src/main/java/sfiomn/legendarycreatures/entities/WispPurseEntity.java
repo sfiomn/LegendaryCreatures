@@ -1,53 +1,42 @@
 package sfiomn.legendarycreatures.entities;
 
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.item.FallingBlockEntity;
-import net.minecraft.particles.BlockParticleData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeMod;
-import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.config.Config;
-import sfiomn.legendarycreatures.registry.BlockRegistry;
 import sfiomn.legendarycreatures.registry.ParticleTypeRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
-import software.bernie.geckolib3.core.AnimationState;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.builder.ILoopType;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.geckolib3.core.manager.AnimationFactory;
-import software.bernie.geckolib3.util.GeckoLibUtil;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
-public class WispPurseEntity extends MobEntity implements IAnimatable {
+public class WispPurseEntity extends Mob implements GeoEntity {
 
-    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
+    private final AnimatableInstanceCache instanceCache = GeckoLibUtil.createInstanceCache(this);
 
-    protected static final AnimationBuilder FALL = new AnimationBuilder().addAnimation("fall", ILoopType.EDefaultLoopTypes.LOOP);
-    protected static final AnimationBuilder GROUND = new AnimationBuilder().addAnimation("ground", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
+    protected static final RawAnimation FALL = RawAnimation.begin().thenPlay("fall");
+    protected static final RawAnimation GROUND = RawAnimation.begin().thenPlayAndHold("ground");
 
-    public WispPurseEntity(EntityType<? extends MobEntity> entityType, World world) {
-        super(entityType, world);
+    public WispPurseEntity(EntityType<? extends Mob> entityType, Level level) {
+        super(entityType, level);
         List<Integer> xpRewardLimits = getRangeXp();
         int xpReward = 0;
         if (xpRewardLimits.size() == 1)
@@ -56,7 +45,7 @@ public class WispPurseEntity extends MobEntity implements IAnimatable {
             if (Objects.equals(xpRewardLimits.get(0), xpRewardLimits.get(1))) {
                 xpReward = xpRewardLimits.get(0);
             } else {
-                xpReward = Math.min(xpRewardLimits.get(0), xpRewardLimits.get(1)) + world.random.nextInt(Math.abs(xpRewardLimits.get(0) - xpRewardLimits.get(1)));
+                xpReward = Math.min(xpRewardLimits.get(0), xpRewardLimits.get(1)) + level.random.nextInt(Math.abs(xpRewardLimits.get(0) - xpRewardLimits.get(1)));
             }
         }
         this.xpReward = xpReward;
@@ -66,8 +55,8 @@ public class WispPurseEntity extends MobEntity implements IAnimatable {
         return Config.Baked.wispPurseXpReward;
     }
 
-    public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
-        return MobEntity.createMobAttributes()
+    public static AttributeSupplier.Builder setCustomAttributes() {
+        return Mob.createMobAttributes()
                 .add(ForgeMod.ENTITY_GRAVITY.get(), 0.005)
                 .add(Attributes.MAX_HEALTH, 1)
                 .add(Attributes.MOVEMENT_SPEED, 0.0)
@@ -78,14 +67,14 @@ public class WispPurseEntity extends MobEntity implements IAnimatable {
     }
 
     @Override
-    public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController<>(this, "animController", 10, this::animController));
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
+        controllerRegistrar.add(new AnimationController<>(this, "animController", 10, this::animPredicate));
     }
 
-    protected <E extends WispPurseEntity> PlayState animController(final AnimationEvent<E> event) {
-        if (this.isOnGround()) {
+    public <E extends GeoAnimatable> PlayState animPredicate(AnimationState<E> event) {
+        if (this.onGround()) {
             event.getController().setAnimation(GROUND);
-            if (event.getController().getAnimationState().equals(AnimationState.Stopped)) {
+            if (event.getController().hasAnimationFinished()) {
                 return PlayState.STOP;
             }
         } else {
@@ -96,9 +85,9 @@ public class WispPurseEntity extends MobEntity implements IAnimatable {
 
     @Override
     public void tick() {
-        if (level != null && !this.onGround) {
-            Random random = this.getRandom();
-            if (this.level.getGameTime() % 3 == 0) {
+        if (!this.onGround()) {
+            RandomSource random = this.getRandom();
+            if (this.level().getGameTime() % 3 == 0) {
                 for (int i = 0; i < 3; ++i) {
                     double offsetX = (2 * random.nextFloat() - 1) * 0.3F;
                     double offsetZ = (2 * random.nextFloat() - 1) * 0.3F;
@@ -107,8 +96,8 @@ public class WispPurseEntity extends MobEntity implements IAnimatable {
                     double y = this.position().y + (random.nextFloat() * 0.05F);
                     double z = this.position().z + offsetZ;
 
-                    if (this.level.getGameTime() % 3 == 0)
-                        this.level.addParticle(ParticleTypeRegistry.WISP_PARTICLE.get(), x, y, z, offsetX / 10, 0.01D, offsetZ / 10);
+                    if (this.level().getGameTime() % 3 == 0)
+                        this.level().addParticle(ParticleTypeRegistry.WISP_PARTICLE.get(), x, y, z, offsetX / 10, 0.01D, offsetZ / 10);
                 }
             }
         }
@@ -128,14 +117,15 @@ public class WispPurseEntity extends MobEntity implements IAnimatable {
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (source == DamageSource.FALL)
+        if (source.is(DamageTypes.FALL))
             return false;
-        if (source == DamageSource.DROWN)
+        if (source.is(DamageTypes.DROWN))
             return false;
         return super.hurt(source, amount);
     }
+
     @Override
-    public AnimationFactory getFactory() {
-        return this.factory;
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.instanceCache;
     }
 }

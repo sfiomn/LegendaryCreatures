@@ -1,11 +1,11 @@
 package sfiomn.legendarycreatures.registry;
 
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 import sfiomn.legendarycreatures.LegendaryCreatures;
 
 public class SoundRegistry {
@@ -57,7 +57,7 @@ public class SoundRegistry {
     public static final RegistryObject<SoundEvent> BULLFROG_TONGUE_ATTACK = registerSoundEvent("bullfrog_tongue_attack");
 
     private static RegistryObject<SoundEvent> registerSoundEvent(String name) {
-        return SOUND_EVENTS.register(name, () -> new SoundEvent(
+        return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(
                 new ResourceLocation(LegendaryCreatures.MOD_ID, name)
             ));
     }

@@ -1,37 +1,39 @@
 package sfiomn.legendarycreatures.entities;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.ai.controller.BodyController;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.play.server.SEntityVelocityPacket;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
+import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.World;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.BodyRotationControl;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
 import sfiomn.legendarycreatures.entities.goals.RangedMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
-import software.bernie.geckolib3.core.AnimationState;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.builder.ILoopType;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 
 import javax.annotation.Nullable;
 
@@ -47,18 +49,24 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
     public final int middleRangedAttackDistance = 8;
     public final int LONG_RANGED_ATTACK = 9;
     public final int longRangedAttackDistance = 10;
-    public BullfrogEntity(EntityType<? extends CreatureEntity> type, World world) {
-        super(type, world);
+
+    public final RawAnimation ATTACK_ANIM = RawAnimation.begin().thenPlay("attack");
+    public final RawAnimation TONGUE_ANIM = RawAnimation.begin().thenPlay("tongue");
+    public final RawAnimation TONGUE2_ANIM = RawAnimation.begin().thenPlay("tongue2");
+    public final RawAnimation TONGUE3_ANIM = RawAnimation.begin().thenPlay("tongue3");
+    public final RawAnimation RUN_ANIM = RawAnimation.begin().thenPlay("run");
+
+    public BullfrogEntity(EntityType<? extends PathfinderMob> type, Level level) {
+        super(type, level);
         this.xpReward = 12;
         if (isLevel3())
             this.xpReward = 20;
         else if (isLevel2())
             this.xpReward = 10;
-        this.maxUpStep = 1.0F;
     }
 
-    public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
-        return MobEntity.createMobAttributes()
+    public static AttributeSupplier.Builder setCustomAttributes() {
+        return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 25)
                 .add(Attributes.MOVEMENT_SPEED, 0.25)
                 .add(Attributes.ARMOR, 0)
@@ -80,9 +88,9 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
 
     @Nullable
     @Override
-    public ILivingEntityData finalizeSpawn(IServerWorld serverWorld, DifficultyInstance difficulty, SpawnReason spawnReason, @Nullable ILivingEntityData entityData, @Nullable CompoundNBT nbt) {
-        ModifiableAttributeInstance healthAttribute = this.getAttribute(Attributes.MAX_HEALTH);
-        ModifiableAttributeInstance attackAttribute = this.getAttribute(Attributes.ATTACK_DAMAGE);
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, @NotNull DifficultyInstance difficulty, @NotNull MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData, @Nullable CompoundTag nbt) {
+        AttributeInstance healthAttribute = this.getAttribute(Attributes.MAX_HEALTH);
+        AttributeInstance attackAttribute = this.getAttribute(Attributes.ATTACK_DAMAGE);
         if (this.isLevel2()) {
             if (attackAttribute != null) {
                 attackAttribute.addPermanentModifier(new AttributeModifier(ATTACK_DAMAGE_UUID, LegendaryCreatures.MOD_ID + ":bullfrog_level2", 5, AttributeModifier.Operation.ADDITION));
@@ -101,22 +109,22 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
             }
         }
 
-        return super.finalizeSpawn(serverWorld, difficulty, spawnReason, entityData, nbt);
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData, nbt);
     }
 
     @Override
-    protected BodyController createBodyControl() {
+    protected BodyRotationControl createBodyControl() {
         return new BullfrogEntity.BodyHelperController(this);
     }
 
     @Override
-    protected ITextComponent getTypeName() {
+    public Component getName() {
         String descriptionId = "entity." + LegendaryCreatures.MOD_ID + ".bullfrog";
         if (isLevel2())
             descriptionId = "entity." + LegendaryCreatures.MOD_ID + ".bullfrog2";
         else if (isLevel3())
             descriptionId = "entity." + LegendaryCreatures.MOD_ID + ".bullfrog3";
-        return new TranslationTextComponent(descriptionId);
+        return Component.translatable(descriptionId);
     }
 
     @Override
@@ -143,14 +151,14 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
                 boolean hit = super.executeAttack(target);
                 if (hit) {
                     if (isLevel3())
-                        target.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 200, 2, false, true));
+                        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 200, 2, false, true));
 
-                    Vector3d targetToMobVector = this.mob.position().subtract(target.position());
-                    Vector3d vector3d = target.isOnGround() ? targetToMobVector.scale(0.18) : targetToMobVector.scale(0.13);
+                    Vec3 targetToMobVector = this.mob.position().subtract(target.position());
+                    Vec3 vector3d = target.onGround() ? targetToMobVector.scale(0.18) : targetToMobVector.scale(0.13);
                     target.setDeltaMovement(vector3d.x, 0.5D, vector3d.z);
                     target.hasImpulse = true;
-                    if (target instanceof ServerPlayerEntity)
-                        ((ServerPlayerEntity) target).connection.send(new SEntityVelocityPacket(target));
+                    if (target instanceof ServerPlayer player)
+                        player.connection.send(new ClientboundSetEntityMotionPacket(target));
                 }
                 return hit;
             }
@@ -163,7 +171,7 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
             }
         };
 
-        this.goalSelector.addGoal(1, new SwimGoal(this));
+        this.goalSelector.addGoal(1, new FloatGoal(this));
         this.targetSelector.addGoal(4, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(7, rangedMeleeAttackGoal);
         this.goalSelector.addGoal(8, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 5, 1.0, true) {
@@ -177,7 +185,7 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
                 this.mob.playSound(SoundRegistry.BULLFROG_ATTACK.get(), 1.0f, 1.0f);
                 boolean hit = super.executeAttack(target);
                 if (hit && (isLevel2() || isLevel3())) {
-                    target.addEffect(new EffectInstance(Effects.POISON, 150, 1, false, true));
+                    target.addEffect(new MobEffectInstance(MobEffects.POISON, 150, 1, false, true));
                 }
                 return hit;
             }
@@ -190,8 +198,8 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
                 return false;
             }
         });
-        this.targetSelector.addGoal(9, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false));
-        this.goalSelector.addGoal(7, new RandomWalkingGoal(this, 0.6, 40));
+        this.targetSelector.addGoal(9, new NearestAttackableTargetGoal<>(this, Player.class, false));
+        this.goalSelector.addGoal(7, new RandomStrollGoal(this, 0.6, 40));
     }
 
     private float getMobLength() {
@@ -199,19 +207,15 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    public <E extends IAnimatable> PlayState attackingPredicate(AnimationEvent<E> event) {
-        if (getAttackAnimation() == BASE_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
-            event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("attack", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
-        } else if (getAttackAnimation() == SHORT_RANGED_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
-            event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("tongue", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
-        } else if (getAttackAnimation() == MIDDLE_RANGED_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
-            event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("tongue2", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
-        } else if (getAttackAnimation() == LONG_RANGED_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
-            event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("tongue3", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> event) {
+        if (getAttackAnimation() == BASE_ATTACK && event.getController().hasAnimationFinished()) {
+            event.getController().setAnimation(ATTACK_ANIM);
+        } else if (getAttackAnimation() == SHORT_RANGED_ATTACK && event.getController().hasAnimationFinished()) {
+            event.getController().setAnimation(TONGUE_ANIM);
+        } else if (getAttackAnimation() == MIDDLE_RANGED_ATTACK && event.getController().hasAnimationFinished()) {
+            event.getController().setAnimation(TONGUE2_ANIM);
+        } else if (getAttackAnimation() == LONG_RANGED_ATTACK && event.getController().hasAnimationFinished()) {
+            event.getController().setAnimation(TONGUE3_ANIM);
         }
         return PlayState.CONTINUE;
     }
@@ -241,18 +245,19 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    public AnimationBuilder getSprintAnimation() {
-        return new AnimationBuilder().addAnimation("run", ILoopType.EDefaultLoopTypes.LOOP);
+    public RawAnimation getSprintAnimation() {
+        return RUN_ANIM;
     }
 
-    class BodyHelperController extends BodyController {
-        public BodyHelperController(MobEntity p_i49925_2_) {
+    // Similar to Phantom entity
+    class BodyHelperController extends BodyRotationControl {
+        public BodyHelperController(Mob p_i49925_2_) {
             super(p_i49925_2_);
         }
 
         public void clientTick() {
             BullfrogEntity.this.yHeadRot = BullfrogEntity.this.yBodyRot;
-            BullfrogEntity.this.yBodyRot = BullfrogEntity.this.yRot;
+            BullfrogEntity.this.yBodyRot = BullfrogEntity.this.getYRot();
         }
     }
 }

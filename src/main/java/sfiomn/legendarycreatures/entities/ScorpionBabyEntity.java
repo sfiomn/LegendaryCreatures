@@ -1,43 +1,43 @@
 package sfiomn.legendarycreatures.entities;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
-import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
-import sfiomn.legendarycreatures.registry.SoundRegistry;
-import sfiomn.legendarycreatures.util.WorldUtil;
-import software.bernie.geckolib3.core.AnimationState;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.builder.ILoopType;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 
 import javax.annotation.Nullable;
 
 public class ScorpionBabyEntity extends AnimatedCreatureEntity {
     private final int baseAttackDuration = 10;
     private final int baseAttackActionPoint = 5;
-    public ScorpionBabyEntity(EntityType<? extends CreatureEntity> type, World world) {
-        super(type, world);
+
+    private final RawAnimation ATTACK_ANIM = RawAnimation.begin().thenPlay("attack");
+
+    public ScorpionBabyEntity(EntityType<? extends PathfinderMob> type, Level level) {
+        super(type, level);
         this.xpReward = 5;
-        this.maxUpStep = 1.0F;
     }
 
-    public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
-        return MobEntity.createMobAttributes()
+    public static AttributeSupplier.Builder setCustomAttributes() {
+        return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 3)
                 .add(Attributes.MOVEMENT_SPEED, 0.3)
                 .add(Attributes.ARMOR, 0)
@@ -48,9 +48,9 @@ public class ScorpionBabyEntity extends AnimatedCreatureEntity {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(1, new SwimGoal(this));
+        this.goalSelector.addGoal(1, new FloatGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
-        this.goalSelector.addGoal(3, new LookAtGoal(this, PlayerEntity.class, (float) 12));
+        this.goalSelector.addGoal(3, new LookAtPlayerGoal(this, Player.class, (float) 12));
         this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 5, 1.0, true) {
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
@@ -63,25 +63,25 @@ public class ScorpionBabyEntity extends AnimatedCreatureEntity {
                 return super.executeAttack(target);
             }
         });
-        this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false, false));
-        this.goalSelector.addGoal(6, new LookRandomlyGoal(this));
-        this.goalSelector.addGoal(7, new RandomWalkingGoal(this, 0.6, 10));
+        this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Player.class, false, false));
+        this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(7, new RandomStrollGoal(this, 0.6, 10));
     }
 
     @Override
-    public <E extends IAnimatable> PlayState attackingPredicate(AnimationEvent<E> event) {
-        if (getAttackAnimation() == BASE_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
-            event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("attack", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> event) {
+        if (getAttackAnimation() == BASE_ATTACK && event.getController().hasAnimationFinished()) {
+            event.getController().setAnimation(ATTACK_ANIM);
         }
         return PlayState.CONTINUE;
     }
 
-    public CreatureAttribute getMobType() {
-        return CreatureAttribute.ARTHROPOD;
+    public @NotNull MobType getMobType() {
+        return MobType.ARTHROPOD;
     }
 
-    protected float getStandingEyeHeight(Pose p_213348_1_, EntitySize p_213348_2_) {
+    @Override
+    protected float getStandingEyeHeight(@NotNull Pose p_21131_, @NotNull EntityDimensions p_21132_) {
         return 0.1F;
     }
 

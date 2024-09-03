@@ -1,42 +1,43 @@
 package sfiomn.legendarycreatures.entities;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
-import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
-import sfiomn.legendarycreatures.util.WorldUtil;
-import software.bernie.geckolib3.core.AnimationState;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.builder.ILoopType;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-
-import java.util.Random;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 
 
 public class ScarecrowEntity extends AnimatedCreatureEntity {
     private final int spawnTimerInTicks = 32;
     private final int baseAttackDuration = 10;
     private final int baseAttackActionPoint = 5;
-    public ScarecrowEntity(EntityType<? extends CreatureEntity> type, World world) {
-        super(type, world);
+
+    private final RawAnimation SPAWN_ANIM = RawAnimation.begin().thenPlayAndHold("spawn");
+    private final RawAnimation ATTACK_ANIM = RawAnimation.begin().thenPlayAndHold("attack");
+
+    public ScarecrowEntity(EntityType<? extends PathfinderMob> type, Level level) {
+        super(type, level);
         this.xpReward = 12;
-        this.maxUpStep = 1.0F;
     }
 
-    public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
-        return MobEntity.createMobAttributes()
+    public static AttributeSupplier.Builder setCustomAttributes() {
+        return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 25)
                 .add(Attributes.MOVEMENT_SPEED, 0.3)
                 .add(Attributes.ARMOR, 0)
@@ -55,7 +56,7 @@ public class ScarecrowEntity extends AnimatedCreatureEntity {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(1, new SwimGoal(this));
+        this.goalSelector.addGoal(1, new FloatGoal(this));
         this.targetSelector.addGoal(4, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(5, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 5, 1.0, true) {
             @Override
@@ -64,14 +65,13 @@ public class ScarecrowEntity extends AnimatedCreatureEntity {
                 return super.executeAttack(target);
             }
         });
-        this.targetSelector.addGoal(6, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false));
+        this.targetSelector.addGoal(6, new NearestAttackableTargetGoal<>(this, Player.class, false));
     }
 
     @Override
-    public <E extends IAnimatable> PlayState attackingPredicate(AnimationEvent<E> event) {
-        if (getAttackAnimation() == BASE_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
-            event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("attack", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> event) {
+        if (getAttackAnimation() == BASE_ATTACK && event.getController().hasAnimationFinished()) {
+            event.getController().setAnimation(ATTACK_ANIM);
         }
         return PlayState.CONTINUE;
     }
@@ -87,8 +87,8 @@ public class ScarecrowEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    public AnimationBuilder getSpawnAnimation() {
-        return new AnimationBuilder().addAnimation("spawn", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
+    public RawAnimation getSpawnAnimation() {
+        return SPAWN_ANIM;
     }
 
     @Override
@@ -96,7 +96,7 @@ public class ScarecrowEntity extends AnimatedCreatureEntity {
         super.tick();
 
         if (getSpawnTimer() == spawnTimerInTicks - 1) {
-            this.level.playSound(null, new BlockPos(this.position()), SoundRegistry.SCARECROW_SPAWN.get(), SoundCategory.HOSTILE, 10.0F, 1.0F);
+            this.level().playSound(null, this.blockPosition(), SoundRegistry.SCARECROW_SPAWN.get(), SoundSource.HOSTILE, 10.0F, 1.0F);
         }
     }
 }

@@ -1,7 +1,7 @@
 package sfiomn.legendarycreatures.entities.goals;
 
-import net.minecraft.command.arguments.EntityAnchorArgument;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
+import net.minecraft.world.entity.LivingEntity;
 import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
 
 import java.util.EnumSet;
@@ -38,7 +38,7 @@ public class DelayedMeleeAttackGoal extends MoveToTargetGoal {
     }
 
     public boolean canUse() {
-        long time = this.mob.level.getGameTime();
+        long time = this.mob.level().getGameTime();
         if (time - this.lastUseTime < 20 || isAttacking()) {
             return false;
         } else {
@@ -60,7 +60,7 @@ public class DelayedMeleeAttackGoal extends MoveToTargetGoal {
 
     public void stop() {
         super.stop();
-        this.lastUseTime = this.mob.level.getGameTime();
+        this.lastUseTime = this.mob.level().getGameTime();
         this.isReset = true;
 
         if (isAttacking())
@@ -83,7 +83,7 @@ public class DelayedMeleeAttackGoal extends MoveToTargetGoal {
                 this.isReset = false;
 
             if (this.isReset) {
-                this.mob.lookAt(EntityAnchorArgument.Type.EYES, target.position());
+                this.mob.lookAt(EntityAnchorArgument.Anchor.EYES, target.position());
                 if (this.ticksUntilFirstAttack-- > 0) {
                     this.mob.setAttackAnimation(AnimatedCreatureEntity.DELAY_ATTACK);
                 } else {
@@ -98,7 +98,7 @@ public class DelayedMeleeAttackGoal extends MoveToTargetGoal {
 
             // Attack target
             if (this.ticksUntilNextAttack == 0 && getAttackReachSqr(target) >= distToTargetSqr && !isAttacking()) {
-                this.mob.lookAt(EntityAnchorArgument.Type.EYES, target.position());
+                this.mob.lookAt(EntityAnchorArgument.Anchor.EYES, target.position());
                 this.startAttack();
             }
 

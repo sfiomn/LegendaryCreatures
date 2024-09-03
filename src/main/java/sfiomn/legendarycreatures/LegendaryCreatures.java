@@ -1,42 +1,31 @@
 package sfiomn.legendarycreatures;
 
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.resources.ReloadListener;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sfiomn.legendarycreatures.config.Config;
 import sfiomn.legendarycreatures.config.json.JsonConfigRegistration;
 import sfiomn.legendarycreatures.entities.render.*;
+import sfiomn.legendarycreatures.particles.CorpseSplatter;
+import sfiomn.legendarycreatures.particles.WispParticle;
 import sfiomn.legendarycreatures.registry.*;
-import sfiomn.legendarycreatures.world.ModEntityPlacement;
-import software.bernie.geckolib3.GeckoLib;
+import software.bernie.geckolib.GeckoLib;
 
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.stream.Collectors;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(LegendaryCreatures.MOD_ID)
@@ -65,23 +54,16 @@ public class LegendaryCreatures
         ItemRegistry.register(modBus);
         ParticleTypeRegistry.register(modBus);
         SoundRegistry.register(modBus);
+        CreativeTabRegistry.register(modBus);
 
         Config.register();
-        Config.Baked.bakeCommon();
-        JsonConfigRegistration.init(LegendaryCreatures.modConfigJson.toFile());
 
         // Register the setup method for modloading
         modBus.addListener(this::setup);
-        // Register the enqueueIMC method for modloading
-        modBus.addListener(this::enqueueIMC);
-        // Register the processIMC method for modloading
-        modBus.addListener(this::processIMC);
-        // Register the doClientStuff method for modloading
-        modBus.addListener(this::doClientStuff);
 
         GeckoLib.initialize();
 
-        forgeBus.addListener(this::reloadJsonConfig);
+        forgeBus.addListener(this::onModConfigLoadEvent);
 
         // Register ourselves for server and other game events we are interested in
         forgeBus.register(this);
@@ -98,99 +80,57 @@ public class LegendaryCreatures
 
     private void setup(final FMLCommonSetupEvent event)
     {
-        ModEntityPlacement.spawnPlacement();
+        Config.Baked.bakeCommon();
+        JsonConfigRegistration.init(LegendaryCreatures.modConfigJson.toFile());
     }
 
-    private void doClientStuff(final FMLClientSetupEvent event) {
-        try {
-            Class.forName("net.optifine.Config");
-            optifineLoaded = true;
-        } catch (ClassNotFoundException e) {
-            optifineLoaded = false;
+    private void onModConfigLoadEvent(ModConfigEvent.Loading event)
+    {
+        final ModConfig config = event.getConfig();
+
+        if (config.getSpec() == Config.COMMON_SPEC)
+            Config.Baked.bakeCommon();
+    }
+
+    @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    public static class ClientModEvents {
+
+        @SubscribeEvent
+        public static void onClientSetup(FMLClientSetupEvent event) {
+            try {
+                Class.forName("net.optifine.Config");
+                optifineLoaded = true;
+            } catch (ClassNotFoundException e) {
+                optifineLoaded = false;
+            }
+
+            if (optifineLoaded)
+                LOGGER.debug("Optifine is loaded, disabling custom glowing shader");
         }
 
-        if (optifineLoaded)
-            LOGGER.debug("Optifine is loaded, disabling custom glowing shader");
+        @SubscribeEvent
+        public static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers  event) {
+            event.registerEntityRenderer(EntityTypeRegistry.DESERT_MOJO.get(), DesertMojoRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.FOREST_MOJO.get(), ForestMojoRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.HOUND.get(), HoundRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.SCARECROW.get(), ScarecrowRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.SCORPION.get(), ScorpionRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.SCORPION_BABY.get(), ScorpionBabyRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.WISP.get(), WispRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.NETHER_WISP.get(), NetherWispRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.ENDER_WISP.get(), EnderWispRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.WISP_PURSE.get(), WispPurseRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.NETHER_WISP_PURSE.get(), NetherWispPurseRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.ENDER_WISP_PURSE.get(), EnderWispPurseRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.CORPSE_EATER.get(), CorpseEaterRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.PEACOCK_SPIDER.get(), PeacockSpiderRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.BULLFROG.get(), BullfrogRenderer::new);
+        }
 
-        event.enqueueWork(() ->
-        {
-            RenderTypeLookup.setRenderLayer(BlockRegistry.DOOM_FIRE_BLOCK.get(), RenderType.cutout());
-        });
-
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, LegendaryCreatures::registerEntityRendering);
-    }
-
-    private static DistExecutor.SafeRunnable registerEntityRendering() {
-
-        return new DistExecutor.SafeRunnable()
-        {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void run()
-            {
-                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.DESERT_MOJO.get(), DesertMojoRenderer::new);
-                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.FOREST_MOJO.get(), ForestMojoRenderer::new);
-                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.HOUND.get(), HoundRenderer::new);
-                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.SCARECROW.get(), ScarecrowRenderer::new);
-                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.SCORPION.get(), ScorpionRenderer::new);
-                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.SCORPION_BABY.get(), ScorpionBabyRenderer::new);
-                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.WISP.get(), WispRenderer::new);
-                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.NETHER_WISP.get(), NetherWispRenderer::new);
-                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.ENDER_WISP.get(), EnderWispRenderer::new);
-                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.WISP_PURSE.get(), WispPurseRenderer::new);
-                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.NETHER_WISP_PURSE.get(), NetherWispPurseRenderer::new);
-                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.ENDER_WISP_PURSE.get(), EnderWispPurseRenderer::new);
-                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.CORPSE_EATER.get(), CorpseEaterRenderer::new);
-                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.PEACOCK_SPIDER.get(), PeacockSpiderRenderer::new);
-                RenderingRegistry.registerEntityRenderingHandler(EntityTypeRegistry.BULLFROG.get(), BullfrogRenderer::new);
-            }
-        };
-    }
-
-    private void reloadJsonConfig(final AddReloadListenerEvent event)
-    {
-        event.addListener(new ReloadListener<Void>()
-              {
-                  @Nonnull
-                  @ParametersAreNonnullByDefault
-                  @Override
-                  protected Void prepare(IResourceManager manager, IProfiler profiler)
-                  {
-                      JsonConfigRegistration.clearContainers();
-                      return null;
-                  }
-
-                  @ParametersAreNonnullByDefault
-                  @Override
-                  protected void apply(Void objectIn, IResourceManager resourceManagerIn, IProfiler profilerIn)
-                  {
-                      Config.Baked.bakeCommon();
-                      JsonConfigRegistration.init(modConfigJson.toFile());
-                  }
-
-              }
-        );
-    }
-
-    private void enqueueIMC(final InterModEnqueueEvent event)
-    {
-        // some example code to dispatch IMC to another mod
-        InterModComms.sendTo("examplemod", "helloworld", () -> { LOGGER.info("Hello world from the MDK"); return "Hello world";});
-    }
-
-    private void processIMC(final InterModProcessEvent event)
-    {
-        // some example code to receive and process InterModComms from other mods
-        LOGGER.info("Got IMC {}", event.getIMCStream().
-                map(m->m.getMessageSupplier().get()).
-                collect(Collectors.toList()));
-    }
-
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
-    @SubscribeEvent
-    public void onServerStarting(FMLServerStartingEvent event) {
-        // do something when the server starts
-        LOGGER.info("HELLO from server starting");
+        @SubscribeEvent
+        public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
+            event.registerSpriteSet(ParticleTypeRegistry.CORPSE_SPLATTER.get(), CorpseSplatter.Factory::new);
+            event.registerSpriteSet(ParticleTypeRegistry.WISP_PARTICLE.get(), WispParticle.Factory::new);
+        }
     }
 }

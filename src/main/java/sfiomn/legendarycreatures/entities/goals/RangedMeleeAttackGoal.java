@@ -1,7 +1,7 @@
 package sfiomn.legendarycreatures.entities.goals;
 
-import net.minecraft.command.arguments.EntityAnchorArgument;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
+import net.minecraft.world.entity.LivingEntity;
 import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
 
 import java.util.EnumSet;
@@ -37,7 +37,7 @@ public class RangedMeleeAttackGoal extends MoveToTargetGoal {
     }
 
     public boolean canUse() {
-        long time = this.mob.level.getGameTime();
+        long time = this.mob.level().getGameTime();
         if (time - this.lastUseTime < coolDown || isAttacking()) {
             return false;
         } else {
@@ -47,7 +47,7 @@ public class RangedMeleeAttackGoal extends MoveToTargetGoal {
             } else if (!target.isAlive()) {
                 return false;
             } else {
-                if (this.mob.canSee(target) && this.mob.distanceToSqr(target) > getMinAttackReachSqr(target)) {
+                if (this.mob.getSensing().hasLineOfSight(target) && this.mob.distanceToSqr(target) > getMinAttackReachSqr(target)) {
                     return super.canUse();
                 } else {
                     return false;
@@ -74,7 +74,7 @@ public class RangedMeleeAttackGoal extends MoveToTargetGoal {
 
     public void stop() {
         super.stop();
-        this.lastUseTime = this.mob.level.getGameTime();
+        this.lastUseTime = this.mob.level().getGameTime();
 
         if (isAttacking())
             this.stopAttack();
@@ -92,12 +92,12 @@ public class RangedMeleeAttackGoal extends MoveToTargetGoal {
             if (!isAttacking())
                 super.tick();
             else
-                this.mob.lookAt(EntityAnchorArgument.Type.EYES, target.position());
+                this.mob.lookAt(EntityAnchorArgument.Anchor.EYES, target.position());
 
             // Attack target
             double distToTargetSqr = this.mob.distanceToSqr(target);
             if (!isAttacking() && !hasAttacked && distToTargetSqr <= getAttackReachSqr(target) - 1.0f) {
-                this.mob.lookAt(EntityAnchorArgument.Type.EYES, target.position());
+                this.mob.lookAt(EntityAnchorArgument.Anchor.EYES, target.position());
                 this.startAttack(target);
             }
 

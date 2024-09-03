@@ -1,37 +1,39 @@
 package sfiomn.legendarycreatures.entities;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.ai.controller.BodyController;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.World;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.BodyRotationControl;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.goals.DelayedMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.EffectRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
-import software.bernie.geckolib3.core.AnimationState;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.builder.ILoopType;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animation.AnimationState;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.object.PlayState;
 
 import javax.annotation.Nullable;
 
@@ -41,18 +43,21 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
     private final int attackDelayTicks = 40;
     private int hissSoundTick = 40;
 
-    public PeacockSpiderEntity(EntityType<? extends CreatureEntity> type, World world) {
-        super(type, world);
+    private final RawAnimation RUN_ANIM = RawAnimation.begin().thenPlay("run");
+    private final RawAnimation ATTACK_ANIM = RawAnimation.begin().thenPlay("attack");
+    private final RawAnimation STARTLE_ANIM = RawAnimation.begin().thenPlay("startle");
+
+    public PeacockSpiderEntity(EntityType<? extends PathfinderMob> type, Level level) {
+        super(type, level);
         this.xpReward = 5;
         if (isLevel3())
             this.xpReward = 20;
         else if (isLevel2())
             this.xpReward = 10;
-        this.maxUpStep = 1.0F;
     }
 
-    public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
-        return MobEntity.createMobAttributes()
+    public static AttributeSupplier.Builder setCustomAttributes() {
+        return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 18)
                 .add(Attributes.MOVEMENT_SPEED, 0.3)
                 .add(Attributes.ARMOR, 0)
@@ -74,9 +79,9 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
 
     @Nullable
     @Override
-    public ILivingEntityData finalizeSpawn(IServerWorld serverWorld, DifficultyInstance difficultyInstance, SpawnReason spawnReason, @Nullable ILivingEntityData entityData, @Nullable CompoundNBT nbt) {
-        ModifiableAttributeInstance healthAttribute = this.getAttribute(Attributes.MAX_HEALTH);
-        ModifiableAttributeInstance attackAttribute = this.getAttribute(Attributes.ATTACK_DAMAGE);
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, @NotNull DifficultyInstance difficulty, @NotNull MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData, @Nullable CompoundTag nbt) {
+        AttributeInstance healthAttribute = this.getAttribute(Attributes.MAX_HEALTH);
+        AttributeInstance attackAttribute = this.getAttribute(Attributes.ATTACK_DAMAGE);
         if (this.isLevel2() || this.isLevel3()) {
             if (healthAttribute != null) {
                 healthAttribute.addPermanentModifier(new AttributeModifier(MAX_HEALTH_UUID, LegendaryCreatures.MOD_ID + ":peacock_spider_level2", 18, AttributeModifier.Operation.ADDITION));
@@ -90,21 +95,21 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
             }
         }
 
-        return super.finalizeSpawn(serverWorld, difficultyInstance, spawnReason, entityData, nbt);
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData, nbt);
     }
 
     @Override
-    protected ITextComponent getTypeName() {
+    public Component getName() {
         String descriptionId = "entity." + LegendaryCreatures.MOD_ID + ".peacock_spider";
         if (isLevel2())
             descriptionId = "entity." + LegendaryCreatures.MOD_ID + ".peacock_spider2";
         else if (isLevel3())
             descriptionId = "entity." + LegendaryCreatures.MOD_ID + ".peacock_spider3";
-        return new TranslationTextComponent(descriptionId);
+        return Component.translatable(descriptionId);
     }
 
     @Override
-    protected BodyController createBodyControl() {
+    protected @NotNull BodyRotationControl createBodyControl() {
         return new PeacockSpiderEntity.BodyHelperController(this);
     }
 
@@ -112,7 +117,7 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
     protected void registerGoals() {
         super.registerGoals();
 
-        this.goalSelector.addGoal(1, new SwimGoal(this));
+        this.goalSelector.addGoal(1, new FloatGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(4, new DelayedMeleeAttackGoal(this, attackDelayTicks, baseAttackDuration, baseAttackActionPoint, 5, 1.0, true){
             @Override
@@ -124,15 +129,15 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
             protected boolean executeAttack(LivingEntity target) {
                 boolean hit = super.executeAttack(target);
                 if (hit) {
-                    target.addEffect(new EffectInstance(Effects.CONFUSION, 200, 0, false, true));
-                    target.addEffect(new EffectInstance(EffectRegistry.CONVULSION.get(), 200, 0, false, true));
+                    target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0, false, true));
+                    target.addEffect(new MobEffectInstance(EffectRegistry.CONVULSION.get(), 200, 0, false, true));
                 }
                 return hit;
             }
         });
-        this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, false, false));
-        this.goalSelector.addGoal(6, new LookRandomlyGoal(this));
-        this.goalSelector.addGoal(7, new RandomWalkingGoal(this, 0.6, 40));
+        this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Player.class, false, false));
+        this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(7, new RandomStrollGoal(this, 0.6, 40));
     }
 
     private float getMobLength() {
@@ -140,16 +145,13 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    public <E extends IAnimatable> PlayState attackingPredicate(AnimationEvent<E> event) {
-        if (getAttackAnimation() == BASE_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
-            event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("attack", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
-        } else if (getAttackAnimation() == DELAY_ATTACK && event.getController().getAnimationState() == AnimationState.Stopped) {
-            event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("startle", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
-        } else if (getAttackAnimation() == NO_ANIMATION && event.getController().getAnimationState() == AnimationState.Running) {
-            event.getController().markNeedsReload();
-            event.getController().setAnimation(new AnimationBuilder());
+    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> event) {
+        if (getAttackAnimation() == BASE_ATTACK && event.getController().hasAnimationFinished()) {
+            event.getController().setAnimation(ATTACK_ANIM);
+        } else if (getAttackAnimation() == DELAY_ATTACK && event.getController().hasAnimationFinished()) {
+            event.getController().setAnimation(STARTLE_ANIM);
+        } else if (getAttackAnimation() == NO_ANIMATION && event.getController().hasAnimationFinished()) {
+            event.getController().setAnimation(RawAnimation.begin());
         }
         return PlayState.CONTINUE;
     }
@@ -160,7 +162,7 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
 
         if (getAttackAnimation() == DELAY_ATTACK && this.hissSoundTick++ >= 40) {
             this.hissSoundTick = 0;
-            this.level.playSound(null, new BlockPos(this.position()), SoundRegistry.PEACOCK_SPIDER_HISS.get(), SoundCategory.HOSTILE, 10.0F, 1.0F);
+            this.level().playSound(null, this.blockPosition(), SoundRegistry.PEACOCK_SPIDER_HISS.get(), SoundSource.HOSTILE, 10.0F, 1.0F);
         }
     }
 
@@ -173,16 +175,16 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    public AnimationBuilder getSprintAnimation() {
-        return new AnimationBuilder().addAnimation("run", ILoopType.EDefaultLoopTypes.LOOP);
+    public RawAnimation getSprintAnimation() {
+        return RUN_ANIM;
     }
 
-    public CreatureAttribute getMobType() {
-        return CreatureAttribute.ARTHROPOD;
+    public @NotNull MobType getMobType() {
+        return MobType.ARTHROPOD;
     }
 
     @Override
-    protected float getStandingEyeHeight(Pose pose, EntitySize entitySize) {
+    protected float getStandingEyeHeight(@NotNull Pose p_21131_, @NotNull EntityDimensions p_21132_) {
         return 0.3F;
     }
 
@@ -204,19 +206,19 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
             this.playSound(SoundRegistry.PEACOCK_SPIDER_RUN.get(), 1.0F, 1.0F);
     }
 
-    class BodyHelperController extends BodyController {
-        public BodyHelperController(MobEntity p_i49925_2_) {
+    class BodyHelperController extends BodyRotationControl {
+        public BodyHelperController(Mob p_i49925_2_) {
             super(p_i49925_2_);
         }
 
         public void clientTick() {
             PeacockSpiderEntity.this.yHeadRot = PeacockSpiderEntity.this.yBodyRot;
-            PeacockSpiderEntity.this.yBodyRot = PeacockSpiderEntity.this.yRot;
+            PeacockSpiderEntity.this.yBodyRot = PeacockSpiderEntity.this.getYRot();
         }
     }
 
     @Override
-    protected ResourceLocation getDefaultLootTable() {
+    protected @NotNull ResourceLocation getDefaultLootTable() {
         if (isLevel2())
             return new ResourceLocation(LegendaryCreatures.MOD_ID, "entities/peacock_spider_level2");
         else if (isLevel3())

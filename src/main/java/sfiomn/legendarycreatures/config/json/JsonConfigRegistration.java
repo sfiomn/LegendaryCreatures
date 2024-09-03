@@ -5,17 +5,13 @@ import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.FileUtils;
 import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.api.entities.MobEntityEnum;
-import sfiomn.legendarycreatures.config.JsonTypeToken;
-import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
 
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 
 public class JsonConfigRegistration
 {
@@ -39,42 +35,14 @@ public class JsonConfigRegistration
 	{
 		JsonConfig.registerBreakingBlockTagSpawn(MobEntityEnum.DESERT_MOJO.mobId, "minecraft:cactus", 0.1);
 
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.DESERT_MOJO.mobId, "minecraft:desert", 10, 1, 1);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.DESERT_MOJO.mobId, "minecraft:desert_hills", 10, 1, 1);
-
 		JsonConfig.registerBreakingBlockTagSpawn(MobEntityEnum.FOREST_MOJO.mobId, "minecraft:flowers", 0.1);
 
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:forest", 10, 1, 2);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:birch_forest", 10, 1, 2);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:birch_forest_hills", 10, 1, 2);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:dark_forest", 10, 1, 2);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:dark_forest_hills", 10, 1, 2);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:flower_forest", 10, 1, 2);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.HOUND.mobId, "minecraft:wooded_hills", 10, 1, 2);
-
-		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.SCARECROW.mobId, "plains", 10, 1, 1);
 		JsonConfig.registerBreakingBlockNameSpawn(MobEntityEnum.SCARECROW.mobId, "minecraft:wheat", 0.1);
 		JsonConfig.registerKillingEntityNameSpawn(MobEntityEnum.SCARECROW.mobId, "minecraft:chicken", 0.3);
-
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.SCORPION.mobId, "minecraft:desert", 10, 2, 2);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.SCORPION.mobId, "minecraft:desert_hills", 10, 2, 2);
-
-		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.WISP.mobId, "plains", 10, 1, 1);
-		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.WISP.mobId, "forest", 10, 1, 1);
-		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.WISP.mobId, "taiga", 10, 1, 1);
-		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.NETHER_WISP.mobId, "nether", 10, 1, 1);
-		JsonConfig.registerBiomeCategorySpawn(MobEntityEnum.ENDER_WISP.mobId, "the_end", 10, 1, 1);
 
 		JsonConfig.registerKillingEntityNameSpawn(MobEntityEnum.CORPSE_EATER.mobId, "default", 0.1);
 		JsonConfig.registerKillingEntityTagSpawn(MobEntityEnum.CORPSE_EATER.mobId, "minecraft:raiders", 0.4);
 		JsonConfig.registerKillingEntityNameBlackList(MobEntityEnum.CORPSE_EATER.mobId, Arrays.asList("minecraft:bee", "minecraft:cow", "minecraft:pillager", LegendaryCreatures.MOD_ID +":"+ MobEntityEnum.CORPSE_EATER.mobId));
-
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.PEACOCK_SPIDER.mobId,"minecraft:beach", 10, 1, 1);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.PEACOCK_SPIDER.mobId,"minecraft:forest", 10, 1, 1);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.PEACOCK_SPIDER.mobId,"minecraft:jungle", 10, 1, 1);
-
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.BULLFROG.mobId,"minecraft:swamp", 10, 2, 2);
-		JsonConfig.registerBiomeNameSpawn(MobEntityEnum.BULLFROG.mobId,"minecraft:swamp_hills", 10, 2, 2);
 	}
 	
 	public static void clearContainers()
@@ -95,14 +63,6 @@ public class JsonConfigRegistration
 				// Clear all defaults for this mobId if mobId-spawn.json file is present
 				JsonConfig.mobIdSpawnList.get(mobId).clearAll();
 
-				for (Map.Entry<String, JsonBiomeSpawn> entry : jsonSpawns.biomeNameSpawns.entrySet()) {
-					JsonConfig.registerBiomeNameSpawn(mobId, entry.getKey(), entry.getValue().weight, entry.getValue().minGroup, entry.getValue().maxGroup);
-				}
-
-				for (Map.Entry<String, JsonBiomeSpawn> entry : jsonSpawns.biomeCategorySpawns.entrySet()) {
-					JsonConfig.registerBiomeCategorySpawn(mobId, entry.getKey(), entry.getValue().weight, entry.getValue().minGroup, entry.getValue().maxGroup);
-				}
-
 				for (Map.Entry<String, JsonChanceSpawn> entry : jsonSpawns.breakingBlockNameSpawns.entrySet()) {
 					JsonConfig.registerBreakingBlockNameSpawn(mobId, entry.getKey(), entry.getValue().chance);
 				}
@@ -115,20 +75,18 @@ public class JsonConfigRegistration
 					JsonConfig.registerKillingEntityNameSpawn(mobId, entry.getKey(), entry.getValue().chance);
 				}
 
-				for (Map.Entry<String, JsonChanceSpawn> entry : jsonSpawns.killingEntityTagSpawns.entrySet()) {
+				for (Map.Entry<String, JsonChanceSpawn> entry : jsonSpawns.killingEntityTypeTagSpawns.entrySet()) {
 					JsonConfig.registerKillingEntityTagSpawn(mobId, entry.getKey(), entry.getValue().chance);
 				}
 
-				JsonConfig.registerBiomeNameBlackList(mobId, jsonSpawns.blackLists.biomeNames);
-				JsonConfig.registerBiomeCategoryBlackList(mobId, jsonSpawns.blackLists.biomeCategories);
 				JsonConfig.registerBreakingBlockNameBlackList(mobId, jsonSpawns.blackLists.breakingBlockNames);
 				JsonConfig.registerBreakingBlockTagBlackList(mobId, jsonSpawns.blackLists.breakingBlockTags);
 				JsonConfig.registerKillingEntityNameBlackList(mobId, jsonSpawns.blackLists.killingEntityNames);
-				JsonConfig.registerKillingEntityTagBlackList(mobId, jsonSpawns.blackLists.killingEntityTags);
+				JsonConfig.registerKillingEntityTagBlackList(mobId, jsonSpawns.blackLists.killingEntityTypeTags);
 			}
 
 			try {
-				manuallyWriteToJson(jsonFileName, JsonConfig.mobIdSpawnList.get(mobId), jsonDir, false);
+				manuallyWriteToJson(jsonFileName, JsonConfig.jsonMobIdSpawnList.get(mobId), jsonDir, false);
 			} catch (Exception e) {
 				LegendaryCreatures.LOGGER.error("Error writing JSON file", e);
 			}

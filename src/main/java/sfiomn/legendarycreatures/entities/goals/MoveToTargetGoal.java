@@ -1,8 +1,8 @@
 package sfiomn.legendarycreatures.entities.goals;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.pathfinding.Path;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.level.pathfinder.Path;
 import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
 
 public abstract class MoveToTargetGoal extends Goal {
@@ -30,7 +30,7 @@ public abstract class MoveToTargetGoal extends Goal {
                 return true;
             } else {
                 // If we can't find a path to the target, but can reach it and see it
-                return this.getAttackReachSqr(target) >= this.mob.distanceToSqr(target) && this.mob.canSee(target);
+                return this.getAttackReachSqr(target) >= this.mob.distanceToSqr(target) && this.mob.getSensing().hasLineOfSight(target);
             }
         }
     }
@@ -64,7 +64,7 @@ public abstract class MoveToTargetGoal extends Goal {
         if (target != null) {
             // Move to target
             double distToTargetSqr = this.mob.distanceToSqr(target);
-            if ((this.followingEvenIfNotSeen || this.mob.canSee(target))) {
+            if ((this.followingEvenIfNotSeen || this.mob.getSensing().hasLineOfSight(target))) {
                 if (--ticksUntilNextPathRecalculation <= 0) {
                     if (this.mob.getNavigation().moveTo(target, this.speedModifier)) {
                         this.ticksUntilNextPathRecalculation = 4 + this.mob.getRandom().nextInt(7);

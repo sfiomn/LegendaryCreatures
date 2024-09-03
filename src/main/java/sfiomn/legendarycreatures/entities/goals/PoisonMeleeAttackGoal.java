@@ -1,8 +1,8 @@
 package sfiomn.legendarycreatures.entities.goals;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
 
 import java.util.EnumSet;
@@ -43,14 +43,14 @@ public class PoisonMeleeAttackGoal extends MoveToTargetGoal {
     }
 
     public boolean canUse() {
-        long time = this.mob.level.getGameTime();
+        long time = this.mob.level().getGameTime();
         if (time - this.lastUseTime < coolDown || isAttacking()) {
             return false;
         } else {
             LivingEntity target = this.mob.getTarget();
             if (!super.canUse()) return false;
             assert target != null;
-            return !target.hasEffect(Effects.POISON);
+            return !target.hasEffect(MobEffects.POISON);
         }
     }
 
@@ -72,7 +72,7 @@ public class PoisonMeleeAttackGoal extends MoveToTargetGoal {
 
     public void stop() {
         super.stop();
-        this.lastUseTime = this.mob.level.getGameTime();
+        this.lastUseTime = this.mob.level().getGameTime();
 
         if (isAttacking())
             this.stopAttack();
@@ -126,8 +126,8 @@ public class PoisonMeleeAttackGoal extends MoveToTargetGoal {
     }
 
     protected void applyPoison(LivingEntity target) {
-        target.addEffect(new EffectInstance(Effects.POISON, this.poisonDuration, this.poisonStrength, false, true));
-        this.isPoisonApplied = target.hasEffect(Effects.POISON);
+        target.addEffect(new MobEffectInstance(MobEffects.POISON, this.poisonDuration, this.poisonStrength, false, true));
+        this.isPoisonApplied = target.hasEffect(MobEffects.POISON);
     }
 
     protected  boolean isActionPoint() {

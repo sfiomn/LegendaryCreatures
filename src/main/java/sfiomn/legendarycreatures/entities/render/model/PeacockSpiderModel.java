@@ -1,39 +1,34 @@
 package sfiomn.legendarycreatures.entities.render.model;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.PeacockSpiderEntity;
-import sfiomn.legendarycreatures.entities.ScorpionEntity;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib.model.GeoModel;
 
-public class PeacockSpiderModel extends AnimatedGeoModel<PeacockSpiderEntity> {
-    private ResourceLocation texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/peacock_spider.png");
+public class PeacockSpiderModel extends GeoModel<PeacockSpiderEntity> {
+    private final ResourceLocation model = new ResourceLocation(LegendaryCreatures.MOD_ID, "geo/peacock_spider.geo.json");
+    private final ResourceLocation texture_level1 = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/peacock_spider.png");
+    private final ResourceLocation texture_level2 = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/peacock_spider_level2.png");
+    private final ResourceLocation texture_level3 = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/peacock_spider_level3.png");
+    private final ResourceLocation animations = new ResourceLocation(LegendaryCreatures.MOD_ID, "animations/peacock_spider.animation.json");
 
     @Override
-    public ResourceLocation getModelLocation(PeacockSpiderEntity object) {
-        return new ResourceLocation(LegendaryCreatures.MOD_ID, "geo/peacock_spider.geo.json");
+    public ResourceLocation getModelResource(PeacockSpiderEntity object) {
+        return this.model;
     }
 
     @Override
-    public ResourceLocation getTextureLocation(PeacockSpiderEntity object) {
-        return texture;
-    }
-
-    @Override
-    public ResourceLocation getAnimationFileLocation(PeacockSpiderEntity animatable) {
-        return new ResourceLocation(LegendaryCreatures.MOD_ID, "animations/peacock_spider.animation.json");
-    }
-
-    @Override
-    public void setCustomAnimations(PeacockSpiderEntity entity, int instanceId, AnimationEvent animationEvent) {
-        super.setCustomAnimations(entity, instanceId, animationEvent);
-
+    public ResourceLocation getTextureResource(PeacockSpiderEntity entity) {
         if (entity.getVariant() == 9)
-            texture = new ResourceLocation(LegendaryCreatures.MOD_ID, "textures/entity/peacock_spider_level3.png");
+            return texture_level3;
         else if (entity.getVariant() == 7)
-            texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/peacock_spider_level2.png");
+            return texture_level2;
         else
-            texture = new ResourceLocation(LegendaryCreatures.MOD_ID,"textures/entity/peacock_spider.png");
+            return texture_level1;
+    }
+
+    @Override
+    public ResourceLocation getAnimationResource(PeacockSpiderEntity animatable) {
+        return this.animations;
     }
 }

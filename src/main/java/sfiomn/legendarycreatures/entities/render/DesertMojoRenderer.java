@@ -1,19 +1,17 @@
 package sfiomn.legendarycreatures.entities.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
 import sfiomn.legendarycreatures.entities.MojoEntity;
 import sfiomn.legendarycreatures.entities.render.model.DesertMojoModel;
-import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
+import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 import javax.annotation.Nullable;
 
 public class DesertMojoRenderer extends GeoEntityRenderer<MojoEntity> {
-    public DesertMojoRenderer(EntityRendererManager renderManager) {
+    public DesertMojoRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new DesertMojoModel());
         this.shadowRadius = 0.8f;
     }
@@ -24,9 +22,9 @@ public class DesertMojoRenderer extends GeoEntityRenderer<MojoEntity> {
         return 0.0F;
     }
 
+
     @Override
-    public RenderType getRenderType(MojoEntity animatable, float partialTicks, MatrixStack stack, @Nullable IRenderTypeBuffer renderTypeBuffer, @Nullable IVertexBuilder vertexBuilder, int packedLightIn, ResourceLocation textureLocation) {
-        stack.scale(1.0f, 1.0f, 1.0f);
-        return RenderType.entityCutoutNoCull(textureLocation);
+    public RenderType getRenderType(MojoEntity animatable, ResourceLocation texture, @Nullable MultiBufferSource bufferSource, float partialTick) {
+        return RenderType.entityCutoutNoCull(texture);
     }
 }
