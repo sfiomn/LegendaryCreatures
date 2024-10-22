@@ -79,11 +79,13 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
     protected void defineSynchedData() {
         super.defineSynchedData();
 
-        int randomVariant = getRandom().nextInt(100);
-        if (randomVariant >= 96)
-            setVariant(9);
-        else if (randomVariant >= 76)
-            setVariant(7);
+        if (!this.level().isClientSide) {
+            int randomVariant = getRandom().nextInt(100);
+            if (randomVariant >= 96)
+                setVariant(9);
+            else if (randomVariant >= 76)
+                setVariant(7);
+        }
     }
 
     @Nullable
@@ -207,17 +209,19 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> event) {
-        if (getAttackAnimation() == BASE_ATTACK && event.getController().hasAnimationFinished()) {
-            event.getController().setAnimation(ATTACK_ANIM);
-        } else if (getAttackAnimation() == SHORT_RANGED_ATTACK && event.getController().hasAnimationFinished()) {
-            event.getController().setAnimation(TONGUE_ANIM);
-        } else if (getAttackAnimation() == MIDDLE_RANGED_ATTACK && event.getController().hasAnimationFinished()) {
-            event.getController().setAnimation(TONGUE2_ANIM);
-        } else if (getAttackAnimation() == LONG_RANGED_ATTACK && event.getController().hasAnimationFinished()) {
-            event.getController().setAnimation(TONGUE3_ANIM);
+    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> state) {
+        if (getAttackAnimation() == BASE_ATTACK) {
+            return state.setAndContinue(ATTACK_ANIM);
+        } else if (getAttackAnimation() == SHORT_RANGED_ATTACK) {
+            return state.setAndContinue(TONGUE_ANIM);
+        } else if (getAttackAnimation() == MIDDLE_RANGED_ATTACK) {
+            return state.setAndContinue(TONGUE2_ANIM);
+        } else if (getAttackAnimation() == LONG_RANGED_ATTACK) {
+            return state.setAndContinue(TONGUE3_ANIM);
         }
-        return PlayState.CONTINUE;
+
+        state.getController().forceAnimationReset();
+        return PlayState.STOP;
     }
 
     public boolean isLevel3() {

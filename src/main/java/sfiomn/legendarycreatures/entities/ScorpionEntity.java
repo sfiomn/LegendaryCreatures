@@ -66,19 +66,20 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        // 70% to have babies
-        boolean hasBabies = getRandom().nextInt(100) >= 70;
 
-        // 10% to be level 2 scorpion
-        if (getRandom().nextInt(100) >= 90)
-            if (hasBabies)
-                this.setVariant(8);
-            else
-                this.setVariant(2);
-        else
-            if (hasBabies)
+        if (!this.level().isClientSide) {
+            // 70% to have babies
+            boolean hasBabies = getRandom().nextInt(100) >= 70;
+
+            // 10% to be level 2 scorpion
+            if (getRandom().nextInt(100) >= 90)
+                if (hasBabies)
+                    this.setVariant(8);
+                else
+                    this.setVariant(2);
+            else if (hasBabies)
                 this.setVariant(7);
-
+        }
     }
 
     @Override
@@ -129,13 +130,15 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> event) {
-        if (getAttackAnimation() == BASE_ATTACK && event.getController().hasAnimationFinished()) {
-            event.getController().setAnimation(CLAWS_ANIM);
-        } else if (getAttackAnimation() == EFFECT_ATTACK && event.getController().hasAnimationFinished()) {
-            event.getController().setAnimation(TAIL_ANIM);
+    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> state) {
+        if (getAttackAnimation() == BASE_ATTACK) {
+            return state.setAndContinue(CLAWS_ANIM);
+        } else if (getAttackAnimation() == EFFECT_ATTACK) {
+            return state.setAndContinue(TAIL_ANIM);
         }
-        return PlayState.CONTINUE;
+
+        state.getController().forceAnimationReset();
+        return PlayState.STOP;
     }
 
     @Nullable

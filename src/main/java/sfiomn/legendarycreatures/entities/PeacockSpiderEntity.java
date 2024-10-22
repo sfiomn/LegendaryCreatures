@@ -70,11 +70,13 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
     protected void defineSynchedData() {
         super.defineSynchedData();
 
-        int randomVariant = getRandom().nextInt(100);
-        if (randomVariant >= 96)
-            setVariant(9);
-        else if (randomVariant >= 76)
-            setVariant(7);
+        if (!this.level().isClientSide) {
+            int randomVariant = getRandom().nextInt(100);
+            if (randomVariant >= 96)
+                setVariant(9);
+            else if (randomVariant >= 76)
+                setVariant(7);
+        }
     }
 
     @Nullable
@@ -119,7 +121,7 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
 
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
-        this.goalSelector.addGoal(4, new DelayedMeleeAttackGoal(this, attackDelayTicks, baseAttackDuration, baseAttackActionPoint, 5, 1.0, true){
+        this.goalSelector.addGoal(4, new DelayedMeleeAttackGoal(this, attackDelayTicks, baseAttackDuration, baseAttackActionPoint, 5, 1.0, true) {
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
@@ -145,15 +147,15 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> event) {
-        if (getAttackAnimation() == BASE_ATTACK && event.getController().hasAnimationFinished()) {
-            event.getController().setAnimation(ATTACK_ANIM);
-        } else if (getAttackAnimation() == DELAY_ATTACK && event.getController().hasAnimationFinished()) {
-            event.getController().setAnimation(STARTLE_ANIM);
-        } else if (getAttackAnimation() == NO_ANIMATION && event.getController().hasAnimationFinished()) {
-            event.getController().setAnimation(RawAnimation.begin());
+    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> state) {
+        if (getAttackAnimation() == BASE_ATTACK) {
+            return state.setAndContinue(ATTACK_ANIM);
+        } else if (getAttackAnimation() == DELAY_ATTACK) {
+            return state.setAndContinue(STARTLE_ANIM);
         }
-        return PlayState.CONTINUE;
+
+        state.getController().forceAnimationReset();
+        return PlayState.STOP;
     }
 
     @Override

@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
@@ -25,11 +26,9 @@ import software.bernie.geckolib.core.object.PlayState;
 import javax.annotation.Nullable;
 
 public abstract class MojoEntity extends AnimatedCreatureEntity {
-    private final int spawnTimerInTicks = 20;
 
-    private final RawAnimation SPAWN_ANIM = RawAnimation.begin().thenPlayAndHold("spawn");
     private final RawAnimation RUN_ANIM = RawAnimation.begin().thenPlay("run");
-    private final RawAnimation ATTACK_ANIM = RawAnimation.begin().thenPlayAndHold("attack");
+    private final RawAnimation ATTACK_ANIM = RawAnimation.begin().thenPlay("attack");
 
     public MojoEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
@@ -42,15 +41,8 @@ public abstract class MojoEntity extends AnimatedCreatureEntity {
                 .add(Attributes.MOVEMENT_SPEED, 0.35)
                 .add(Attributes.ARMOR, 0)
                 .add(Attributes.ATTACK_DAMAGE, 3)
-                .add(Attributes.FOLLOW_RANGE, 16)
+                .add(Attributes.FOLLOW_RANGE, 20)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.5);
-    }
-
-    @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-
-        setSpawnTimer(spawnTimerInTicks);
     }
 
     protected int getBaseAttackDuration() {
@@ -79,18 +71,20 @@ public abstract class MojoEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> event) {
-        if (getAttackAnimation() == BASE_ATTACK && event.getController().hasAnimationFinished()) {
-            event.getController().setAnimation(ATTACK_ANIM);
+    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> state) {
+        if (getAttackAnimation() == BASE_ATTACK) {
+            return state.setAndContinue(ATTACK_ANIM);
         }
-        return PlayState.CONTINUE;
+
+        state.getController().forceAnimationReset();
+        return PlayState.STOP;
     }
 
     @Override
     public void tick() {
         super.tick();
 
-        if (getSpawnTimer() == spawnTimerInTicks - 1) {
+        if (hasSpawnEffect() && this.tickCount == 1) {
             this.level().playSound(null, this.blockPosition(), SoundRegistry.MOJO_SPAWN.get(), SoundSource.HOSTILE, 10.0F, 1.0F);
         }
     }
@@ -125,10 +119,5 @@ public abstract class MojoEntity extends AnimatedCreatureEntity {
     @Override
     public RawAnimation getSprintAnimation() {
         return RUN_ANIM;
-    }
-
-    @Override
-    public RawAnimation getSpawnAnimation() {
-        return SPAWN_ANIM;
     }
 }

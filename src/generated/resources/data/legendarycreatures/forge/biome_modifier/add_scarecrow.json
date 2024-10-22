@@ -1,0 +1,10 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "#legendarycreatures:has_scarecrow",
+  "spawners": {
+    "type": "legendarycreatures:scarecrow",
+    "maxCount": 1,
+    "minCount": 1,
+    "weight": 20
+  }
+}

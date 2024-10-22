@@ -10,17 +10,19 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -30,7 +32,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import java.util.Random;
 import java.util.UUID;
 
 public abstract class AnimatedCreatureEntity extends PathfinderMob implements GeoEntity {
@@ -41,7 +42,7 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
 
     private static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(AnimatedCreatureEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> ATTACK_ANIMATION = SynchedEntityData.defineId(AnimatedCreatureEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> SPAWN_TIMER = SynchedEntityData.defineId(AnimatedCreatureEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> SPAWN_EFFECT = SynchedEntityData.defineId(AnimatedCreatureEntity.class, EntityDataSerializers.BOOLEAN);
 
     private final RawAnimation WALK_ANIM = RawAnimation.begin().thenPlay("walk");
     private final RawAnimation IDLE_ANIM = RawAnimation.begin().thenPlay("idle");
@@ -66,7 +67,16 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
 
         this.entityData.define(VARIANT, 0);
         this.entityData.define(ATTACK_ANIMATION, NO_ANIMATION);
-        this.entityData.define(SPAWN_TIMER, 0);
+        this.entityData.define(SPAWN_EFFECT, Boolean.FALSE);
+    }
+
+    @Nullable
+    @Override
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficultyInstance, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData, @Nullable CompoundTag tag) {
+        if (spawnType.equals(MobSpawnType.SPAWN_EGG))
+            enableSpawnEffect(true);
+
+        return super.finalizeSpawn(level, difficultyInstance, spawnType, spawnGroupData, tag);
     }
 
     public int getAttackAnimation() {
@@ -75,14 +85,6 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
 
     public void setAttackAnimation(int animation) {
         this.entityData.set(ATTACK_ANIMATION, animation);
-    }
-
-    public int getSpawnTimer() {
-        return entityData.get(SPAWN_TIMER);
-    }
-
-    public void setSpawnTimer(int spawnTimer) {
-        entityData.set(SPAWN_TIMER, spawnTimer);
     }
 
     public int getVariant() {
@@ -94,16 +96,26 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
         entityData.set(VARIANT, variant);
     }
 
+    public void enableSpawnEffect(boolean spawnEffect) {
+        entityData.set(SPAWN_EFFECT, spawnEffect);
+    }
+
+    public boolean hasSpawnEffect() {
+        return entityData.get(SPAWN_EFFECT);
+    }
+
+    @Override
     public void addAdditionalSaveData(CompoundTag nbt) {
         super.addAdditionalSaveData(nbt);
         nbt.putInt("variant", getVariant());
-        nbt.putInt("spawnTimer", getSpawnTimer());
+        nbt.putBoolean("spawn_effect", hasSpawnEffect());
     }
 
+    @Override
     public void readAdditionalSaveData(CompoundTag nbt) {
         super.readAdditionalSaveData(nbt);
-        setVariant(nbt.getByte("variant"));
-        setSpawnTimer(nbt.getInt("spawnTimer"));
+        setVariant(nbt.getInt("variant"));
+        enableSpawnEffect(nbt.getBoolean("spawn_effect"));
     }
 
     @Override
@@ -125,56 +137,40 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
         return super.hurt(source, amount);
     }
 
-    public <E extends GeoAnimatable> PlayState movementPredicate(AnimationState<E> event) {
-        if (getSpawnTimer() > 0)
-            return PlayState.CONTINUE;
-
+    public <E extends GeoAnimatable> PlayState movementPredicate(AnimationState<E> state) {
         if (getDeathAnimation() != null && this.isDeadOrDying()) {
-            event.getController().setAnimation(getDeathAnimation());
-            return PlayState.CONTINUE;
-        } else if (event.isMoving()) {
+            return state.setAndContinue(getDeathAnimation());
+        } else if (state.isMoving()) {
             if (this.isInWaterOrBubble()) {
                 if (getSwimAnimation() != null) {
-                    event.getController().setAnimation(getSwimAnimation());
-                    return PlayState.CONTINUE;
+                    return state.setAndContinue(getSwimAnimation());
                 } else if (getWalkAnimation() != null) {
-                    event.getController().setAnimation(getWalkAnimation());
-                    return PlayState.CONTINUE;
+                    return state.setAndContinue(getWalkAnimation());
                 }
             } else if (getSprintAnimation() != null && this.isSprinting()) {
-                event.getController().setAnimation(getSprintAnimation());
-                return PlayState.CONTINUE;
+                return state.setAndContinue(getSprintAnimation());
             } else if (getWalkAnimation() != null) {
-                event.getController().setAnimation(getWalkAnimation());
-                return PlayState.CONTINUE;
+                return state.setAndContinue(getWalkAnimation());
             }
         }
-        event.getController().setAnimation(getIdleAnimation());
-        return PlayState.CONTINUE;
+        return state.setAndContinue(getIdleAnimation());
     }
 
-    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> event) {
-        return PlayState.CONTINUE;
-    }
-
-    public <E extends GeoAnimatable> PlayState spawnPredicate(AnimationState<E> event) {
-        if (getSpawnAnimation() != null && getSpawnTimer() > 0) {
-            event.getController().setAnimation(getSpawnAnimation());
-            return PlayState.CONTINUE;
-        }
+    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> state) {
         return PlayState.STOP;
     }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        controllerRegistrar.add(new AnimationController<>(this, "movement", 4, this::movementPredicate));
-        controllerRegistrar.add(new AnimationController<>(this, "attacking", 4, this::attackingPredicate));
-        controllerRegistrar.add(new AnimationController<>(this, "spawn", 0, this::spawnPredicate));
+        if (getSpawnAnimationTicks() > 0)
+            controllerRegistrar.add(DefaultAnimations.getSpawnController(this, (animationState) -> this, getSpawnAnimationTicks()));
+        controllerRegistrar.add(new AnimationController<>(this, "Movement", 4, this::movementPredicate));
+        controllerRegistrar.add(new AnimationController<>(this, "Attack", 4, this::attackingPredicate));
     }
 
     @Override
     public void tick() {
-        if (getSpawnTimer() > 5) {
+        if (hasSpawnEffect() && this.tickCount < this.getSpawnAnimationTicks() * 0.6) {
             RandomSource random = this.getRandom();
             for(int i = 0; i < 6; ++i) {
                 double x = this.getX() + 0.5 + ((random.nextFloat() * 0.5F) - 1.0);
@@ -189,15 +185,15 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
         super.tick();
     }
 
-    public static boolean checkCreatureDaySpawnRules(EntityType<? extends Mob> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, Random random) {
-        return level.getLightEmission(pos) > 8;
+    public static boolean checkHostileCreatureDaySpawnRules(EntityType<? extends Mob> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {
+        return level.getLightEmission(pos) > 8 && level.getDifficulty() != Difficulty.PEACEFUL;
     }
 
-    public static boolean checkCreatureNoSpawnRules(EntityType<? extends Mob> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, Random random) {
-        return true;
+    public static boolean checkHostileCreatureNoSpawnRules(EntityType<? extends Mob> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {
+        return level.getDifficulty() != Difficulty.PEACEFUL;
     }
 
-    public static boolean checkFlyingCreatureSpawnRules(EntityType<? extends Mob> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, Random random) {
+    public static boolean checkPeacefulFlyingCreatureSpawnRules(EntityType<? extends Mob> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {
         return true;
     }
 
@@ -214,6 +210,9 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
     public RawAnimation getSpawnAnimation() {
         return null;
     }
+    public int getSpawnAnimationTicks() {
+        return 0;
+    }
     public RawAnimation getWalkAnimation() { return WALK_ANIM;}
     public RawAnimation getIdleAnimation() { return IDLE_ANIM;}
     public RawAnimation getDeathAnimation() {
@@ -228,10 +227,6 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
 
     @Override
     protected void customServerAiStep() {
-        if (this.getSpawnTimer() > 0) {
-            this.setSpawnTimer(getSpawnTimer() - 1);
-        }
-
         if (this.isSprinting() != this.isAggressive())
             this.setSprinting(this.isAggressive());
 

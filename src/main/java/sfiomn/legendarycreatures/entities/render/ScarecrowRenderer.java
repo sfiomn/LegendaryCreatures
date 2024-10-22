@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 public class ScarecrowRenderer extends GeoEntityRenderer<ScarecrowEntity> {
     public ScarecrowRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ScarecrowModel());
+        this.withScale(0.8f);
         this.shadowRadius = 0.8f;
     }
 

@@ -39,25 +39,29 @@ public class ModBiomeModifier {
         var biomes = context.lookup(Registries.BIOME);
 
         addSpawn(context, ADD_BULLFROG, biomes.getOrThrow(ModBiomeTags.HAS_BULLFROG),
-                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.BULLFROG.get(), 10, 2, 2));
+                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.BULLFROG.get(), 40, 2, 2));
         addSpawn(context, ADD_DESERT_MOJO, biomes.getOrThrow(ModBiomeTags.HAS_DESERT_MOJO),
-                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.DESERT_MOJO.get(), 10, 1, 1));
+                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.DESERT_MOJO.get(), 20, 1, 1));
         addSpawn(context, ADD_FOREST_MOJO, biomes.getOrThrow(ModBiomeTags.HAS_FOREST_MOJO),
-                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.FOREST_MOJO.get(), 10, 1, 1));
+                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.FOREST_MOJO.get(), 20, 1, 1));
+        addSpawn(context, ADD_CORPSE_EATER, biomes.getOrThrow(ModBiomeTags.HAS_CORPSE_EATER),
+                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.CORPSE_EATER.get(), 20, 1, 1));
         addSpawn(context, ADD_HOUND, biomes.getOrThrow(ModBiomeTags.HAS_HOUND),
-                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.HOUND.get(), 10, 1, 2));
+                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.HOUND.get(), 20, 1, 2));
         addSpawn(context, ADD_SCARECROW, biomes.getOrThrow(ModBiomeTags.HAS_SCARECROW),
-                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.SCARECROW.get(), 10, 1, 1));
+                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.SCARECROW.get(), 20, 1, 1));
         addSpawn(context, ADD_SCORPION, biomes.getOrThrow(ModBiomeTags.HAS_SCORPION),
-                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.SCORPION.get(), 10, 2, 2));
+                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.SCORPION.get(), 20, 2, 2));
         addSpawn(context, ADD_WISP, biomes.getOrThrow(ModBiomeTags.HAS_WISP),
-                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.WISP.get(), 10, 1, 1));
+                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.WISP.get(), 5, 1, 1));
         addSpawn(context, ADD_NETHER_WISP, biomes.getOrThrow(ModBiomeTags.HAS_NETHER_WIP),
-                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.NETHER_WISP.get(), 10, 1, 1));
+                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.NETHER_WISP.get(), 5, 1, 1));
         addSpawn(context, ADD_ENDER_WISP, biomes.getOrThrow(ModBiomeTags.HAS_ENDER_WISP),
-                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.ENDER_WISP.get(), 10, 1, 1));
+                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.ENDER_WISP.get(), 5, 1, 1));
         addSpawn(context, ADD_PEACOCK_SPIDER, biomes.getOrThrow(ModBiomeTags.HAS_PEACOCK_SPIDER),
-                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.PEACOCK_SPIDER.get(), 10, 1, 1));
+                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.PEACOCK_SPIDER.get(), 20, 1, 1));
+        addSpawn(context, ADD_BABY_SCORPION, biomes.getOrThrow(ModBiomeTags.HAS_BABY_SCORPION),
+                new MobSpawnSettings.SpawnerData(EntityTypeRegistry.SCORPION_BABY.get(), 20, 1, 1));
     }
 
     private static void addSpawn(BootstapContext<BiomeModifier> context, ResourceKey<BiomeModifier> resourceName, HolderSet.Named<Biome> biomes, MobSpawnSettings.SpawnerData... spawns) {

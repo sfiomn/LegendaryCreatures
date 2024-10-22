@@ -565,7 +565,7 @@
 				}
 			}
 		},
-		"spawn": {
+		"misc.spawn": {
 			"animation_length": 1,
 			"bones": {
 				"spider": {

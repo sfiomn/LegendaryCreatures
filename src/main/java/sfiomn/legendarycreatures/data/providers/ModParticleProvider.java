@@ -24,8 +24,18 @@ public class ModParticleProvider extends ParticleDescriptionProvider {
         }
         spriteSet(ParticleTypeRegistry.CORPSE_SPLATTER.get(), corpseSplatterSprites);
 
+        List<ResourceLocation> desertMojoSprites = new ArrayList<>();
+        for (int i=1; i<6; i++) {
+            desertMojoSprites.add(new ResourceLocation(LegendaryCreatures.MOD_ID, "desert_mojo_particles_" + i));
+        }
+        spriteSet(ParticleTypeRegistry.DESERT_MOJO_PARTICLE.get(), desertMojoSprites);
+
         List<ResourceLocation> wispParticleSprites = new ArrayList<>();
         wispParticleSprites.add(new ResourceLocation(LegendaryCreatures.MOD_ID, "wisp_particle"));
         spriteSet(ParticleTypeRegistry.WISP_PARTICLE.get(), wispParticleSprites);
+
+        List<ResourceLocation> crowsParticleSprites = new ArrayList<>();
+        crowsParticleSprites.add(new ResourceLocation(LegendaryCreatures.MOD_ID, "crows_particle"));
+        spriteSet(ParticleTypeRegistry.CROWS_PARTICLE.get(), crowsParticleSprites);
     }
 }

@@ -60,7 +60,7 @@ public class HoundEntity extends AnimatedCreatureEntity {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        ChargeMeleeAttackGoal chargeMeleeAttackGoal = new ChargeMeleeAttackGoal(this, chargeAttackDuration, chargeAttackActionPoint, 120, 8,  1.9, 30, true) {
+        ChargeMeleeAttackGoal chargeMeleeAttackGoal = new ChargeMeleeAttackGoal(this, chargeAttackDuration, chargeAttackActionPoint, 120, 8,  1.7, 30, true) {
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
@@ -73,15 +73,15 @@ public class HoundEntity extends AnimatedCreatureEntity {
             }
         };
 
-        RootMeleeAttackGoal rootMeleeAttackGoal = new RootMeleeAttackGoal(this, this.biteAttackDuration, this.biteAttackActionPoint, biteLongAttackDuration, 0.1f,   0.3, 1.0f, 240) {
+        RootMeleeAttackGoal rootMeleeAttackGoal = new RootMeleeAttackGoal(this, this.biteAttackDuration, this.biteAttackActionPoint, biteLongAttackDuration * 3, 0.1f,   0.3, 1.0f, 240) {
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
             }
 
             @Override
-            protected void executeInitialAttack(LivingEntity target) {
-                super.executeInitialAttack(target);
+            protected void executeBaseAttack(LivingEntity target) {
+                super.executeBaseAttack(target);
                 this.mob.playSound(SoundRegistry.HOUND_BASE_ATTACK_HIT.get(), 1.0f, 1.0f);
             }
         };
@@ -90,7 +90,7 @@ public class HoundEntity extends AnimatedCreatureEntity {
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(3, chargeMeleeAttackGoal);
         this.goalSelector.addGoal(4, rootMeleeAttackGoal);
-        this.goalSelector.addGoal(5, new BaseMeleeAttackGoal(this, biteAttackDuration, biteAttackActionPoint, 5, 1.5, true) {
+        this.goalSelector.addGoal(5, new BaseMeleeAttackGoal(this, biteAttackDuration, biteAttackActionPoint, 0, 1.3, true) {
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
@@ -115,19 +115,21 @@ public class HoundEntity extends AnimatedCreatureEntity {
     }
 
     private float getMobLength() {
-        return 1.2f;
+        return 1.5f;
     }
 
     @Override
-    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> event) {
-        if (getAttackAnimation() == BASE_ATTACK && event.getController().hasAnimationFinished()) {
-            event.getController().setAnimation(BITE_ANIM);
-        } else if (getAttackAnimation() == CHARGE_ATTACK && event.getController().hasAnimationFinished()) {
-            event.getController().setAnimation(CHARGE_ANIM);
-        }else if (getAttackAnimation() == ROOT_ATTACK && event.getController().hasAnimationFinished()) {
-            event.getController().setAnimation(BITE_LONG_ANIM);
+    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> state) {
+        if (getAttackAnimation() == BASE_ATTACK) {
+            return state.setAndContinue(BITE_ANIM);
+        } else if (getAttackAnimation() == CHARGE_ATTACK) {
+            return state.setAndContinue(CHARGE_ANIM);
+        } else if (getAttackAnimation() == ROOT_ATTACK) {
+            return state.setAndContinue(BITE_LONG_ANIM);
         }
-        return PlayState.CONTINUE;
+
+        state.getController().forceAnimationReset();
+        return PlayState.STOP;
     }
 
     @Nullable

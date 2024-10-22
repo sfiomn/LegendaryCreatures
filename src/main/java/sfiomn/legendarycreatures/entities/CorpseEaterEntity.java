@@ -27,6 +27,7 @@ import sfiomn.legendarycreatures.registry.BlockRegistry;
 import sfiomn.legendarycreatures.registry.ParticleTypeRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
@@ -36,11 +37,9 @@ import javax.annotation.Nullable;
 public class CorpseEaterEntity extends AnimatedCreatureEntity {
     private final int baseAttackDuration = 15;
     private final int baseAttackActionPoint = 7;
-    private final int spawnTimerInTicks = 20;
 
-    private final RawAnimation SPAWN_ANIM = RawAnimation.begin().thenPlayAndHold("spawn");
     private final RawAnimation RUN_ANIM = RawAnimation.begin().thenPlay("run");
-    private final RawAnimation ATTACK_ANIM = RawAnimation.begin().thenPlayAndHold("attack");
+    private final RawAnimation ATTACK_ANIM = RawAnimation.begin().thenPlay("attack");
 
     public CorpseEaterEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
@@ -50,7 +49,7 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 8)
-                .add(Attributes.MOVEMENT_SPEED, 0.35)
+                .add(Attributes.MOVEMENT_SPEED, 0.15)
                 .add(Attributes.ARMOR, 0)
                 .add(Attributes.ATTACK_DAMAGE, 4)
                 .add(Attributes.FOLLOW_RANGE, 16)
@@ -60,8 +59,6 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-
-        setSpawnTimer(spawnTimerInTicks);
     }
 
     @Override
@@ -70,7 +67,7 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(3, new LookAtPlayerGoal(this, Player.class, (float) 12));
-        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 5, 1.5, true) {
+        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 5, 1.2, true) {
             @Override
             protected boolean executeAttack(LivingEntity target) {
                 mob.playSound(SoundRegistry.CORPSE_EATER_ATTACK_HIT.get(), 1.0F, 1.0F);
@@ -79,27 +76,29 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
         });
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Player.class, false, false));
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
-        this.goalSelector.addGoal(7, new RandomStrollGoal(this, 0.4, 20));
+        this.goalSelector.addGoal(7, new RandomStrollGoal(this, 0.5, 20));
     }
 
     @Override
-    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> event) {
-        if (getAttackAnimation() == BASE_ATTACK && event.getController().hasAnimationFinished()) {
+    public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> state) {
+        if (getAttackAnimation() == BASE_ATTACK) {
             this.playSound(SoundRegistry.CORPSE_EATER_ATTACK.get(), 1.0F, 1.0F);
-            event.getController().setAnimation(ATTACK_ANIM);
+            return state.setAndContinue(ATTACK_ANIM);
         }
-        return PlayState.CONTINUE;
+
+        state.getController().forceAnimationReset();
+        return PlayState.STOP;
     }
 
     @Override
     public void tick() {
         super.tick();
 
-        if (getSpawnTimer() == spawnTimerInTicks - 1) {
+        if (hasSpawnEffect() && this.tickCount == 1) {
             this.level().playSound(null, this.blockPosition(), SoundRegistry.CORPSE_EATER_SPAWN.get(), SoundSource.HOSTILE, 10.0F, 1.0F);
         }
 
-        if (getSpawnTimer() > spawnTimerInTicks - 1) {
+        if (hasSpawnEffect() && this.tickCount < 2) {
             for (int i = 0; i < 30; ++i) {
                 double offsetX = (2 * this.level().getRandom().nextFloat() - 1) * 0.2F;
                 double offsetZ = (2 * this.level().getRandom().nextFloat() - 1) * 0.2F;
@@ -139,8 +138,8 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    public RawAnimation getSpawnAnimation() {
-        return SPAWN_ANIM;
+    public int getSpawnAnimationTicks() {
+        return 20;
     }
 
     @Override
@@ -153,11 +152,11 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
                         BlockPos posUp = this.blockPosition().above().offset(new Vec3i(i, 0, j));
                         BlockPos posDown = this.blockPosition().below().offset(new Vec3i(i, 0, j));
                         if (applyFireAtPos(this.level(), pos))
-                            return;
-                        if (applyFireAtPos(this.level(), posDown))
-                            return;
-                        if (applyFireAtPos(this.level(), posUp))
-                            return;
+                            continue;
+                        else if (applyFireAtPos(this.level(), posDown))
+                            continue;
+                        else if (applyFireAtPos(this.level(), posUp))
+                            continue;
                     }
                 }
             }

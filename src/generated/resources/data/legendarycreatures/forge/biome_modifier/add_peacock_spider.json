@@ -1,0 +1,10 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "#legendarycreatures:has_peacock_spider",
+  "spawners": {
+    "type": "legendarycreatures:peacock_spider",
+    "maxCount": 1,
+    "minCount": 1,
+    "weight": 20
+  }
+}

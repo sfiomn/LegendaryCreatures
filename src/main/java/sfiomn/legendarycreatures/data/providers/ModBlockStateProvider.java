@@ -4,7 +4,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.PipeBlock;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ModelFile;
@@ -21,7 +20,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        fireBlock(BlockRegistry.DOOM_FIRE_BLOCK.get(), "doomfire");
+        fireBlock(BlockRegistry.DOOM_FIRE_BLOCK.get(), "doom_fire");
     }
 
     public void fireBlock(Block block, String baseName){
@@ -46,11 +45,6 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 .nextModel()
                 .modelFile(floor1)
                 .addModel()
-                .condition(FireBlock.EAST, false)
-                .condition(FireBlock.NORTH, false)
-                .condition(FireBlock.SOUTH, false)
-                .condition(FireBlock.WEST, false)
-                .condition(FireBlock.UP, false)
                 .end();
 
         PipeBlock.PROPERTY_BY_DIRECTION.forEach((dir, value) -> {
@@ -70,22 +64,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
                         .modelFile(sideAlt1)
                         .rotationY(rotValue)
                         .addModel()
-                        .condition(value, true)
                         .end();
             }
         });
-
-        builder
-                .part()
-                .modelFile(up0)
-                .nextModel()
-                .modelFile(up1)
-                .nextModel()
-                .modelFile(upAlt0)
-                .nextModel()
-                .modelFile(upAlt1)
-                .addModel()
-                .condition(FireBlock.UP, true)
-                .end();
     }
 }

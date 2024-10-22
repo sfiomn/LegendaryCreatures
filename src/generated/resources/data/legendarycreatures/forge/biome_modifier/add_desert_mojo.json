@@ -1,0 +1,10 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "#legendarycreatures:has_desert_mojo",
+  "spawners": {
+    "type": "legendarycreatures:desert_mojo",
+    "maxCount": 1,
+    "minCount": 1,
+    "weight": 20
+  }
+}

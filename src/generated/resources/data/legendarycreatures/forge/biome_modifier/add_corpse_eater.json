@@ -1,0 +1,10 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "#legendarycreatures:has_corpse_eater",
+  "spawners": {
+    "type": "legendarycreatures:corpse_eater",
+    "maxCount": 1,
+    "minCount": 1,
+    "weight": 20
+  }
+}

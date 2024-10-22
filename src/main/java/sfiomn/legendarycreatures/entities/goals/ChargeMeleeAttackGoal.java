@@ -84,8 +84,9 @@ public class ChargeMeleeAttackGoal extends Goal {
             return false;
         } else if (!target.isAlive()) {
             return false;
-        }
-        return !hasAttacked;
+        } else if (this.mob.getDeltaMovement().length() <= 0.1)
+            return false;
+        return !hasAttacked ;
     }
 
     public void start() {
@@ -163,7 +164,7 @@ public class ChargeMeleeAttackGoal extends Goal {
             if (this.attackAnimationTick == 0 && isAttacking())
                 this.stopAttack();
 
-            if (isActionPoint() && distToTargetSqr <= getAttackReachSqr(target)) {
+            if (isActionPoint()) {
                 this.executeAttack(target);
             }
         }

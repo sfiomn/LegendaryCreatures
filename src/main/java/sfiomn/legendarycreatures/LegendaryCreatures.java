@@ -1,5 +1,6 @@
 package sfiomn.legendarycreatures;
 
+import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
@@ -19,7 +20,10 @@ import org.apache.logging.log4j.Logger;
 import sfiomn.legendarycreatures.config.Config;
 import sfiomn.legendarycreatures.config.json.JsonConfigRegistration;
 import sfiomn.legendarycreatures.entities.render.*;
+import sfiomn.legendarycreatures.level.gen.ModEntityPlacement;
 import sfiomn.legendarycreatures.particles.CorpseSplatter;
+import sfiomn.legendarycreatures.particles.CrowsParticle;
+import sfiomn.legendarycreatures.particles.DesertMojoParticle;
 import sfiomn.legendarycreatures.particles.WispParticle;
 import sfiomn.legendarycreatures.registry.*;
 import software.bernie.geckolib.GeckoLib;
@@ -82,6 +86,7 @@ public class LegendaryCreatures
     {
         Config.Baked.bakeCommon();
         JsonConfigRegistration.init(LegendaryCreatures.modConfigJson.toFile());
+        event.enqueueWork(ModEntityPlacement::spawnPlacement);
     }
 
     private void onModConfigLoadEvent(ModConfigEvent.Loading event)
@@ -131,6 +136,8 @@ public class LegendaryCreatures
         public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
             event.registerSpriteSet(ParticleTypeRegistry.CORPSE_SPLATTER.get(), CorpseSplatter.Factory::new);
             event.registerSpriteSet(ParticleTypeRegistry.WISP_PARTICLE.get(), WispParticle.Factory::new);
+            event.registerSpriteSet(ParticleTypeRegistry.DESERT_MOJO_PARTICLE.get(), DesertMojoParticle.Factory::new);
+            event.registerSpriteSet(ParticleTypeRegistry.CROWS_PARTICLE.get(), CrowsParticle.Factory::new);
         }
     }
 }

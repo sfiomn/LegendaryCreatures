@@ -83,7 +83,7 @@ public class BaseMeleeAttackGoal extends MoveToTargetGoal {
             if (this.attackAnimationTick == 0 && isAttacking())
                 this.stopAttack();
 
-            if (isActionPoint() && distToTargetSqr <= getAttackReachSqr(target))
+            if (isActionPoint())
                 this.executeAttack(target);
         }
     }

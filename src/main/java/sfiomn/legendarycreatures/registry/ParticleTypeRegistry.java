@@ -13,6 +13,8 @@ public class ParticleTypeRegistry {
 
     public static final RegistryObject<SimpleParticleType> WISP_PARTICLE = PARTICLE_TYPES.register("wisp_particle", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> CORPSE_SPLATTER = PARTICLE_TYPES.register("corpse_splatter", () -> new SimpleParticleType(true));
+    public static final RegistryObject<SimpleParticleType> DESERT_MOJO_PARTICLE = PARTICLE_TYPES.register("desert_mojo_particle", () -> new SimpleParticleType(true));
+    public static final RegistryObject<SimpleParticleType> CROWS_PARTICLE = PARTICLE_TYPES.register("crows_particle", () -> new SimpleParticleType(true));
 
     public static void register(IEventBus eventBus) {
         PARTICLE_TYPES.register(eventBus);

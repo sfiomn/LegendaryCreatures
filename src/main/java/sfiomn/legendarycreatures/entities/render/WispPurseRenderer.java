@@ -15,6 +15,7 @@ public class WispPurseRenderer extends GeoEntityRenderer<WispPurseEntity> {
 
     public WispPurseRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new WispPurseModel());
+        this.withScale(0.8f);
 
         addRenderLayer(new AutoGlowingGeoLayer<>(this));
     }

@@ -1,0 +1,10 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "#legendarycreatures:has_nether_wisp",
+  "spawners": {
+    "type": "legendarycreatures:nether_wisp",
+    "maxCount": 1,
+    "minCount": 1,
+    "weight": 5
+  }
+}

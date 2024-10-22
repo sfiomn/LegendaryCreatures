@@ -2,6 +2,7 @@ package sfiomn.legendarycreatures.entities.goals;
 
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.world.entity.LivingEntity;
+import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
 
 import java.util.EnumSet;
@@ -86,11 +87,13 @@ public class DelayedMeleeAttackGoal extends MoveToTargetGoal {
                 this.mob.lookAt(EntityAnchorArgument.Anchor.EYES, target.position());
                 if (this.ticksUntilFirstAttack-- > 0) {
                     this.mob.setAttackAnimation(AnimatedCreatureEntity.DELAY_ATTACK);
-                } else {
-                    this.mob.setAttackAnimation(AnimatedCreatureEntity.NO_ANIMATION);
-                    this.isReset = false;
+                    return;
                 }
-                return;
+                this.isReset = false;
+            }
+
+            if (this.mob.getAttackAnimation() == AnimatedCreatureEntity.DELAY_ATTACK) {
+                this.mob.setAttackAnimation(AnimatedCreatureEntity.NO_ANIMATION);
             }
 
             // Move to target
@@ -105,7 +108,7 @@ public class DelayedMeleeAttackGoal extends MoveToTargetGoal {
             if (this.attackAnimationTick == 0 && isAttacking())
                 this.stopAttack();
 
-            if (isActionPoint() && distToTargetSqr <= getAttackReachSqr(target))
+            if (isActionPoint())
                 this.executeAttack(target);
         }
     }

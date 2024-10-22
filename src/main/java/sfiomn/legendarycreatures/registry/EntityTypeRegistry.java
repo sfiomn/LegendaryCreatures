@@ -50,7 +50,7 @@ public class EntityTypeRegistry {
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "hound").toString()));
     public static final RegistryObject<EntityType<ScarecrowEntity>> SCARECROW = ENTITY_TYPES.register("scarecrow",
             () -> EntityType.Builder.of(ScarecrowEntity::new, MobCategory.CREATURE)
-                    .sized(1.0F, 2.9F)
+                    .sized(0.8F, 2.32F)
                     .clientTrackingRange(10)
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)
@@ -71,40 +71,40 @@ public class EntityTypeRegistry {
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "scorpion_baby").toString()));
     public static final RegistryObject<EntityType<WispEntity>> WISP = ENTITY_TYPES.register("wisp",
             () -> EntityType.Builder.of(WispEntity::new, MobCategory.CREATURE)
-                    .sized(1.0F, 1.2F)
+                    .sized(0.8F, 1.0F)
                     .clientTrackingRange(64)
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "wisp").toString()));
     public static final RegistryObject<EntityType<WispPurseEntity>> WISP_PURSE = ENTITY_TYPES.register("wisp_purse",
             () -> EntityType.Builder.<WispPurseEntity>of(WispPurseEntity::new, MobCategory.MISC)
-                    .sized(0.5F, 0.5F)
+                    .sized(0.4F, 0.4F)
                     .clientTrackingRange(64)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "wisp_purse").toString()));
     public static final RegistryObject<EntityType<NetherWispEntity>> NETHER_WISP = ENTITY_TYPES.register("nether_wisp",
             () -> EntityType.Builder.of(NetherWispEntity::new, MobCategory.CREATURE)
-                    .sized(1.0F, 1.2F)
+                    .sized(0.8F, 1.0F)
                     .clientTrackingRange(64)
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "nether_wisp").toString()));
     public static final RegistryObject<EntityType<NetherWispPurseEntity>> NETHER_WISP_PURSE = ENTITY_TYPES.register("nether_wisp_purse",
             () -> EntityType.Builder.<NetherWispPurseEntity>of(NetherWispPurseEntity::new, MobCategory.MISC)
-                    .sized(0.5F, 0.5F)
+                    .sized(0.4F, 0.4F)
                     .clientTrackingRange(64)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "nether_wisp_purse").toString()));
     public static final RegistryObject<EntityType<EnderWispEntity>> ENDER_WISP = ENTITY_TYPES.register("ender_wisp",
             () -> EntityType.Builder.of(EnderWispEntity::new, MobCategory.CREATURE)
-                    .sized(1.0F, 1.2F)
+                    .sized(0.8F, 1.0F)
                     .clientTrackingRange(64)
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "ender_wisp").toString()));
     public static final RegistryObject<EntityType<EnderWispPurseEntity>> ENDER_WISP_PURSE = ENTITY_TYPES.register("ender_wisp_purse",
             () -> EntityType.Builder.<EnderWispPurseEntity>of(EnderWispPurseEntity::new, MobCategory.MISC)
-                    .sized(0.5F, 0.5F)
+                    .sized(0.4F, 0.4F)
                     .clientTrackingRange(64)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "ender_wisp_purse").toString()));

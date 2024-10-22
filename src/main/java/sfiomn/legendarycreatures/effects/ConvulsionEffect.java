@@ -23,7 +23,7 @@ public class ConvulsionEffect extends MobEffect
 		{
 			RandomSource rand = player.getRandom();
 
-			if(!player.isCreative() || !player.isSpectator()) {
+			if(!player.isCreative() && !player.isSpectator()) {
 				if(rand.nextDouble() <= 0.1) {
 					player.moveRelative((amplifier + 1), new Vec3(rand.nextDouble() - 0.5D, rand.nextDouble() - 0.5D, rand.nextDouble() - 0.5D));
 				}

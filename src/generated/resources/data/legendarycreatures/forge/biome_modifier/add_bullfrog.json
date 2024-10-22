@@ -1,0 +1,10 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "#legendarycreatures:has_bullfrog",
+  "spawners": {
+    "type": "legendarycreatures:bullfrog",
+    "maxCount": 2,
+    "minCount": 2,
+    "weight": 40
+  }
+}

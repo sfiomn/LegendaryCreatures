@@ -21,6 +21,7 @@ import sfiomn.legendarycreatures.api.entities.MobEntityEnum;
 import sfiomn.legendarycreatures.config.BlackLists;
 import sfiomn.legendarycreatures.config.json.JsonChanceSpawn;
 import sfiomn.legendarycreatures.config.json.JsonConfig;
+import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
 import sfiomn.legendarycreatures.util.WorldUtil;
 
 import java.util.*;
@@ -159,6 +160,8 @@ public class ForgeEvents {
             if (entityType != null) {
                 Entity entityToSpawn = entityType.create((Level) level);
                 if (entityToSpawn != null) {
+                    if (entityToSpawn instanceof AnimatedCreatureEntity animEntity)
+                        animEntity.enableSpawnEffect(true);
                     WorldUtil.spawnEntity(entityToSpawn, level, pos);
                     return true;
                 }

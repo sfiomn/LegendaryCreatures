@@ -1,5 +1,6 @@
 package sfiomn.legendarycreatures.entities;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -11,14 +12,13 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
-import net.minecraft.world.entity.ai.util.AirAndWaterRandomPos;
 import net.minecraft.world.entity.ai.util.AirRandomPos;
-import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.entity.animal.FlyingAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import sfiomn.legendarycreatures.entities.goals.FleeAirGoal;
 import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
 import sfiomn.legendarycreatures.registry.ParticleTypeRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
@@ -36,7 +36,7 @@ public class WispEntity extends AnimatedCreatureEntity implements FlyingAnimal {
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 1)
-                .add(Attributes.MOVEMENT_SPEED, 0.25)
+                .add(Attributes.MOVEMENT_SPEED, 0.35)
                 .add(Attributes.ARMOR, 0)
                 .add(Attributes.ATTACK_DAMAGE, 0)
                 .add(Attributes.FOLLOW_RANGE, 16)
@@ -48,7 +48,7 @@ public class WispEntity extends AnimatedCreatureEntity implements FlyingAnimal {
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(1, new PanicGoal(this, 5));
-        this.goalSelector.addGoal(2, new AvoidEntityGoal<>(this, Player.class, (float) 30, 0.8, 1.4));
+        this.goalSelector.addGoal(2, new FleeAirGoal<>(this, Player.class, (float) 40, 1.0, 1.7));
         this.goalSelector.addGoal(3, new RandomLookAroundGoal(this));
         this.goalSelector.addGoal(4, new FloatGoal(this));
         this.goalSelector.addGoal(5, new RandomStrollGoal(this, 1.0, 10) {
@@ -64,15 +64,18 @@ public class WispEntity extends AnimatedCreatureEntity implements FlyingAnimal {
     public void tick() {
         super.tick();
 
-        double offsetX = (2 * this.getRandom().nextFloat() - 1) * 0.3F;
-        double offsetZ = (2 * this.getRandom().nextFloat() - 1) * 0.3F;
+        if (this.level().isClientSide) {
 
-        double x = this.position().x + offsetX;
-        double y = this.position().y + (this.getRandom().nextFloat() * 0.05F);
-        double z = this.position().z + offsetZ;
+            double offsetX = (2 * this.getRandom().nextFloat() - 1) * 0.3F;
+            double offsetZ = (2 * this.getRandom().nextFloat() - 1) * 0.3F;
 
-        if (this.level().getGameTime() % 3 == 0)
-            this.level().addParticle(ParticleTypeRegistry.WISP_PARTICLE.get(), x, y, z, offsetX / 10, 0.01D, offsetZ / 10);
+            double x = this.position().x + offsetX;
+            double y = this.position().y + (this.getRandom().nextFloat() * 0.05F);
+            double z = this.position().z + offsetZ;
+
+            if (this.level().getGameTime() % 3 == 0)
+                this.level().addParticle(ParticleTypeRegistry.WISP_PARTICLE.get(), x, y, z, offsetX / 10, 0.01D, offsetZ / 10);
+        }
     }
 
     @Override

@@ -5,8 +5,6 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.level.Level;
 import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
 
-import javax.annotation.Nullable;
-
 public class NetherWispEntity extends WispEntity {
     public NetherWispEntity(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
