@@ -4,7 +4,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.NetherWispEntity;
+import sfiomn.legendarycreatures.entities.render.layer.NetherWispEmissiveLayer;
 import sfiomn.legendarycreatures.entities.render.model.NetherWispModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
@@ -16,7 +18,10 @@ public class NetherWispRenderer extends GeoEntityRenderer<NetherWispEntity> {
         super(renderManager, new NetherWispModel());
         this.withScale(0.8f);
 
-        addRenderLayer(new AutoGlowingGeoLayer<>(this));
+        if (LegendaryCreatures.oculusLoaded)
+            addRenderLayer(new NetherWispEmissiveLayer(this));
+        else
+            addRenderLayer(new AutoGlowingGeoLayer<>(this));
 
         this.shadowRadius = 0.4f;
     }

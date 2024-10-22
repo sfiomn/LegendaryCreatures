@@ -18,7 +18,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
-import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
@@ -114,6 +113,11 @@ public abstract class MojoEntity extends AnimatedCreatureEntity {
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
         this.playSound(SoundRegistry.MOJO_STEP.get(), 1.0F, 1.0F);
+    }
+
+    @Override
+    public int getSpawnAnimationTicks() {
+        return 9;
     }
 
     @Override

@@ -39,8 +39,10 @@ public class LegendaryCreatures
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "legendarycreatures";
 
-    // Check if shaders are loaded or not. Necessary for the glowing effect. If shader loaded, shaderpack will manage the glowing effect.
+    // Check if shaders are loaded or not. Necessary for the glowing effect. If shader loaded, shaderpack will manage the glowing effect, so revert to basic minecraft glowing effect.
     public static boolean optifineLoaded = false;
+    public static boolean oculusLoaded = false;
+
     public static boolean atmosphericLoaded = false;
 
     public static Path configPath = FMLPaths.CONFIGDIR.get();
@@ -77,9 +79,13 @@ public class LegendaryCreatures
     private void modIntegration() {
 
         atmosphericLoaded = ModList.get().isLoaded("atmospheric");
+        oculusLoaded = ModList.get().isLoaded("oculus");
 
         if (atmosphericLoaded)
             LOGGER.debug("Atmospheric is loaded, enabling compatibility");
+
+        if (oculusLoaded)
+            LOGGER.debug("Oculus is loaded, enabling compatibility");
     }
 
     private void setup(final FMLCommonSetupEvent event)

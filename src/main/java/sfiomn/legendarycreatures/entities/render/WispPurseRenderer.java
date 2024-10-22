@@ -4,7 +4,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.WispPurseEntity;
+import sfiomn.legendarycreatures.entities.render.layer.WispPurseEmissiveLayer;
 import sfiomn.legendarycreatures.entities.render.model.WispPurseModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
@@ -17,7 +19,10 @@ public class WispPurseRenderer extends GeoEntityRenderer<WispPurseEntity> {
         super(renderManager, new WispPurseModel());
         this.withScale(0.8f);
 
-        addRenderLayer(new AutoGlowingGeoLayer<>(this));
+        if (LegendaryCreatures.oculusLoaded)
+            addRenderLayer(new WispPurseEmissiveLayer(this));
+        else
+            addRenderLayer(new AutoGlowingGeoLayer<>(this));
     }
 
     @Override
