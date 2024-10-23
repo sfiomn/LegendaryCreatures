@@ -417,7 +417,7 @@
 				}
 			}
 		},
-		"misc.spawn": {
+		"spawn": {
 			"animation_length": 1,
 			"bones": {
 				"mojo": {

@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 public class CorpseEaterRenderer extends GeoEntityRenderer<CorpseEaterEntity> {
     public CorpseEaterRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new CorpseEaterModel());
+        this.withScale(0.8f);
 
         if (LegendaryCreatures.oculusLoaded)
             addRenderLayer(new CorpseEaterEmissiveLayer(this));

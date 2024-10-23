@@ -111,7 +111,7 @@ public class EntityTypeRegistry {
 
     public static final RegistryObject<EntityType<CorpseEaterEntity>> CORPSE_EATER = ENTITY_TYPES.register("corpse_eater",
             () -> EntityType.Builder.of(CorpseEaterEntity::new, MobCategory.MONSTER)
-                    .sized(0.79F, 1.6F)
+                    .sized(0.6F, 1.2F)
                     .clientTrackingRange(10)
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)

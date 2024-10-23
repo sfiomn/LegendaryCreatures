@@ -15,6 +15,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.ParticleTypeRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
@@ -27,6 +28,7 @@ import software.bernie.geckolib.core.object.PlayState;
 public class ScarecrowEntity extends AnimatedCreatureEntity {
     private final int baseAttackDuration = 10;
     private final int baseAttackActionPoint = 5;
+    private int movingStep = 0;
 
     private final RawAnimation ATTACK_ANIM = RawAnimation.begin().thenPlay("attack");
 
@@ -77,7 +79,9 @@ public class ScarecrowEntity extends AnimatedCreatureEntity {
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
-        this.playSound(SoundRegistry.SCARECROW_STEP.get(), 1.0F, 1.0F);
+        this.movingStep++;
+        if (movingStep % 2 == 0)
+            this.playSound(SoundRegistry.SCARECROW_STEP.get(), 1.0F, 1.0F);
     }
 
     @Override
@@ -96,10 +100,31 @@ public class ScarecrowEntity extends AnimatedCreatureEntity {
         if (hasSpawnEffect() && this.tickCount < 10) {
             for (int i = 0; i < 6; ++i) {
                 double offsetX = (2 * this.level().getRandom().nextFloat() - 1) * 0.7f;
+                double offsetY = 0.1 + (this.level().getRandom().nextFloat() * 0.2F);
                 double offsetZ = (2 * this.level().getRandom().nextFloat() - 1) * 0.7f;
 
                 double x = this.position().x + offsetX;
-                double y = this.position().y + 0.1 + (this.level().getRandom().nextFloat() * 0.2F);
+                double y = this.position().y + offsetY;
+                double z = this.position().z + offsetZ;
+
+                this.level().addParticle(ParticleTypeRegistry.CROWS_PARTICLE.get(), x, y, z, offsetX / 6, 0.23D, offsetZ / 6);
+            }
+        }
+
+        if (this.isRemoved()) {
+        }
+    }
+
+    protected void tickDeath() {
+        super.tickDeath();
+        if (this.level().isClientSide && this.deathTime > 3 && this.deathTime <= 8 && !this.isRemoved()) {
+            for (int i = 0; i < 5; ++i) {
+                double offsetX = (2 * this.level().getRandom().nextFloat() - 1) * 0.4f;
+                double offsetY = 0.5 + (this.level().getRandom().nextFloat()) * 0.5f;
+                double offsetZ = (2 * this.level().getRandom().nextFloat() - 1) * 0.4f;
+
+                double x = this.position().x + offsetX;
+                double y = this.position().y + offsetY;
                 double z = this.position().z + offsetZ;
 
                 this.level().addParticle(ParticleTypeRegistry.CROWS_PARTICLE.get(), x, y, z, offsetX / 6, 0.23D, offsetZ / 6);

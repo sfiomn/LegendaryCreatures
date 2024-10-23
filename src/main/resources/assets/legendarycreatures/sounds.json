@@ -34,7 +34,15 @@
     "subtitle": "sounds.legendarycreatures.mojo_step",
     "sounds": [
       {
-        "name": "legendarycreatures:mojo_step",
+        "name": "legendarycreatures:mojo_step1",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:mojo_step2",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:mojo_step3",
         "stream": false
       }
     ]
@@ -102,7 +110,7 @@
     "subtitle": "sounds.legendarycreatures.hound_hurt",
     "sounds": [
       {
-        "name": "legendarycreatures:hound/hurt",
+        "name": "legendarycreatures:hound/hurt1",
         "stream": false
       },
       {
@@ -210,7 +218,15 @@
     "subtitle": "sounds.legendarycreatures.scarecrow_step",
     "sounds": [
       {
-        "name": "legendarycreatures:scarecrow_step",
+        "name": "legendarycreatures:scarecrow_step1",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:scarecrow_step2",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:scarecrow_step3",
         "stream": false
       }
     ]
