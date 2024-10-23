@@ -22,7 +22,7 @@ public class ChargeMeleeAttackGoal extends Goal {
     protected final AnimatedCreatureEntity mob;
     private final int attackDuration;
     private final int actionPoint;
-    private final int coolDown;
+    private final int goalCoolDown;
     private final double minDistance;
     private final double speedModifier;
     private final double chargeCorrectionAngle;
@@ -36,11 +36,11 @@ public class ChargeMeleeAttackGoal extends Goal {
     private Vec3 chargeAxe;
     private BlockPos targetBlockPos;
 
-    public ChargeMeleeAttackGoal(AnimatedCreatureEntity mob, int attackDuration, int hurtTick, int attackCoolDown, double minDistanceAttack, double speedModifier, double chargeCorrectionAngle, boolean mayDisableShield) {
+    public ChargeMeleeAttackGoal(AnimatedCreatureEntity mob, int attackDuration, int hurtTick, int goalCoolDown, double minDistanceAttack, double speedModifier, double chargeCorrectionAngle, boolean mayDisableShield) {
         this.mob = mob;
-        this.attackDuration = attackDuration;
-        this.actionPoint = hurtTick;
-        this.coolDown = attackCoolDown;
+        this.attackDuration = (int) Math.ceil(attackDuration / 2.0);
+        this.actionPoint = hurtTick / 2;
+        this.goalCoolDown = goalCoolDown;
         this.minDistance = minDistanceAttack;
         this.speedModifier = speedModifier;
         this.chargeCorrectionAngle = chargeCorrectionAngle;
@@ -59,7 +59,7 @@ public class ChargeMeleeAttackGoal extends Goal {
 
     public boolean canUse() {
         long time = this.mob.level().getGameTime();
-        if (time - this.lastUseTime < coolDown || isAttacking()) {
+        if (time - this.lastUseTime < goalCoolDown || isAttacking()) {
             return false;
         } else {
             LivingEntity target = this.mob.getTarget();

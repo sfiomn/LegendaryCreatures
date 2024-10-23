@@ -175,6 +175,16 @@
       }
     ]
   },
+  "hound_root_attack": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.hound_root_attack",
+    "sounds": [
+      {
+        "name": "legendarycreatures:hound/root",
+        "stream": false
+      }
+    ]
+  },
   "scarecrow_spawn": {
     "category": "hostile",
     "subtitle": "sounds.legendarycreatures.scarecrow_spawn",

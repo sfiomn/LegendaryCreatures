@@ -66,7 +66,7 @@ public abstract class MoveToTargetGoal extends Goal {
             double distToTargetSqr = this.mob.distanceToSqr(target);
             if ((this.followingEvenIfNotSeen || this.mob.getSensing().hasLineOfSight(target))) {
                 if (--ticksUntilNextPathRecalculation <= 0) {
-                    this.ticksUntilNextPathRecalculation = 2 + this.mob.getRandom().nextInt(5);
+                    this.ticksUntilNextPathRecalculation = 2 + this.mob.getRandom().nextInt(4);
                     if (!this.mob.getNavigation().moveTo(target, this.speedModifier)) {
                         this.ticksUntilNextPathRecalculation += 15;
                     }

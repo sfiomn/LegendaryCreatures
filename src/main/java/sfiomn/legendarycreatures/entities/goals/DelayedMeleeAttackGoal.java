@@ -2,7 +2,6 @@ package sfiomn.legendarycreatures.entities.goals;
 
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.world.entity.LivingEntity;
-import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
 
 import java.util.EnumSet;
@@ -11,7 +10,7 @@ public class DelayedMeleeAttackGoal extends MoveToTargetGoal {
     private final int attackDelayTime;
     private final int attackDuration;
     private final int actionPoint;
-    private final int coolDown;
+    private final int attackCoolDown;
     private int attackAnimationTick;
     private long lastUseTime;
     private int ticksUntilFirstAttack;
@@ -20,10 +19,10 @@ public class DelayedMeleeAttackGoal extends MoveToTargetGoal {
 
     public DelayedMeleeAttackGoal(AnimatedCreatureEntity mob, int attackDelayTime, int attackDuration, int hurtTick, int attackCoolDown, double speedModifier, boolean followingEvenIfNotSeen ) {
         super(mob, speedModifier, followingEvenIfNotSeen);
-        this.attackDelayTime = attackDelayTime;
-        this.attackDuration = attackDuration;
-        this.actionPoint = hurtTick;
-        this.coolDown = attackCoolDown;
+        this.attackDelayTime = (int) Math.ceil(attackDelayTime / 2.0);
+        this.attackDuration = (int) Math.ceil(attackDuration / 2.0);
+        this.actionPoint = hurtTick / 2;
+        this.attackCoolDown = (int) Math.ceil(attackCoolDown / 2.0);
         this.isReset = true;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
@@ -120,7 +119,7 @@ public class DelayedMeleeAttackGoal extends MoveToTargetGoal {
 
     protected void stopAttack() {
         this.mob.setAttackAnimation(AnimatedCreatureEntity.NO_ANIMATION);
-        this.ticksUntilNextAttack = this.coolDown;
+        this.ticksUntilNextAttack = this.attackCoolDown;
     }
 
     protected boolean executeAttack(LivingEntity target) {

@@ -26,6 +26,7 @@ public class SoundRegistry {
     public static final RegistryObject<SoundEvent> HOUND_STEP = registerSoundEvent("hound_step");
     public static final RegistryObject<SoundEvent> HOUND_IDLE = registerSoundEvent("hound_idle");
     public static final RegistryObject<SoundEvent> HOUND_BASE_ATTACK_HIT = registerSoundEvent("hound_base_attack_hit");
+    public static final RegistryObject<SoundEvent> HOUND_ROOT_ATTACK = registerSoundEvent("hound_root_attack");
     public static final RegistryObject<SoundEvent> SCARECROW_DEATH = registerSoundEvent("scarecrow_death");
     public static final RegistryObject<SoundEvent> SCARECROW_STEP = registerSoundEvent("scarecrow_step");
     public static final RegistryObject<SoundEvent> SCARECROW_SPAWN = registerSoundEvent("scarecrow_spawn");

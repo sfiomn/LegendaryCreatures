@@ -17,6 +17,7 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
@@ -74,7 +75,7 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficultyInstance, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData, @Nullable CompoundTag tag) {
         if (spawnType.equals(MobSpawnType.SPAWN_EGG))
-            enableSpawnEffect(true);
+            setSpawnEffect(true);
 
         return super.finalizeSpawn(level, difficultyInstance, spawnType, spawnGroupData, tag);
     }
@@ -96,7 +97,7 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
         entityData.set(VARIANT, variant);
     }
 
-    public void enableSpawnEffect(boolean spawnEffect) {
+    public void setSpawnEffect(boolean spawnEffect) {
         entityData.set(SPAWN_EFFECT, spawnEffect);
     }
 
@@ -115,7 +116,7 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
     public void readAdditionalSaveData(CompoundTag nbt) {
         super.readAdditionalSaveData(nbt);
         setVariant(nbt.getInt("variant"));
-        enableSpawnEffect(nbt.getBoolean("spawn_effect"));
+        setSpawnEffect(nbt.getBoolean("spawn_effect"));
     }
 
     @Override
@@ -182,11 +183,14 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
                 }
             }
         }
+
+        if (hasSpawnEffect() && this.tickCount > this.getSpawnAnimationTicks() + 5)
+            setSpawnEffect(false);
         super.tick();
     }
 
     public static boolean checkHostileCreatureDaySpawnRules(EntityType<? extends Mob> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {
-        return level.getLightEmission(pos) > 8 && level.getDifficulty() != Difficulty.PEACEFUL;
+        return level.getBrightness(LightLayer.SKY, pos) > 8 && level.getDifficulty() != Difficulty.PEACEFUL;
     }
 
     public static boolean checkHostileCreatureNoSpawnRules(EntityType<? extends Mob> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {

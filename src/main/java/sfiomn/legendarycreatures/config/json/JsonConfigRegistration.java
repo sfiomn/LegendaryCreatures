@@ -33,16 +33,43 @@ public class JsonConfigRegistration
 	
 	public static void registerDefaults()
 	{
-		JsonConfig.registerBreakingBlockTagSpawn(MobEntityEnum.DESERT_MOJO.mobId, "minecraft:cactus", 0.1);
+		JsonConfig.registerBreakingBlockTagSpawn(MobEntityEnum.DESERT_MOJO.mobId, "minecraft:cactus", 0.01);
 
-		JsonConfig.registerBreakingBlockTagSpawn(MobEntityEnum.FOREST_MOJO.mobId, "minecraft:flowers", 0.1);
+		JsonConfig.registerBreakingBlockTagSpawn(MobEntityEnum.FOREST_MOJO.mobId, "minecraft:flowers", 0.01);
 
-		JsonConfig.registerBreakingBlockNameSpawn(MobEntityEnum.SCARECROW.mobId, "minecraft:wheat", 0.1);
-		JsonConfig.registerKillingEntityNameSpawn(MobEntityEnum.SCARECROW.mobId, "minecraft:chicken", 0.3);
+		JsonConfig.registerBreakingBlockNameSpawn(MobEntityEnum.SCARECROW.mobId, "minecraft:wheat", 0.01);
 
-		JsonConfig.registerKillingEntityNameSpawn(MobEntityEnum.CORPSE_EATER.mobId, "default", 0.1);
-		JsonConfig.registerKillingEntityTagSpawn(MobEntityEnum.CORPSE_EATER.mobId, "minecraft:raiders", 0.4);
-		JsonConfig.registerKillingEntityNameBlackList(MobEntityEnum.CORPSE_EATER.mobId, Arrays.asList("minecraft:bee", "minecraft:cow", "minecraft:pillager", LegendaryCreatures.MOD_ID +":"+ MobEntityEnum.CORPSE_EATER.mobId));
+		JsonConfig.registerKillingEntityNameSpawn(MobEntityEnum.CORPSE_EATER.mobId, "default", 0.005);
+		JsonConfig.registerKillingEntityNameBlackList(MobEntityEnum.CORPSE_EATER.mobId, Arrays.asList(
+				"minecraft:bee",
+				"minecraft:cow",
+				"minecraft:chicken",
+				"minecraft:cod",
+				"minecraft:donkey",
+				"minecraft:fox",
+				"minecraft:horse",
+				"minecraft:mooshroom",
+				"minecraft:mule",
+				"minecraft:ocelot",
+				"minecraft:panda",
+				"minecraft:parrot",
+				"minecraft:polar_bear",
+				"minecraft:pufferfish",
+				"minecraft:rabbit",
+				"minecraft:salmon",
+				"minecraft:sheep",
+				"minecraft:skeleton_horse",
+				"minecraft:snow_golem",
+				"minecraft:squid",
+				"minecraft:strider",
+				"minecraft:tropical_fish",
+				"minecraft:turtle",
+				"minecraft:trader_llama",
+				"minecraft:villager",
+				"minecraft:wandering_trader",
+				"minecraft:axolotl",
+				"minecraft:camel",
+				LegendaryCreatures.MOD_ID +":"+ MobEntityEnum.CORPSE_EATER.mobId));
 	}
 	
 	public static void clearContainers()

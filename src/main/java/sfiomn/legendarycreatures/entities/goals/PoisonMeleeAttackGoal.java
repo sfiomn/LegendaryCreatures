@@ -13,7 +13,7 @@ public class PoisonMeleeAttackGoal extends MoveToTargetGoal {
     private final int attackDuration;
     private final int actionPoint;
     private final int attackCoolDown;
-    private final int coolDown;
+    private final int goalCoolDown;
     private int attackAnimationTick;
     private long lastUseTime;
     private int ticksUntilNextAttack;
@@ -25,11 +25,11 @@ public class PoisonMeleeAttackGoal extends MoveToTargetGoal {
         super(mob, speedModifier, followingEvenIfNotSeen);
         this.poisonDuration = poisonDuration;
         this.poisonStrength = poisonStrength;
-        this.attackDuration = attackDuration;
-        this.actionPoint = hurtTick;
-        this.attackCoolDown = attackCoolDown;
+        this.attackDuration = (int) Math.ceil(attackDuration / 2.0);
+        this.actionPoint = hurtTick / 2;
+        this.attackCoolDown = (int) Math.ceil(attackCoolDown / 2.0);
         this.tentative = tentative;
-        this.coolDown = goalCoolDown;
+        this.goalCoolDown = goalCoolDown;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
@@ -44,7 +44,7 @@ public class PoisonMeleeAttackGoal extends MoveToTargetGoal {
 
     public boolean canUse() {
         long time = this.mob.level().getGameTime();
-        if (time - this.lastUseTime < coolDown || isAttacking()) {
+        if (time - this.lastUseTime < goalCoolDown || isAttacking()) {
             return false;
         } else {
             LivingEntity target = this.mob.getTarget();

@@ -27,7 +27,6 @@ import sfiomn.legendarycreatures.registry.BlockRegistry;
 import sfiomn.legendarycreatures.registry.ParticleTypeRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
-import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
@@ -49,7 +48,7 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
     public static AttributeSupplier.Builder setCustomAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 8)
-                .add(Attributes.MOVEMENT_SPEED, 0.15)
+                .add(Attributes.MOVEMENT_SPEED, 0.2)
                 .add(Attributes.ARMOR, 0)
                 .add(Attributes.ATTACK_DAMAGE, 4)
                 .add(Attributes.FOLLOW_RANGE, 16)
@@ -67,7 +66,7 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(3, new LookAtPlayerGoal(this, Player.class, (float) 12));
-        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 5, 1.2, true) {
+        this.goalSelector.addGoal(4, new BaseMeleeAttackGoal(this, baseAttackDuration, baseAttackActionPoint, 5, 1.6, true) {
             @Override
             protected boolean executeAttack(LivingEntity target) {
                 mob.playSound(SoundRegistry.CORPSE_EATER_ATTACK_HIT.get(), 1.0F, 1.0F);

@@ -9,16 +9,16 @@ import java.util.EnumSet;
 public class BaseMeleeAttackGoal extends MoveToTargetGoal {
     private final int attackDuration;
     private final int actionPoint;
-    private final int coolDown;
+    private final int attackCoolDown;
     private int attackAnimationTick;
     private long lastUseTime;
     private int ticksUntilNextAttack;
 
     public BaseMeleeAttackGoal(AnimatedCreatureEntity mob, int attackDuration, int hurtTick, int attackCoolDown, double speedModifier, boolean followingEvenIfNotSeen ) {
         super(mob, speedModifier, followingEvenIfNotSeen);
-        this.attackDuration = attackDuration;
-        this.actionPoint = hurtTick;
-        this.coolDown = attackCoolDown;
+        this.attackDuration = (int) Math.ceil(attackDuration / 2.0);
+        this.actionPoint = hurtTick / 2;
+        this.attackCoolDown = (int) Math.ceil(attackCoolDown / 2.0);
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
@@ -80,8 +80,9 @@ public class BaseMeleeAttackGoal extends MoveToTargetGoal {
                 this.startAttack();
             }
 
-            if (this.attackAnimationTick == 0 && isAttacking())
+            if (this.attackAnimationTick == 0 && isAttacking()) {
                 this.stopAttack();
+            }
 
             if (isActionPoint())
                 this.executeAttack(target);
@@ -95,7 +96,7 @@ public class BaseMeleeAttackGoal extends MoveToTargetGoal {
 
     protected void stopAttack() {
         this.mob.setAttackAnimation(AnimatedCreatureEntity.NO_ANIMATION);
-        this.ticksUntilNextAttack = this.coolDown;
+        this.ticksUntilNextAttack = this.attackCoolDown;
     }
 
     protected boolean executeAttack(LivingEntity target) {

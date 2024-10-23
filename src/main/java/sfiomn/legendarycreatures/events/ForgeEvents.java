@@ -161,7 +161,7 @@ public class ForgeEvents {
                 Entity entityToSpawn = entityType.create((Level) level);
                 if (entityToSpawn != null) {
                     if (entityToSpawn instanceof AnimatedCreatureEntity animEntity)
-                        animEntity.enableSpawnEffect(true);
+                        animEntity.setSpawnEffect(true);
                     WorldUtil.spawnEntity(entityToSpawn, level, pos);
                     return true;
                 }

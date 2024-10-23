@@ -10,18 +10,18 @@ import java.util.Objects;
 public class RangedMeleeAttackGoal extends MoveToTargetGoal {
     protected final int attackDuration;
     private final int actionPoint;
-    private final int coolDown;
+    private final int goalCoolDown;
     private final double minDistance;
     private final double maxDistance;
     protected int attackAnimationTick;
     private long lastUseTime;
     private boolean hasAttacked;
 
-    public RangedMeleeAttackGoal(AnimatedCreatureEntity mob, int attackDuration, int hurtTick, int attackCoolDown, double minDistanceAttack, double maxDistanceAttack, double speedModifier, boolean followingEvenIfNotSeen ) {
+    public RangedMeleeAttackGoal(AnimatedCreatureEntity mob, int attackDuration, int hurtTick, int goalCoolDown, double minDistanceAttack, double maxDistanceAttack, double speedModifier, boolean followingEvenIfNotSeen ) {
         super(mob, speedModifier, followingEvenIfNotSeen);
-        this.attackDuration = attackDuration;
-        this.actionPoint = hurtTick;
-        this.coolDown = attackCoolDown;
+        this.attackDuration = (int) Math.ceil(attackDuration / 2.0);
+        this.actionPoint = hurtTick / 2;
+        this.goalCoolDown = goalCoolDown;
         this.minDistance = minDistanceAttack;
         this.maxDistance = maxDistanceAttack;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
@@ -38,7 +38,7 @@ public class RangedMeleeAttackGoal extends MoveToTargetGoal {
 
     public boolean canUse() {
         long time = this.mob.level().getGameTime();
-        if (time - this.lastUseTime < coolDown || isAttacking()) {
+        if (time - this.lastUseTime < goalCoolDown || isAttacking()) {
             return false;
         } else {
             LivingEntity target = this.mob.getTarget();

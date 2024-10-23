@@ -1,5 +1,6 @@
 package sfiomn.legendarycreatures.entities;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -22,6 +23,7 @@ import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
 import sfiomn.legendarycreatures.entities.goals.ChargeMeleeAttackGoal;
 import sfiomn.legendarycreatures.entities.goals.RootMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
+import sfiomn.legendarycreatures.sounds.StoppableSound;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
@@ -73,7 +75,7 @@ public class HoundEntity extends AnimatedCreatureEntity {
             }
         };
 
-        RootMeleeAttackGoal rootMeleeAttackGoal = new RootMeleeAttackGoal(this, this.biteAttackDuration, this.biteAttackActionPoint, biteLongAttackDuration * 3, 0.1f,   0.3, 1.0f, 240) {
+        RootMeleeAttackGoal rootMeleeAttackGoal = new RootMeleeAttackGoal(this, this.biteAttackDuration, this.biteAttackActionPoint, biteLongAttackDuration * 3, 3.0f,   0.3, 1.0f, 240) {
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());
@@ -84,13 +86,22 @@ public class HoundEntity extends AnimatedCreatureEntity {
                 super.executeBaseAttack(target);
                 this.mob.playSound(SoundRegistry.HOUND_BASE_ATTACK_HIT.get(), 1.0f, 1.0f);
             }
+
+            @Override
+            protected void startRootAttack() {
+                super.startRootAttack();
+                Minecraft.getInstance().getSoundManager().play(
+                        new StoppableSound(SoundRegistry.HOUND_ROOT_ATTACK.get(),
+                                this.mob,
+                                (mob) -> mob.getAttackAnimation() != ROOT_ATTACK));
+            }
         };
 
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
         this.goalSelector.addGoal(3, chargeMeleeAttackGoal);
         this.goalSelector.addGoal(4, rootMeleeAttackGoal);
-        this.goalSelector.addGoal(5, new BaseMeleeAttackGoal(this, biteAttackDuration, biteAttackActionPoint, 0, 1.3, true) {
+        this.goalSelector.addGoal(5, new BaseMeleeAttackGoal(this, biteAttackDuration, biteAttackActionPoint, 5, 1.3, true) {
             @Override
             protected double getAttackReachSqr(LivingEntity entity) {
                 return (double) (getMobLength() * 2.0F * getMobLength() * 2.0F + entity.getBbWidth());

@@ -25,8 +25,8 @@ public class RootMeleeAttackGoal extends MoveToTargetGoal {
     private final int baseActionPoint;
     private boolean baseAttackDone;
     private final int rootAttackDuration;
-    private final float damageEvery10Ticks;
-    private final int coolDown;
+    private final float damageEvery1s;
+    private final int goalCoolDown;
     private final double stopAttackMobHealthPercent;
     private float mobHealth;
     private boolean shouldStopAttack;
@@ -36,13 +36,13 @@ public class RootMeleeAttackGoal extends MoveToTargetGoal {
     private long lastUseTime;
     private LivingEntity rootTarget;
 
-    public RootMeleeAttackGoal(AnimatedCreatureEntity mob, int baseAttackDuration, int baseActionPoint, int rootAttackDuration, float damageEvery10Ticks, double stopAttackMobHealthPercent, double speedModifier, int goalCoolDown) {
+    public RootMeleeAttackGoal(AnimatedCreatureEntity mob, int baseAttackDuration, int baseActionPoint, int rootAttackDuration, float damageEvery1s, double stopAttackMobHealthPercent, double speedModifier, int goalCoolDown) {
         super(mob, speedModifier, true);
-        this.baseAttackDuration = baseAttackDuration;
-        this.baseActionPoint = baseActionPoint;
-        this.rootAttackDuration = rootAttackDuration;
-        this.damageEvery10Ticks = damageEvery10Ticks;
-        this.coolDown = goalCoolDown;
+        this.baseAttackDuration = (int) Math.ceil(baseAttackDuration / 2.0);
+        this.baseActionPoint = baseActionPoint / 2;
+        this.rootAttackDuration = (int) Math.ceil(rootAttackDuration / 2.0);
+        this.damageEvery1s = damageEvery1s;
+        this.goalCoolDown = goalCoolDown;
         this.stopAttackMobHealthPercent = stopAttackMobHealthPercent;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
@@ -58,7 +58,7 @@ public class RootMeleeAttackGoal extends MoveToTargetGoal {
 
     public boolean canUse() {
         long time = this.mob.level().getGameTime();
-        if (time - this.lastUseTime < coolDown) {
+        if (time - this.lastUseTime < goalCoolDown) {
             return false;
         } else {
             return super.canUse();
@@ -159,11 +159,12 @@ public class RootMeleeAttackGoal extends MoveToTargetGoal {
         if (target != null) {
             if (!this.isDamageSourceBlocked(target)) {
                 addRootEffect(target);
-                target.hurt(DamageSourceUtil.getDamageSource(this.mob.level(), ROOT_ATTACK), this.damageEvery10Ticks);
+                target.hurt(DamageSourceUtil.getDamageSource(this.mob.level(), ROOT_ATTACK), this.damageEvery1s);
                 this.rootTarget = target;
+                this.rootTick = 10;
                 this.baseAttackDone = true;
             } else {
-                target.hurt(this.mob.damageSources().mobAttack(this.mob), this.damageEvery10Ticks);
+                target.hurt(this.mob.damageSources().mobAttack(this.mob), this.damageEvery1s);
                 this.shouldStopAttack = true;
             }
         }
@@ -171,7 +172,7 @@ public class RootMeleeAttackGoal extends MoveToTargetGoal {
 
     protected void executeRootAttack(LivingEntity target) {
         addRootEffect(target);
-        target.hurt(DamageSourceUtil.getDamageSource(this.mob.level(), ROOT_ATTACK), this.damageEvery10Ticks);
+        target.hurt(DamageSourceUtil.getDamageSource(this.mob.level(), ROOT_ATTACK), this.damageEvery1s);
     }
 
     protected void addRootEffect(LivingEntity target) {
