@@ -70,6 +70,9 @@ public class ScorpionBabyEntity extends AnimatedCreatureEntity {
 
     @Override
     public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> state) {
+        if (hasSpawnEffect() && this.tickCount < getSpawnAnimationTicks())
+            return PlayState.CONTINUE;
+
         if (getAttackAnimation() == BASE_ATTACK) {
             return state.setAndContinue(ATTACK_ANIM);
         }

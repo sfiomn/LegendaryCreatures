@@ -139,6 +139,9 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
     }
 
     public <E extends GeoAnimatable> PlayState movementPredicate(AnimationState<E> state) {
+        if (hasSpawnEffect() && this.tickCount < getSpawnAnimationTicks())
+            return PlayState.CONTINUE;
+
         if (getDeathAnimation() != null && this.isDeadOrDying()) {
             return state.setAndContinue(getDeathAnimation());
         } else if (state.isMoving()) {
@@ -163,8 +166,8 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        if (getSpawnAnimationTicks() > 0)
-            controllerRegistrar.add(DefaultAnimations.getSpawnController(this, (animationState) -> this, getSpawnAnimationTicks()));
+        if (getSpawnAnimationTicks() > 0 && hasSpawnEffect())
+            controllerRegistrar.add(DefaultAnimations.getSpawnController(this, (animationState) -> this, hasSpawnEffect() ? getSpawnAnimationTicks(): 0));
         controllerRegistrar.add(new AnimationController<>(this, "Movement", 4, this::movementPredicate));
         controllerRegistrar.add(new AnimationController<>(this, "Attack", 4, this::attackingPredicate));
     }
@@ -186,6 +189,7 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
 
         if (hasSpawnEffect() && this.tickCount > this.getSpawnAnimationTicks() + 5)
             setSpawnEffect(false);
+
         super.tick();
     }
 
@@ -211,9 +215,6 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
         return this.instanceCache;
     }
 
-    public RawAnimation getSpawnAnimation() {
-        return null;
-    }
     public int getSpawnAnimationTicks() {
         return 0;
     }

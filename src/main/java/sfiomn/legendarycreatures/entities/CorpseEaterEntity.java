@@ -80,6 +80,9 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
 
     @Override
     public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> state) {
+        if (hasSpawnEffect() && this.tickCount < getSpawnAnimationTicks())
+            return PlayState.CONTINUE;
+
         if (getAttackAnimation() == BASE_ATTACK) {
             this.playSound(SoundRegistry.CORPSE_EATER_ATTACK.get(), 1.0F, 1.0F);
             return state.setAndContinue(ATTACK_ANIM);
@@ -138,7 +141,7 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
 
     @Override
     public int getSpawnAnimationTicks() {
-        return 20;
+        return 25;
     }
 
     @Override

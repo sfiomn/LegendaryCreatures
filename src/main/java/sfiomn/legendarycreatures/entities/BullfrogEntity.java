@@ -210,6 +210,9 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
 
     @Override
     public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> state) {
+        if (hasSpawnEffect() && this.tickCount < getSpawnAnimationTicks())
+            return PlayState.CONTINUE;
+
         if (getAttackAnimation() == BASE_ATTACK) {
             return state.setAndContinue(ATTACK_ANIM);
         } else if (getAttackAnimation() == SHORT_RANGED_ATTACK) {

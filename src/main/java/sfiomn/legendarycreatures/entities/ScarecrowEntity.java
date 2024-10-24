@@ -15,7 +15,6 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.ParticleTypeRegistry;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
@@ -64,6 +63,9 @@ public class ScarecrowEntity extends AnimatedCreatureEntity {
 
     @Override
     public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> state) {
+        if (hasSpawnEffect() && this.tickCount < getSpawnAnimationTicks())
+            return PlayState.CONTINUE;
+
         if (getAttackAnimation() == BASE_ATTACK) {
             return state.setAndContinue(ATTACK_ANIM);
         }
@@ -86,7 +88,7 @@ public class ScarecrowEntity extends AnimatedCreatureEntity {
 
     @Override
     public int getSpawnAnimationTicks() {
-        return 32;
+        return 35;
     }
 
     @Override
@@ -109,9 +111,6 @@ public class ScarecrowEntity extends AnimatedCreatureEntity {
 
                 this.level().addParticle(ParticleTypeRegistry.CROWS_PARTICLE.get(), x, y, z, offsetX / 6, 0.23D, offsetZ / 6);
             }
-        }
-
-        if (this.isRemoved()) {
         }
     }
 

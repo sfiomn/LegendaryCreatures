@@ -226,14 +226,6 @@
 						}
 					}
 				}
-			},
-			"sound_effects": {
-				"1.125": {
-					"effect": "mojo"
-				},
-				"7.4583": {
-					"effect": "mojo"
-				}
 			}
 		},
 		"walk": {
@@ -417,7 +409,7 @@
 				}
 			}
 		},
-		"spawn": {
+		"misc.spawn": {
 			"animation_length": 1,
 			"bones": {
 				"mojo": {

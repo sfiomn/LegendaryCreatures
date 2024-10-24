@@ -131,6 +131,9 @@ public class HoundEntity extends AnimatedCreatureEntity {
 
     @Override
     public <E extends GeoAnimatable> PlayState attackingPredicate(AnimationState<E> state) {
+        if (hasSpawnEffect() && this.tickCount < getSpawnAnimationTicks())
+            return PlayState.CONTINUE;
+
         if (getAttackAnimation() == BASE_ATTACK) {
             return state.setAndContinue(BITE_ANIM);
         } else if (getAttackAnimation() == CHARGE_ATTACK) {
