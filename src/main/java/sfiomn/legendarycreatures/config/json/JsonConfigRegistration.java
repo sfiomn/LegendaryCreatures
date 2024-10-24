@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.FileUtils;
 import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.api.entities.MobEntityEnum;
+import sfiomn.legendarycreatures.integration.IntegrationController;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -33,11 +34,14 @@ public class JsonConfigRegistration
 	
 	public static void registerDefaults()
 	{
-		JsonConfig.registerBreakingBlockTagSpawn(MobEntityEnum.DESERT_MOJO.mobId, "minecraft:cactus", 0.01);
+		JsonConfig.registerBreakingBlockNameSpawn(MobEntityEnum.DESERT_MOJO.mobId, "minecraft:cactus", 0.01);
+		JsonConfig.registerBreakingBlockNameSpawn(MobEntityEnum.DESERT_MOJO.mobId, "minecraft:dead_bush", 0.01);
 
 		JsonConfig.registerBreakingBlockTagSpawn(MobEntityEnum.FOREST_MOJO.mobId, "minecraft:flowers", 0.01);
+		JsonConfig.registerBreakingBlockTagSpawn(MobEntityEnum.FOREST_MOJO.mobId, "minecraft:small_flowers", 0.01);
+		JsonConfig.registerBreakingBlockTagSpawn(MobEntityEnum.FOREST_MOJO.mobId, "minecraft:tall_flowers", 0.01);
 
-		JsonConfig.registerBreakingBlockNameSpawn(MobEntityEnum.SCARECROW.mobId, "minecraft:wheat", 0.01);
+		JsonConfig.registerBreakingBlockTagSpawn(MobEntityEnum.SCARECROW.mobId, "minecraft:crops", 0.01);
 
 		JsonConfig.registerKillingEntityNameSpawn(MobEntityEnum.CORPSE_EATER.mobId, "default", 0.005);
 		JsonConfig.registerKillingEntityNameBlackList(MobEntityEnum.CORPSE_EATER.mobId, Arrays.asList(
@@ -70,13 +74,8 @@ public class JsonConfigRegistration
 				"minecraft:axolotl",
 				"minecraft:camel",
 				LegendaryCreatures.MOD_ID +":"+ MobEntityEnum.CORPSE_EATER.mobId));
-	}
-	
-	public static void clearContainers()
-	{
-		for (String mobId: JsonConfig.mobIdSpawnList.keySet()) {
-			JsonConfig.mobIdSpawnList.get(mobId).clearAll();
-		}
+
+		IntegrationController.initIntegration();
 	}
 	
 	public static void processAllJson(File jsonDir)
