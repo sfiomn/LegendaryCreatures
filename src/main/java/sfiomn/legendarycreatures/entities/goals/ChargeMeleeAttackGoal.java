@@ -1,6 +1,7 @@
 package sfiomn.legendarycreatures.entities.goals;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -35,6 +36,9 @@ public class ChargeMeleeAttackGoal extends Goal {
     private long lastUseTime;
     private Vec3 chargeAxe;
     private BlockPos targetBlockPos;
+    private int checkPosTick;
+    private BlockPos oldPos;
+    private boolean shouldStopAttack;
 
     public ChargeMeleeAttackGoal(AnimatedCreatureEntity mob, int attackDuration, int hurtTick, int goalCoolDown, double minDistanceAttack, double speedModifier, double chargeCorrectionAngle, boolean mayDisableShield) {
         this.mob = mob;
@@ -84,7 +88,7 @@ public class ChargeMeleeAttackGoal extends Goal {
             return false;
         } else if (!target.isAlive()) {
             return false;
-        } else if (this.mob.getDeltaMovement().length() <= 0.1)
+        } else if (this.shouldStopAttack)
             return false;
         return !hasAttacked ;
     }
@@ -98,6 +102,9 @@ public class ChargeMeleeAttackGoal extends Goal {
         this.pathUpdated = false;
         this.chargeAxe = Vec3.ZERO;
         this.targetBlockPos = BlockPos.ZERO;
+        this.checkPosTick = 0;
+        this.oldPos = this.mob.blockPosition();
+        this.shouldStopAttack = false;
     }
 
     public void stop() {
@@ -113,6 +120,12 @@ public class ChargeMeleeAttackGoal extends Goal {
     public void tick() {
         LivingEntity target = this.mob.getTarget();
         if (target != null) {
+            if (this.checkPosTick++ > 30) {
+                this.checkPosTick = 0;
+                this.shouldStopAttack = this.mob.blockPosition().getCenter().distanceToSqr(this.oldPos.getCenter()) <= 1;
+                this.oldPos = this.mob.blockPosition();
+            }
+
             if (this.chargeAxe == Vec3.ZERO)
                 this.chargeAxe = this.mob.position().subtract(target.position());
             if (this.targetBlockPos == BlockPos.ZERO)
