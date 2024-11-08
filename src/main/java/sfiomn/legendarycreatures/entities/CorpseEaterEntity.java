@@ -75,7 +75,7 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
         });
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Player.class, false, false));
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
-        this.goalSelector.addGoal(7, new RandomStrollGoal(this, 0.5, 20));
+        this.goalSelector.addGoal(7, new RandomStrollGoal(this, 0.9, 20));
     }
 
     @Override

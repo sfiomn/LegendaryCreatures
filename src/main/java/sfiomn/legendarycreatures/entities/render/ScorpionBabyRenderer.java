@@ -14,11 +14,8 @@ import javax.annotation.Nullable;
 
 public class ScorpionBabyRenderer extends GeoEntityRenderer<ScorpionBabyEntity> {
 
-    private static final AABB INITIAL_AABB = new AABB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
     public ScorpionBabyRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ScorpionBabyModel());
-
-        addRenderLayer(new AutoGlowingGeoLayer<>(this));
 
         this.shadowRadius = 0.0f;
     }

@@ -201,7 +201,7 @@ public class BullfrogEntity extends AnimatedCreatureEntity {
             }
         });
         this.targetSelector.addGoal(9, new NearestAttackableTargetGoal<>(this, Player.class, false));
-        this.goalSelector.addGoal(7, new RandomStrollGoal(this, 0.6, 40));
+        this.goalSelector.addGoal(7, new RandomStrollGoal(this, 0.9, 40));
     }
 
     private float getMobLength() {

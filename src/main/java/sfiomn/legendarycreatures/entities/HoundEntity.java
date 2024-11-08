@@ -90,10 +90,12 @@ public class HoundEntity extends AnimatedCreatureEntity {
             @Override
             protected void startRootAttack() {
                 super.startRootAttack();
-                Minecraft.getInstance().getSoundManager().play(
-                        new StoppableSound(SoundRegistry.HOUND_ROOT_ATTACK.get(),
-                                this.mob,
-                                (mob) -> mob.getAttackAnimation() != ROOT_ATTACK));
+                if (this.mob.level().isClientSide) {
+                    Minecraft.getInstance().getSoundManager().play(
+                            new StoppableSound(SoundRegistry.HOUND_ROOT_ATTACK.get(),
+                                    this.mob,
+                                    (mob) -> mob.getAttackAnimation() != ROOT_ATTACK));
+                }
             }
         };
 
