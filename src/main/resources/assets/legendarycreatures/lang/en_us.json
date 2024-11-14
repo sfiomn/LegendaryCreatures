@@ -20,6 +20,7 @@
   "effect.legendarycreatures.convulsion.description": "Force the player to move erratically",
 
   "death.attack.legendarycreatures.root_attack": "%1$s has been bitten to death",
+  "death.attack.legendarycreatures.root_attack.player": "%1$s has been bitten to death",
 
   "entity.legendarycreatures.desert_mojo": "Desert Mojo",
   "entity.legendarycreatures.forest_mojo": "Forest Mojo",

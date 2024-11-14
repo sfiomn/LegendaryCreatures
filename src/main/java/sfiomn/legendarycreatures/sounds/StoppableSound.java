@@ -4,10 +4,13 @@ import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
 
 import java.util.function.Function;
 
+@OnlyIn(Dist.CLIENT)
 public class StoppableSound extends AbstractTickableSoundInstance {
     private final AnimatedCreatureEntity mob;
     private final Function<AnimatedCreatureEntity, Boolean> stopCondition;

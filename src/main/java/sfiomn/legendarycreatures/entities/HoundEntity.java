@@ -1,6 +1,5 @@
 package sfiomn.legendarycreatures.entities;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -19,11 +18,12 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import sfiomn.legendarycreatures.LegendaryCreatures;
 import sfiomn.legendarycreatures.entities.goals.BaseMeleeAttackGoal;
 import sfiomn.legendarycreatures.entities.goals.ChargeMeleeAttackGoal;
 import sfiomn.legendarycreatures.entities.goals.RootMeleeAttackGoal;
 import sfiomn.legendarycreatures.registry.SoundRegistry;
-import sfiomn.legendarycreatures.sounds.StoppableSound;
+import sfiomn.legendarycreatures.sounds.HoundRootAttackSound;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
@@ -37,6 +37,8 @@ public class HoundEntity extends AnimatedCreatureEntity {
     private final int biteAttackDuration = 12;
     private final int biteAttackActionPoint = 7;
     private final int biteLongAttackDuration = 26;
+
+    private boolean playingRootAttackSound;
 
     private final RawAnimation RUN_ANIM = RawAnimation.begin().thenPlay("run");
     private final RawAnimation CHARGE_ANIM = RawAnimation.begin().thenPlay("charge");
@@ -57,6 +59,19 @@ public class HoundEntity extends AnimatedCreatureEntity {
                 .add(Attributes.FOLLOW_RANGE, 20)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
                 .add(Attributes.ATTACK_KNOCKBACK, 0.5);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        if (this.level().isClientSide) {
+            if (getAttackAnimation() == ROOT_ATTACK && !playingRootAttackSound) {
+                playingRootAttackSound = true;
+                HoundRootAttackSound.startPlaying(this);
+            } else if (getAttackAnimation() != ROOT_ATTACK && playingRootAttackSound)
+                playingRootAttackSound = false;
+        }
     }
 
     @Override
@@ -85,17 +100,6 @@ public class HoundEntity extends AnimatedCreatureEntity {
             protected void executeBaseAttack(LivingEntity target) {
                 super.executeBaseAttack(target);
                 this.mob.playSound(SoundRegistry.HOUND_BASE_ATTACK_HIT.get(), 1.0f, 1.0f);
-            }
-
-            @Override
-            protected void startRootAttack() {
-                super.startRootAttack();
-                if (this.mob.level().isClientSide) {
-                    Minecraft.getInstance().getSoundManager().play(
-                            new StoppableSound(SoundRegistry.HOUND_ROOT_ATTACK.get(),
-                                    this.mob,
-                                    (mob) -> mob.getAttackAnimation() != ROOT_ATTACK));
-                }
             }
         };
 
