@@ -29,23 +29,6 @@ public enum MobEntityEnum {
         this.entityConstructor = entityConstructor;
     }
 
-    public boolean canSpawnNaturally() {
-        return switch (this) {
-            case DESERT_MOJO -> Config.Baked.desertMojoNaturalSpawn;
-            case FOREST_MOJO -> Config.Baked.forestMojoNaturalSpawn;
-            case HOUND -> Config.Baked.houndNaturalSpawn;
-            case SCARECROW -> Config.Baked.scarecrowNaturalSpawn;
-            case SCORPION -> Config.Baked.scorpionNaturalSpawn;
-            case SCORPION_BABY -> Config.Baked.scorpionBabyNaturalSpawn;
-            case WISP -> Config.Baked.wispNaturalSpawn;
-            case NETHER_WISP -> Config.Baked.netherWispNaturalSpawn;
-            case ENDER_WISP -> Config.Baked.enderWispNaturalSpawn;
-            case CORPSE_EATER -> Config.Baked.corpseEaterNaturalSpawn;
-            case PEACOCK_SPIDER -> Config.Baked.peacockSpiderNaturalSpawn;
-            case BULLFROG -> Config.Baked.bullfrogNaturalSpawn;
-        };
-    }
-
     public boolean canSpawnByBreaking() {
         return switch (this) {
             case DESERT_MOJO -> Config.Baked.desertMojoBreakingBlockSpawn;
