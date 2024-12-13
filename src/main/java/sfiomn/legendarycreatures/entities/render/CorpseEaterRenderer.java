@@ -18,7 +18,7 @@ public class CorpseEaterRenderer extends GeoEntityRenderer<CorpseEaterEntity> {
     public CorpseEaterRenderer(EntityRendererManager renderManager) {
         super(renderManager, new CorpseEaterModel());
 
-        addLayer(new LayerGlowingAreasGeo(this,
+        addLayer(new LayerGlowingAreasGeo<>(this,
                 entity -> getGeoModelProvider().getTextureLocation((CorpseEaterEntity) entity),
                 entity -> getGeoModelProvider().getModelLocation((CorpseEaterEntity) entity),
                 resourceLocation -> RenderTypeUtil.glowingNoTransparency((ResourceLocation) resourceLocation)));

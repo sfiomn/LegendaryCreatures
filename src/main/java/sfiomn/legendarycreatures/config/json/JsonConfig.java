@@ -24,7 +24,7 @@ public class JsonConfig
 		MobEntityEnum mobEntityEnum = MobEntityEnum.valueOfMobId(mobId);
 		assert mobEntityEnum != null;
 
-		if (!mobIdSpawnList.get(mobId).biomeNameSpawns.containsKey(registryName) && mobEntityEnum.naturalSpawn) {
+		if (!mobIdSpawnList.get(mobId).biomeNameSpawns.containsKey(registryName) && mobEntityEnum.canSpawnNaturally()) {
 			mobIdSpawnList.get(mobId).biomeNameSpawns.put(registryName, new JsonBiomeSpawn(weight, minGroup, maxGroup));
 		}
 	}
@@ -36,7 +36,7 @@ public class JsonConfig
 		MobEntityEnum mobEntityEnum = MobEntityEnum.valueOfMobId(mobId);
 		assert mobEntityEnum != null;
 
-		if (!mobIdSpawnList.get(mobId).biomeCategorySpawns.containsKey(registryName) && mobEntityEnum.naturalSpawn)
+		if (!mobIdSpawnList.get(mobId).biomeCategorySpawns.containsKey(registryName) && mobEntityEnum.canSpawnNaturally())
 			mobIdSpawnList.get(mobId).biomeCategorySpawns.put(registryName, new JsonBiomeSpawn(weight, minGroup, maxGroup));
 	}
 
@@ -47,7 +47,7 @@ public class JsonConfig
 		MobEntityEnum mobEntityEnum = MobEntityEnum.valueOfMobId(mobId);
 		assert mobEntityEnum != null;
 
-		if (!mobIdSpawnList.get(mobId).breakingBlockNameSpawns.containsKey(registryName) && mobEntityEnum.breakingBlockSpawn)
+		if (!mobIdSpawnList.get(mobId).breakingBlockNameSpawns.containsKey(registryName) && mobEntityEnum.canSpawnByBreaking())
 			mobIdSpawnList.get(mobId).breakingBlockNameSpawns.put(registryName, new JsonChanceSpawn(chance));
 	}
 
@@ -58,7 +58,7 @@ public class JsonConfig
 		MobEntityEnum mobEntityEnum = MobEntityEnum.valueOfMobId(mobId);
 		assert mobEntityEnum != null;
 
-		if (!mobIdSpawnList.get(mobId).breakingBlockTagSpawns.containsKey(registryName) && mobEntityEnum.breakingBlockSpawn)
+		if (!mobIdSpawnList.get(mobId).breakingBlockTagSpawns.containsKey(registryName) && mobEntityEnum.canSpawnByBreaking())
 			mobIdSpawnList.get(mobId).breakingBlockTagSpawns.put(registryName, new JsonChanceSpawn(chance));
 	}
 
@@ -69,7 +69,7 @@ public class JsonConfig
 		MobEntityEnum mobEntityEnum = MobEntityEnum.valueOfMobId(mobId);
 		assert mobEntityEnum != null;
 
-		if (!mobIdSpawnList.get(mobId).killingEntityNameSpawns.containsKey(registryName) && mobEntityEnum.killingEntitySpawn)
+		if (!mobIdSpawnList.get(mobId).killingEntityNameSpawns.containsKey(registryName) && mobEntityEnum.canSpawnByKilling())
 			mobIdSpawnList.get(mobId).killingEntityNameSpawns.put(registryName, new JsonChanceSpawn(chance));
 	}
 
@@ -80,7 +80,7 @@ public class JsonConfig
 		MobEntityEnum mobEntityEnum = MobEntityEnum.valueOfMobId(mobId);
 		assert mobEntityEnum != null;
 
-		if (!mobIdSpawnList.get(mobId).killingEntityTagSpawns.containsKey(registryName) && mobEntityEnum.killingEntitySpawn)
+		if (!mobIdSpawnList.get(mobId).killingEntityTagSpawns.containsKey(registryName) && mobEntityEnum.canSpawnByKilling())
 			mobIdSpawnList.get(mobId).killingEntityTagSpawns.put(registryName, new JsonChanceSpawn(chance));
 	}
 
@@ -91,7 +91,7 @@ public class JsonConfig
 		MobEntityEnum mobEntityEnum = MobEntityEnum.valueOfMobId(mobId);
 		assert mobEntityEnum != null;
 
-		if (mobEntityEnum.naturalSpawn) {
+		if (mobEntityEnum.canSpawnNaturally()) {
 			if (mobIdSpawnList.get(mobId).blackLists.biomeNames.isEmpty())
 				mobIdSpawnList.get(mobId).blackLists.biomeNames = new ArrayList<>(registryNames);
 			else
@@ -106,7 +106,7 @@ public class JsonConfig
 		MobEntityEnum mobEntityEnum = MobEntityEnum.valueOfMobId(mobId);
 		assert mobEntityEnum != null;
 
-		if (mobEntityEnum.naturalSpawn) {
+		if (mobEntityEnum.canSpawnNaturally()) {
 			if (mobIdSpawnList.get(mobId).blackLists.biomeCategories.isEmpty())
 				mobIdSpawnList.get(mobId).blackLists.biomeCategories = new ArrayList<>(registryNames);
 			else
@@ -121,7 +121,7 @@ public class JsonConfig
 		MobEntityEnum mobEntityEnum = MobEntityEnum.valueOfMobId(mobId);
 		assert mobEntityEnum != null;
 
-		if (mobEntityEnum.breakingBlockSpawn) {
+		if (mobEntityEnum.canSpawnByBreaking()) {
 			if (mobIdSpawnList.get(mobId).blackLists.breakingBlockNames.isEmpty())
 				mobIdSpawnList.get(mobId).blackLists.breakingBlockNames = new ArrayList<>(registryNames);
 			else
@@ -136,7 +136,7 @@ public class JsonConfig
 		MobEntityEnum mobEntityEnum = MobEntityEnum.valueOfMobId(mobId);
 		assert mobEntityEnum != null;
 
-		if (mobEntityEnum.breakingBlockSpawn) {
+		if (mobEntityEnum.canSpawnByBreaking()) {
 			if (mobIdSpawnList.get(mobId).blackLists.breakingBlockTags.isEmpty())
 				mobIdSpawnList.get(mobId).blackLists.breakingBlockTags = new ArrayList<>(registryNames);
 			else
@@ -151,7 +151,7 @@ public class JsonConfig
 		MobEntityEnum mobEntityEnum = MobEntityEnum.valueOfMobId(mobId);
 		assert mobEntityEnum != null;
 
-		if (mobEntityEnum.killingEntitySpawn) {
+		if (mobEntityEnum.canSpawnByKilling()) {
 			if (mobIdSpawnList.get(mobId).blackLists.killingEntityNames.isEmpty())
 				mobIdSpawnList.get(mobId).blackLists.killingEntityNames = new ArrayList<>(registryNames);
 			else
@@ -166,7 +166,7 @@ public class JsonConfig
 		MobEntityEnum mobEntityEnum = MobEntityEnum.valueOfMobId(mobId);
 		assert mobEntityEnum != null;
 
-		if (mobEntityEnum.killingEntitySpawn) {
+		if (mobEntityEnum.canSpawnByKilling()) {
 			if (mobIdSpawnList.get(mobId).blackLists.killingEntityTags.isEmpty())
 				mobIdSpawnList.get(mobId).blackLists.killingEntityTags = new ArrayList<>(registryNames);
 			else

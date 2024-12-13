@@ -11,14 +11,13 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import sfiomn.legendarycreatures.LegendaryCreatures;
-import sfiomn.legendarycreatures.registry.EntityTypeRegistry;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -198,15 +197,15 @@ public abstract class AnimatedCreatureEntity extends CreatureEntity implements I
         super.tick();
     }
 
-    public static boolean checkCreatureDaySpawnRules(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
-        return world.getRawBrightness(pos, 0) > 8;
+    public static boolean checkHostileCreatureDaySpawnRules(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+        return world.getRawBrightness(pos, 0) > 8 && world.getDifficulty() != Difficulty.PEACEFUL;
     }
 
-    public static boolean checkCreatureNoSpawnRules(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
-        return true;
+    public static boolean checkHostileCreatureNoSpawnRules(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+        return world.getDifficulty() != Difficulty.PEACEFUL;
     }
 
-    public static boolean checkFlyingCreatureSpawnRules(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean checkPeacefulFlyingCreatureSpawnRules(EntityType<? extends MobEntity> entityType, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
         return true;
     }
 

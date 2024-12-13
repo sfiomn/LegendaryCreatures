@@ -40,7 +40,7 @@ public abstract class MojoEntity extends AnimatedCreatureEntity {
                 .add(Attributes.MOVEMENT_SPEED, 0.35)
                 .add(Attributes.ARMOR, 0)
                 .add(Attributes.ATTACK_DAMAGE, 3)
-                .add(Attributes.FOLLOW_RANGE, 16)
+                .add(Attributes.FOLLOW_RANGE, 20)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.5);
     }
 

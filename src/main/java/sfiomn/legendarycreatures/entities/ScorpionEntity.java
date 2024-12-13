@@ -11,7 +11,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
@@ -146,6 +147,14 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
         }
 
         return super.finalizeSpawn(serverWorld, difficultyInstance, spawnReason, entityData, nbt);
+    }
+
+    @Override
+    protected ITextComponent getTypeName() {
+        String descriptionId = "entity." + LegendaryCreatures.MOD_ID + ".scorpion";
+        if (isLevel2())
+            descriptionId = "entity." + LegendaryCreatures.MOD_ID + ".scorpion2";
+        return new TranslationTextComponent(descriptionId);
     }
 
     public boolean isLevel2() {

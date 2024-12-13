@@ -67,8 +67,6 @@ public class LegendaryCreatures
         SoundRegistry.register(modBus);
 
         Config.register();
-        Config.Baked.bakeCommon();
-        JsonConfigRegistration.init(LegendaryCreatures.modConfigJson.toFile());
 
         // Register the setup method for modloading
         modBus.addListener(this::setup);
@@ -98,6 +96,8 @@ public class LegendaryCreatures
 
     private void setup(final FMLCommonSetupEvent event)
     {
+        Config.Baked.bakeCommon();
+        JsonConfigRegistration.init(LegendaryCreatures.modConfigJson.toFile());
         ModEntityPlacement.spawnPlacement();
     }
 
