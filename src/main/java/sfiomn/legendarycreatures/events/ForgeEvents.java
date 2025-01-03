@@ -16,6 +16,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -43,7 +44,7 @@ public class ForgeEvents {
         handleBreakBlock(event.getLevel(), event.getState(), event.getPos());
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onBlockRightClick(PlayerInteractEvent.RightClickBlock event) {
         if (LegendaryCreatures.xpFromHarvestLoaded && ModConfig.simpleHarvest.get()) {
             if (event.getEntity() == null || event.getLevel().isClientSide())
