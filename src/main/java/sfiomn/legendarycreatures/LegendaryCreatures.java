@@ -1,6 +1,5 @@
 package sfiomn.legendarycreatures;
 
-import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
@@ -44,6 +43,7 @@ public class LegendaryCreatures
     public static boolean oculusLoaded = false;
 
     public static boolean atmosphericLoaded = false;
+    public static boolean xpFromHarvestLoaded = false;
 
     public static Path configPath = FMLPaths.CONFIGDIR.get();
     public static Path modConfigPath = Paths.get(configPath.toAbsolutePath().toString(), "legendarycreatures");
@@ -80,12 +80,16 @@ public class LegendaryCreatures
 
         atmosphericLoaded = ModList.get().isLoaded("atmospheric");
         oculusLoaded = ModList.get().isLoaded("oculus");
+        xpFromHarvestLoaded = ModList.get().isLoaded("xpfromharvest");
 
         if (atmosphericLoaded)
             LOGGER.debug("Atmospheric is loaded, enabling compatibility");
 
         if (oculusLoaded)
             LOGGER.debug("Oculus is loaded, enabling compatibility");
+
+        if (xpFromHarvestLoaded)
+            LOGGER.debug("XpFromHarvest is loaded, enabling compatibility");
     }
 
     private void setup(final FMLCommonSetupEvent event)

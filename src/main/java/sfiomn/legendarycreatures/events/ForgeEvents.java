@@ -1,5 +1,7 @@
 package sfiomn.legendarycreatures.events;
 
+import com.realgecko.xpfromharvest.ModConfig;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
@@ -9,8 +11,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -36,61 +40,21 @@ public class ForgeEvents {
                  !event.getState().getBlock().canHarvestBlock(event.getState(), event.getLevel(), event.getPos(), event.getPlayer()))
              return;
 
-        LevelAccessor level = event.getLevel();
+        handleBreakBlock(event.getLevel(), event.getState(), event.getPos());
+    }
 
-        ResourceLocation blockRegistryName = ForgeRegistries.BLOCKS.getKey(event.getState().getBlock());
-        if (blockRegistryName == null) {
-            return;
-        }
-        Vec3 pos = new Vec3(event.getPos().getX() + 0.5, event.getPos().getY(), event.getPos().getZ() + 0.5);
+    @SubscribeEvent
+    public static void onBlockRightClick(PlayerInteractEvent.RightClickBlock event) {
+        if (LegendaryCreatures.xpFromHarvestLoaded && ModConfig.simpleHarvest.get()) {
+            if (event.getEntity() == null || event.getLevel().isClientSide())
+                return;
 
-        Optional<IReverseTag<Block>> blockTagsOptional = Objects.requireNonNull(ForgeRegistries.BLOCKS.tags()).getReverseTag(event.getState().getBlock());
-        IReverseTag<Block> blockTags = null;
-        if (blockTagsOptional.isPresent())
-            blockTags = blockTagsOptional.get();
+            Level level = event.getLevel();
+            BlockPos pos = event.getPos();
+            BlockState state = level.getBlockState(pos);
 
-        for (MobEntityEnum mobEntityEnum : MobEntityEnum.values()) {
-            String mobId = mobEntityEnum.mobId;
-            String blockName = blockRegistryName.toString();
-
-            BlackLists blackLists = JsonConfig.mobIdSpawnList.get(mobId).blackLists;
-
-            Map<String, JsonChanceSpawn> breakingBlockNameSpawns = JsonConfig.mobIdSpawnList.get(mobId).breakingBlockNameSpawns;
-            Map<TagKey<Block>, JsonChanceSpawn> breakingBlockTagSpawns = JsonConfig.mobIdSpawnList.get(mobId).breakingBlockTagSpawns;
-
-            boolean cancelSpawn = false;
-            if (blackLists.breakingBlockNames.contains(blockName)) {
-                cancelSpawn = true;
-            }
-            else if (blockTags != null) {
-                for (TagKey<Block> blackListedBlockTag : blackLists.breakingBlockTags) {
-                    if (blockTags.containsTag(blackListedBlockTag)) {
-                        cancelSpawn = true;
-                    }
-                }
-            }
-            if (cancelSpawn)
-                continue;
-
-            if (breakingBlockNameSpawns.containsKey(blockRegistryName.toString())) {
-                if (spawnEntity(level, pos, mobEntityEnum, breakingBlockNameSpawns.get(blockRegistryName.toString()).chance)) {
-                    return;
-                }
-            } else if (blockTags != null) {
-                boolean tagFound = false;
-                for (TagKey<Block> spawnBlockTag : breakingBlockTagSpawns.keySet()) {
-                    if (blockTags.containsTag(spawnBlockTag)) {
-                        tagFound = true;
-                        if (spawnEntity(level, pos, mobEntityEnum, breakingBlockTagSpawns.get(spawnBlockTag).chance)) {
-                            return;
-                        }
-                    }
-                    if (!tagFound && breakingBlockNameSpawns.containsKey("default")) {
-                        if (spawnEntity(level, pos, mobEntityEnum, breakingBlockNameSpawns.get("default").chance)) {
-                            return;
-                        }
-                    }
-                }
+            if (ModConfig.crops.get().contains(state.toString())) {
+                handleBreakBlock(level, state, pos);
             }
         }
     }
@@ -144,6 +108,66 @@ public class ForgeEvents {
                     }
                     if (!tagFound && killingEntityNameSpawns.containsKey("default")) {
                         if (spawnEntity(event.getEntity().getCommandSenderWorld(), event.getEntity().position(), mobEntityEnum, killingEntityNameSpawns.get("default").chance)) {
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static void handleBreakBlock(LevelAccessor level, BlockState state, BlockPos pos) {
+
+        ResourceLocation blockRegistryName = ForgeRegistries.BLOCKS.getKey(state.getBlock());
+        if (blockRegistryName == null) {
+            return;
+        }
+
+        Vec3 spawnPos = new Vec3(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+
+        Optional<IReverseTag<Block>> blockTagsOptional = Objects.requireNonNull(ForgeRegistries.BLOCKS.tags()).getReverseTag(state.getBlock());
+        IReverseTag<Block> blockTags = null;
+        if (blockTagsOptional.isPresent())
+            blockTags = blockTagsOptional.get();
+
+        for (MobEntityEnum mobEntityEnum : MobEntityEnum.values()) {
+            String mobId = mobEntityEnum.mobId;
+            String blockName = blockRegistryName.toString();
+
+            BlackLists blackLists = JsonConfig.mobIdSpawnList.get(mobId).blackLists;
+
+            Map<String, JsonChanceSpawn> breakingBlockNameSpawns = JsonConfig.mobIdSpawnList.get(mobId).breakingBlockNameSpawns;
+            Map<TagKey<Block>, JsonChanceSpawn> breakingBlockTagSpawns = JsonConfig.mobIdSpawnList.get(mobId).breakingBlockTagSpawns;
+
+            boolean cancelSpawn = false;
+            if (blackLists.breakingBlockNames.contains(blockName)) {
+                cancelSpawn = true;
+            }
+            else if (blockTags != null) {
+                for (TagKey<Block> blackListedBlockTag : blackLists.breakingBlockTags) {
+                    if (blockTags.containsTag(blackListedBlockTag)) {
+                        cancelSpawn = true;
+                    }
+                }
+            }
+            if (cancelSpawn)
+                continue;
+
+            if (breakingBlockNameSpawns.containsKey(blockRegistryName.toString())) {
+                if (spawnEntity(level, spawnPos, mobEntityEnum, breakingBlockNameSpawns.get(blockRegistryName.toString()).chance)) {
+                    return;
+                }
+            } else if (blockTags != null) {
+                boolean tagFound = false;
+                for (TagKey<Block> spawnBlockTag : breakingBlockTagSpawns.keySet()) {
+                    if (blockTags.containsTag(spawnBlockTag)) {
+                        tagFound = true;
+                        if (spawnEntity(level, spawnPos, mobEntityEnum, breakingBlockTagSpawns.get(spawnBlockTag).chance)) {
+                            return;
+                        }
+                    }
+                    if (!tagFound && breakingBlockNameSpawns.containsKey("default")) {
+                        if (spawnEntity(level, spawnPos, mobEntityEnum, breakingBlockNameSpawns.get("default").chance)) {
                             return;
                         }
                     }
