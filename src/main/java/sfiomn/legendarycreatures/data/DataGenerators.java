@@ -31,5 +31,6 @@ public final class DataGenerators
 		gen.addProvider(event.includeServer(), new ModBiomeTagsProvider(packOutput, lookupProvider, existingFileHelper));
 		gen.addProvider(event.includeServer(), new ModDamageTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
 		gen.addProvider(event.includeServer(), new ModDatapackBuiltinEntriesProvider(packOutput, lookupProvider));
+		gen.addProvider(event.includeServer(), ModLootTableProvider.createLootTables(packOutput));
 	}
 }

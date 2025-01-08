@@ -32,7 +32,9 @@ public class CreativeTabRegistry {
                         ItemRegistry.ENDER_WISP_SPAWN_EGG.get().getDefaultInstance(),
                         ItemRegistry.HOUND_SPAWN_EGG.get().getDefaultInstance(),
                         ItemRegistry.PEACOCK_SPIDER_SPAWN_EGG.get().getDefaultInstance(),
-                        ItemRegistry.CORPSE_EATER_SPAWN_EGG.get().getDefaultInstance()
+                        ItemRegistry.CORPSE_EATER_SPAWN_EGG.get().getDefaultInstance(),
+
+                        ItemRegistry.STRAW_HAT.get().getDefaultInstance()
                 ));
 
                 list.acceptAll(stacks);

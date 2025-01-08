@@ -28,6 +28,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         spawnEgg(ItemRegistry.SCARECROW_SPAWN_EGG.get());
         spawnEgg(ItemRegistry.SCORPION_SPAWN_EGG.get());
         spawnEgg(ItemRegistry.SCORPION_BABY_SPAWN_EGG.get());
+
+        basicItem(ItemRegistry.STRAW_HAT.get());
     }
 
     private void spawnEgg(Item item) {

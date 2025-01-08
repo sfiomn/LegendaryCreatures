@@ -5,8 +5,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -27,6 +30,8 @@ import sfiomn.legendarycreatures.config.BlackLists;
 import sfiomn.legendarycreatures.config.json.JsonChanceSpawn;
 import sfiomn.legendarycreatures.config.json.JsonConfig;
 import sfiomn.legendarycreatures.entities.AnimatedCreatureEntity;
+import sfiomn.legendarycreatures.items.StrawHatItem;
+import sfiomn.legendarycreatures.util.DamageSourceUtil;
 import sfiomn.legendarycreatures.util.WorldUtil;
 
 import java.util.*;
@@ -41,7 +46,7 @@ public class ForgeEvents {
                  !event.getState().getBlock().canHarvestBlock(event.getState(), event.getLevel(), event.getPos(), event.getPlayer()))
              return;
 
-        handleBreakBlock(event.getLevel(), event.getState(), event.getPos());
+        handleBreakBlock(event.getLevel(), event.getState(), event.getPos(), event.getPlayer());
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -55,7 +60,7 @@ public class ForgeEvents {
             BlockState state = level.getBlockState(pos);
 
             if (ModConfig.crops.get().contains(state.toString())) {
-                handleBreakBlock(level, state, pos);
+                handleBreakBlock(level, state, pos, event.getEntity());
             }
         }
     }
@@ -117,7 +122,7 @@ public class ForgeEvents {
         }
     }
 
-    private static void handleBreakBlock(LevelAccessor level, BlockState state, BlockPos pos) {
+    private static void handleBreakBlock(LevelAccessor level, BlockState state, BlockPos pos, Player player) {
 
         ResourceLocation blockRegistryName = ForgeRegistries.BLOCKS.getKey(state.getBlock());
         if (blockRegistryName == null) {
@@ -131,7 +136,10 @@ public class ForgeEvents {
         if (blockTagsOptional.isPresent())
             blockTags = blockTagsOptional.get();
 
+        boolean isStrawHatWorn = (player.getItemBySlot(EquipmentSlot.HEAD).getItem() instanceof StrawHatItem);
+
         for (MobEntityEnum mobEntityEnum : MobEntityEnum.values()) {
+
             String mobId = mobEntityEnum.mobId;
             String blockName = blockRegistryName.toString();
 
@@ -154,24 +162,30 @@ public class ForgeEvents {
             if (cancelSpawn)
                 continue;
 
-            if (breakingBlockNameSpawns.containsKey(blockRegistryName.toString())) {
-                if (spawnEntity(level, spawnPos, mobEntityEnum, breakingBlockNameSpawns.get(blockRegistryName.toString()).chance)) {
-                    return;
-                }
-            } else if (blockTags != null) {
-                boolean tagFound = false;
+            double spawnChance = 0;
+            if (breakingBlockNameSpawns.containsKey(blockRegistryName.toString()))
+                spawnChance = breakingBlockNameSpawns.get(blockRegistryName.toString()).chance;
+
+            if (spawnChance <= 0 && breakingBlockNameSpawns.containsKey("default"))
+                spawnChance = breakingBlockNameSpawns.get("default").chance;
+
+            if (spawnChance <= 0 && blockTags != null) {
                 for (TagKey<Block> spawnBlockTag : breakingBlockTagSpawns.keySet()) {
                     if (blockTags.containsTag(spawnBlockTag)) {
-                        tagFound = true;
-                        if (spawnEntity(level, spawnPos, mobEntityEnum, breakingBlockTagSpawns.get(spawnBlockTag).chance)) {
-                            return;
-                        }
+                        spawnChance = breakingBlockTagSpawns.get(spawnBlockTag).chance;
                     }
-                    if (!tagFound && breakingBlockNameSpawns.containsKey("default")) {
-                        if (spawnEntity(level, spawnPos, mobEntityEnum, breakingBlockNameSpawns.get("default").chance)) {
-                            return;
-                        }
-                    }
+                }
+            }
+
+            if (spawnChance > 0) {
+                if (mobEntityEnum == MobEntityEnum.SCARECROW && isStrawHatWorn) {
+                    if (level instanceof Level)
+                        player.getInventory().hurtArmor(DamageSourceUtil.getDamageSource((Level) level, DamageTypes.GENERIC),1, Inventory.HELMET_SLOT_ONLY);
+                    continue;
+                }
+
+                if (spawnEntity(level, spawnPos, mobEntityEnum, spawnChance)) {
+                    return;
                 }
             }
         }

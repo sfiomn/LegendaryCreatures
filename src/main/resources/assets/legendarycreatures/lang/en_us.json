@@ -3,6 +3,9 @@
 
   "block.legendarycreatures.doom_fire": "Doom Fire",
 
+  "item.legendarycreatures.straw_hat": "Straw Hat",
+  "item.legendarycreatures.straw_hat.description": "Prevents Scarecrow spawn",
+
   "item.legendarycreatures.desert_mojo_spawn_egg": "Desert Mojo Spawn Egg",
   "item.legendarycreatures.forest_mojo_spawn_egg": "Forest Mojo Spawn Egg",
   "item.legendarycreatures.hound_spawn_egg": "Hound Spawn Egg",
