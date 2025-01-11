@@ -34,7 +34,7 @@ public class ModEntityLootTables extends EntityLootSubProvider {
         this.add(EntityTypeRegistry.SCARECROW.get(), LootTable.lootTable()
                 .withPool(LootPool.lootPool()
                         .add(LootItem.lootTableItem(ItemRegistry.STRAW_HAT.get())
-                            .when(LootItemRandomChanceCondition.randomChance(0.2f))))
+                            .when(LootItemRandomChanceCondition.randomChance(0.1f))))
                 .withPool(LootPool.lootPool()
                         .add(LootItem.lootTableItem(Items.WHEAT)
                             .apply(SetItemCountFunction.setCount(UniformGenerator.between(5.0f, 20.0f)))

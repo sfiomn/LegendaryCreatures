@@ -2,6 +2,7 @@ package sfiomn.legendarycreatures.registry;
 
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -17,7 +18,7 @@ public class ItemRegistry {
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, LegendaryCreatures.MOD_ID);
 
-    public static final RegistryObject<Item> STRAW_HAT = ITEMS.register("straw_hat", () -> new StrawHatItem(STRAW, ArmorItem.Type.HELMET, new Item.Properties()));
+    public static final RegistryObject<Item> STRAW_HAT = ITEMS.register("straw_hat", () -> new StrawHatItem(STRAW, ArmorItem.Type.HELMET, new Item.Properties().rarity(Rarity.RARE)));
 
     public static final RegistryObject<SpawnEggItem> DESERT_MOJO_SPAWN_EGG = ITEMS.register("desert_mojo_spawn_egg",
             () -> new ForgeSpawnEggItem(EntityTypeRegistry.DESERT_MOJO, -13210, -52,

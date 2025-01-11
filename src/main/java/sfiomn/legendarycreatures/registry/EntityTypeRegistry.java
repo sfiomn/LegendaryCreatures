@@ -50,7 +50,7 @@ public class EntityTypeRegistry {
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "hound").toString()));
     public static final RegistryObject<EntityType<ScarecrowEntity>> SCARECROW = ENTITY_TYPES.register("scarecrow",
             () -> EntityType.Builder.of(ScarecrowEntity::new, MobCategory.CREATURE)
-                    .sized(0.8F, 2.32F)
+                    .sized(0.8F, 1.95F)
                     .clientTrackingRange(10)
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)

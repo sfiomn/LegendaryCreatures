@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 public enum ArmorMaterialBase implements ArmorMaterial
 {
-	STRAW("straw", 5.75f, new int[] { 1, 1, 2, 1}, 17, SoundEvents.ARMOR_EQUIP_LEATHER, 0, 0.0f, () -> Ingredient.of(Items.WHEAT));
+	STRAW("straw_hat", 20.0f, new int[] { 0, 0, 0, 0}, 17, SoundEvents.ARMOR_EQUIP_LEATHER, 0, 0.0f, () -> Ingredient.of(Items.WHEAT));
 
 	private static final int[] BASE_DURABILITY = new int[] {13, 15, 16, 11};
 	private final String name;

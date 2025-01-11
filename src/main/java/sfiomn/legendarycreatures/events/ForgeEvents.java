@@ -51,6 +51,10 @@ public class ForgeEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onBlockRightClick(PlayerInteractEvent.RightClickBlock event) {
+        if (event.getEntity().isCreative() ||
+                event.getEntity().isSpectator())
+            return;
+
         if (LegendaryCreatures.xpFromHarvestLoaded && ModConfig.simpleHarvest.get()) {
             if (event.getEntity() == null || event.getLevel().isClientSide())
                 return;

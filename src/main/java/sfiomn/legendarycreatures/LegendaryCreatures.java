@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import sfiomn.legendarycreatures.config.Config;
 import sfiomn.legendarycreatures.config.json.JsonConfigRegistration;
 import sfiomn.legendarycreatures.entities.render.*;
+import sfiomn.legendarycreatures.items.render.model.StrawHatModel;
 import sfiomn.legendarycreatures.level.gen.ModEntityPlacement;
 import sfiomn.legendarycreatures.particles.CorpseSplatter;
 import sfiomn.legendarycreatures.particles.CrowsParticle;
@@ -29,6 +30,8 @@ import software.bernie.geckolib.GeckoLib;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import static sfiomn.legendarycreatures.items.render.model.StrawHatModel.LAYER_LOCATION;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(LegendaryCreatures.MOD_ID)
@@ -148,6 +151,11 @@ public class LegendaryCreatures
             event.registerSpriteSet(ParticleTypeRegistry.WISP_PARTICLE.get(), WispParticle.Factory::new);
             event.registerSpriteSet(ParticleTypeRegistry.DESERT_MOJO_PARTICLE.get(), DesertMojoParticle.Factory::new);
             event.registerSpriteSet(ParticleTypeRegistry.CROWS_PARTICLE.get(), CrowsParticle.Factory::new);
+        }
+
+        @SubscribeEvent
+        public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+            event.registerLayerDefinition(LAYER_LOCATION, StrawHatModel::createBodyLayer);
         }
     }
 }
