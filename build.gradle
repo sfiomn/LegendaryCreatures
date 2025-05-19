@@ -160,7 +160,7 @@ dependencies {
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar
     // The group id is ignored when searching -- in this case, it is "blank"
 
-    implementation fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
+    implementation(fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}"))
     implementation(fg.deobf("com.eliotlash.mclib:mclib:20"))
 
     compileOnly(fg.deobf("curse.maven:xp-from-harvest-reworked-888441:4985543"))

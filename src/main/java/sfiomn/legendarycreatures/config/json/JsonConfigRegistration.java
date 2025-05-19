@@ -47,6 +47,7 @@ public class JsonConfigRegistration
 		JsonConfig.registerKillingEntityNameBlackList(MobEntityEnum.CORPSE_EATER.mobId, Arrays.asList(
 				"minecraft:bee",
 				"minecraft:cow",
+				"minecraft:pig",
 				"minecraft:chicken",
 				"minecraft:cod",
 				"minecraft:donkey",
