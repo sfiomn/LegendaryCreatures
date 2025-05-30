@@ -207,7 +207,6 @@ public class Config
 				peacockSpiderKillingEntitySpawn = COMMON.peacockSpiderKillingEntitySpawn.get();
 				bullfrogBreakingBlockSpawn = COMMON.bullfrogBreakingBlockSpawn.get();
 				bullfrogKillingEntitySpawn = COMMON.bullfrogKillingEntitySpawn.get();
-
 			}
 			catch (Exception e)
 			{

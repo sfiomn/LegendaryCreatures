@@ -1,9 +1,6 @@
 package sfiomn.legendarycreatures.events;
 
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import sfiomn.legendarycreatures.entities.*;
@@ -31,10 +28,5 @@ public class ModBusEvents {
         event.put(EntityTypeRegistry.CORPSE_EATER.get(), CorpseEaterEntity.setCustomAttributes().build());
         event.put(EntityTypeRegistry.PEACOCK_SPIDER.get(), PeacockSpiderEntity.setCustomAttributes().build());
         event.put(EntityTypeRegistry.BULLFROG.get(), BullfrogEntity.setCustomAttributes().build());
-    }
-
-    @SubscribeEvent
-    public static void modifyEntityAttributes(EntityAttributeModificationEvent event) {
-        event.add(EntityType.ZOMBIE, Attributes.MOVEMENT_SPEED, 0.1);
     }
 }
