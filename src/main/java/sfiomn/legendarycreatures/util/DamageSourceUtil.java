@@ -13,10 +13,7 @@ public class DamageSourceUtil {
     private DamageSourceUtil() {}
 
     private static Registry<DamageType> damageTypes(Level level) {
-        if (damageTypes == null) {
-            damageTypes = level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
-        }
-        return damageTypes;
+        return level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
     }
 
     public static DamageSource getDamageSource(Level level, ResourceKey<DamageType> damageType) {

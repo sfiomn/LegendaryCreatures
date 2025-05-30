@@ -1,5 +1,6 @@
 package sfiomn.legendarycreatures;
 
+import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
@@ -40,6 +41,8 @@ public class LegendaryCreatures
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "legendarycreatures";
+
+    public static MobCategory LEGENDARY_HOSTILE_CREATURE = MobCategory.create("legendary_hostile_creature", "legendary_hostile_creature", 3, false, false, 128);
 
     // Check if shaders are loaded or not. Necessary for the glowing effect. If shader loaded, shaderpack will manage the glowing effect, so revert to basic minecraft glowing effect.
     public static boolean optifineLoaded = false;
