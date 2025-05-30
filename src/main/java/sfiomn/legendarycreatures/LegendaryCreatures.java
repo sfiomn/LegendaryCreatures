@@ -3,6 +3,7 @@ package sfiomn.legendarycreatures;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.resources.ReloadListener;
+import net.minecraft.entity.EntityClassification;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
@@ -22,7 +23,6 @@ import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sfiomn.legendarycreatures.config.Config;
@@ -45,6 +45,8 @@ public class LegendaryCreatures
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "legendarycreatures";
+
+    public static EntityClassification LEGENDARY_HOSTILE_CREATURE = EntityClassification.create("legendary_hostile_creature", "LEGENDARY_HOSTILE_CREATURE", 3, false, false, 128);
 
     // Check if shaders are loaded or not. Necessary for the glowing effect. If shader loaded, shaderpack will manage the glowing effect.
     public static boolean optifineLoaded = false;
