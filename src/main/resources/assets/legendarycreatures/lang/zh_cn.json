@@ -1,5 +1,10 @@
 {
   "itemGroup.legendarycreatures": "传说生物",
+  
+  "block.legendarycreatures.doom_fire": "死焰",
+  
+  "item.legendarycreatures.straw_hat": "草帽",
+  "item.legendarycreatures.straw_hat.description": "防止稻草人生成",
 
   "item.legendarycreatures.desert_mojo_spawn_egg": "沙漠魔啾刷怪蛋",
   "item.legendarycreatures.forest_mojo_spawn_egg": "森林魔啾刷怪蛋",
