@@ -45,7 +45,7 @@ public class EntityTypeRegistry {
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "forest_mojo").toString()));
     public static final RegistryObject<EntityType<HoundEntity>> HOUND = ENTITY_TYPES.register("hound",
             () -> EntityType.Builder.of(HoundEntity::new, LEGENDARY_HOSTILE_CREATURE)
-                    .sized(1.5F, 1.5F)
+                    .sized(1.3F, 1.3F)
                     .clientTrackingRange(64)
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)

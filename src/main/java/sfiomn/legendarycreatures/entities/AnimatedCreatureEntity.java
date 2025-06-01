@@ -15,6 +15,7 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -35,7 +36,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.UUID;
 
-public abstract class AnimatedCreatureEntity extends PathfinderMob implements GeoEntity {
+public abstract class AnimatedCreatureEntity extends PathfinderMob implements GeoEntity, Enemy {
     protected static final UUID MAX_HEALTH_UUID = UUID.fromString("4133085c-5129-4018-9ea1-de2b2190ecc1");
     protected static final UUID ATTACK_DAMAGE_UUID = UUID.fromString("1d16a9ed-6ef2-4547-b14c-f3e3e7ec273e");
 

@@ -34,12 +34,11 @@ import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
-import net.minecraft.world.entity.monster.Enemy;
 
 import javax.annotation.Nullable;
 
 
-public class BullfrogEntity extends AnimatedCreatureEntity implements Enemy{
+public class BullfrogEntity extends AnimatedCreatureEntity {
     private final int baseAttackDuration = 10;
     private final int baseAttackActionPoint = 5;
     private final int baseDistanceAttackDuration = 10;
