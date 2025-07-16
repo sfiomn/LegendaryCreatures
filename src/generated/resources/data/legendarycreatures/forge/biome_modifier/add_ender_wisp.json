@@ -5,6 +5,6 @@
     "type": "legendarycreatures:ender_wisp",
     "maxCount": 1,
     "minCount": 1,
-    "weight": 5
+    "weight": 20
   }
 }

@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
@@ -16,6 +17,8 @@ import net.minecraft.world.entity.ai.util.AirRandomPos;
 import net.minecraft.world.entity.animal.FlyingAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import sfiomn.legendarycreatures.entities.goals.FleeAirGoal;
@@ -54,8 +57,10 @@ public class WispEntity extends AnimatedCreatureEntity implements FlyingAnimal {
         this.goalSelector.addGoal(5, new RandomStrollGoal(this, 1.0, 10) {
             @Override
             protected Vec3 getPosition() {
+                int mobHeight = this.mob.blockPosition().getY() - this.mob.level().getHeight(Heightmap.Types.WORLD_SURFACE_WG, this.mob.blockPosition().getX(), this.mob.blockPosition().getZ());
+                int yOffset = mobHeight > 15 ? -4: mobHeight <= 3 ? 4 : 0;
                 Vec3 viewVector = this.mob.getViewVector(0);
-                return AirRandomPos.getPosTowards(this.mob, 8, 4, -2, viewVector, 1.5707963705062866);
+                return AirRandomPos.getPosTowards(this.mob, 10, 6, yOffset, viewVector, 1.5707963705062866);
             }
         });
     }
@@ -94,17 +99,6 @@ public class WispEntity extends AnimatedCreatureEntity implements FlyingAnimal {
         return SoundRegistry.WISP_DEATH.get();
     }
 
-    @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (source.is(DamageTypes.FALLING_ANVIL))
-            return false;
-        if (source.is(DamageTypes.DRAGON_BREATH))
-            return false;
-        if (source.is(DamageTypes.CACTUS))
-            return false;
-        return super.hurt(source, amount);
-    }
-
     protected WispPurseEntity getPurseEntity() {
         return EntityTypeRegistry.WISP_PURSE.get().create(this.level());
     }
@@ -130,6 +124,23 @@ public class WispEntity extends AnimatedCreatureEntity implements FlyingAnimal {
 
     @Override
     public boolean isFlying() {
+        return true;
+    }
+
+    public boolean isPushable() {
+        return false;
+    }
+
+    protected void doPush(@NotNull Entity entity) {
+    }
+
+    protected void pushEntities() {
+    }
+
+    protected void checkFallDamage(double p_27419_, boolean p_27420_, BlockState p_27421_, BlockPos p_27422_) {
+    }
+
+    public boolean isIgnoringBlockTriggers() {
         return true;
     }
 }

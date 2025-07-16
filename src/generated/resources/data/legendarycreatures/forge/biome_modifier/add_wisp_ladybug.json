@@ -1,0 +1,18 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "#legendarycreatures:has_wisp_ladybug",
+  "spawners": [
+    {
+      "type": "legendarycreatures:wisp",
+      "maxCount": 1,
+      "minCount": 1,
+      "weight": 20
+    },
+    {
+      "type": "legendarycreatures:ladybug",
+      "maxCount": 1,
+      "minCount": 1,
+      "weight": 40
+    }
+  ]
+}

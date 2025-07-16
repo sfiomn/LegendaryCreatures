@@ -1,0 +1,18 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "#legendarycreatures:has_scarecrow_ladybug",
+  "spawners": [
+    {
+      "type": "legendarycreatures:scarecrow",
+      "maxCount": 1,
+      "minCount": 1,
+      "weight": 20
+    },
+    {
+      "type": "legendarycreatures:ladybug",
+      "maxCount": 1,
+      "minCount": 1,
+      "weight": 40
+    }
+  ]
+}

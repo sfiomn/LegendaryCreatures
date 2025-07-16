@@ -1,0 +1,18 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "#legendarycreatures:has_desert_mojo_scarab",
+  "spawners": [
+    {
+      "type": "legendarycreatures:desert_mojo",
+      "maxCount": 1,
+      "minCount": 1,
+      "weight": 20
+    },
+    {
+      "type": "legendarycreatures:scarab",
+      "maxCount": 1,
+      "minCount": 1,
+      "weight": 40
+    }
+  ]
+}

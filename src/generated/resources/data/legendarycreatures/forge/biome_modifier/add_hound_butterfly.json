@@ -1,0 +1,18 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "#legendarycreatures:has_hound_butterfly",
+  "spawners": [
+    {
+      "type": "legendarycreatures:hound",
+      "maxCount": 2,
+      "minCount": 1,
+      "weight": 20
+    },
+    {
+      "type": "legendarycreatures:butterfly",
+      "maxCount": 1,
+      "minCount": 1,
+      "weight": 40
+    }
+  ]
+}

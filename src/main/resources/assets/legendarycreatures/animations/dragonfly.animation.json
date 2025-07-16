@@ -1,0 +1,132 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"idle": {
+			"loop": true,
+			"animation_length": 0.0833,
+			"bones": {
+				"wing4": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, -20],
+							"easing": "linear"
+						},
+						"0.0417": {
+							"vector": [0, 0, 20],
+							"easing": "linear"
+						},
+						"0.0833": {
+							"vector": [0, 0, -20]
+						}
+					}
+				},
+				"wing": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, -20],
+							"easing": "linear"
+						},
+						"0.0417": {
+							"vector": [0, 0, 30]
+						},
+						"0.0833": {
+							"vector": [0, 0, -20]
+						}
+					}
+				},
+				"wing2": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 20],
+							"easing": "linear"
+						},
+						"0.0417": {
+							"vector": [0, 0, -30]
+						},
+						"0.0833": {
+							"vector": [0, 0, 20]
+						}
+					}
+				},
+				"wing3": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 20],
+							"easing": "linear"
+						},
+						"0.0417": {
+							"vector": [0, 0, -20]
+						},
+						"0.0833": {
+							"vector": [0, 0, 20]
+						}
+					}
+				}
+			}
+		},
+		"walk": {
+			"loop": true,
+			"animation_length": 0.0833,
+			"bones": {
+				"wing4": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, -20],
+							"easing": "linear"
+						},
+						"0.0417": {
+							"vector": [0, 0, 20],
+							"easing": "linear"
+						},
+						"0.0833": {
+							"vector": [0, 0, -20]
+						}
+					}
+				},
+				"wing": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, -20],
+							"easing": "linear"
+						},
+						"0.0417": {
+							"vector": [0, 0, 30]
+						},
+						"0.0833": {
+							"vector": [0, 0, -20]
+						}
+					}
+				},
+				"wing2": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 20],
+							"easing": "linear"
+						},
+						"0.0417": {
+							"vector": [0, 0, -30]
+						},
+						"0.0833": {
+							"vector": [0, 0, 20]
+						}
+					}
+				},
+				"wing3": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 20],
+							"easing": "linear"
+						},
+						"0.0417": {
+							"vector": [0, 0, -20]
+						},
+						"0.0833": {
+							"vector": [0, 0, 20]
+						}
+					}
+				}
+			}
+		}
+	},
+	"geckolib_format_version": 2
+}

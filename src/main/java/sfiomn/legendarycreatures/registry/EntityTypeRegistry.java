@@ -29,6 +29,13 @@ public class EntityTypeRegistry {
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "bullfrog").toString()));
 
+    public static final RegistryObject<EntityType<ButterflyEntity>> BUTTERFLY = ENTITY_TYPES.register("butterfly",
+            () -> EntityType.Builder.of(ButterflyEntity::new, LEGENDARY_HOSTILE_CREATURE)
+                    .sized(0.4F, 0.4F)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .clientTrackingRange(5)
+                    .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "butterfly").toString()));
+
     public static final RegistryObject<EntityType<DesertMojoEntity>> DESERT_MOJO = ENTITY_TYPES.register("desert_mojo",
             () -> EntityType.Builder.of(DesertMojoEntity::new, LEGENDARY_HOSTILE_CREATURE)
                     .sized(1.0F, 1.0F)
@@ -36,6 +43,14 @@ public class EntityTypeRegistry {
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "desert_mojo").toString()));
+
+    public static final RegistryObject<EntityType<DragonflyEntity>> DRAGONFLY = ENTITY_TYPES.register("dragonfly",
+            () -> EntityType.Builder.of(DragonflyEntity::new, LEGENDARY_HOSTILE_CREATURE)
+                    .sized(0.4F, 0.4F)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .clientTrackingRange(5)
+                    .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "dragonfly").toString()));
+
     public static final RegistryObject<EntityType<ForestMojoEntity>> FOREST_MOJO = ENTITY_TYPES.register("forest_mojo",
             () -> EntityType.Builder.of(ForestMojoEntity::new, LEGENDARY_HOSTILE_CREATURE)
                     .sized(1.0F, 1.0F)
@@ -43,6 +58,14 @@ public class EntityTypeRegistry {
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "forest_mojo").toString()));
+
+    public static final RegistryObject<EntityType<HermitCrabEntity>> HERMIT_CRAB = ENTITY_TYPES.register("hermit_crab",
+            () -> EntityType.Builder.of(HermitCrabEntity::new, LEGENDARY_HOSTILE_CREATURE)
+                    .sized(0.4F, 0.4F)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .clientTrackingRange(5)
+                    .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "hermit_crab").toString()));
+
     public static final RegistryObject<EntityType<HoundEntity>> HOUND = ENTITY_TYPES.register("hound",
             () -> EntityType.Builder.of(HoundEntity::new, LEGENDARY_HOSTILE_CREATURE)
                     .sized(1.3F, 1.3F)
@@ -50,6 +73,28 @@ public class EntityTypeRegistry {
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "hound").toString()));
+
+    public static final RegistryObject<EntityType<MantisEntity>> MANTIS = ENTITY_TYPES.register("mantis",
+            () -> EntityType.Builder.of(MantisEntity::new, LEGENDARY_HOSTILE_CREATURE)
+                    .sized(0.4F, 0.4F)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .clientTrackingRange(5)
+                    .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "mantis").toString()));
+
+    public static final RegistryObject<EntityType<LadybugEntity>> LADYBUG = ENTITY_TYPES.register("ladybug",
+            () -> EntityType.Builder.of(LadybugEntity::new, LEGENDARY_HOSTILE_CREATURE)
+                    .sized(0.4F, 0.4F)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .clientTrackingRange(5)
+                    .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "ladybug").toString()));
+
+    public static final RegistryObject<EntityType<ScarabEntity>> SCARAB = ENTITY_TYPES.register("scarab",
+            () -> EntityType.Builder.of(ScarabEntity::new, LEGENDARY_HOSTILE_CREATURE)
+                    .sized(0.4F, 0.4F)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .clientTrackingRange(5)
+                    .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "scarab").toString()));
+
     public static final RegistryObject<EntityType<ScarecrowEntity>> SCARECROW = ENTITY_TYPES.register("scarecrow",
             () -> EntityType.Builder.of(ScarecrowEntity::new, LEGENDARY_HOSTILE_CREATURE)
                     .sized(0.8F, 1.95F)
@@ -57,6 +102,7 @@ public class EntityTypeRegistry {
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "scarecrow").toString()));
+
     public static final RegistryObject<EntityType<ScorpionEntity>> SCORPION = ENTITY_TYPES.register("scorpion",
             () -> EntityType.Builder.of(ScorpionEntity::new, LEGENDARY_HOSTILE_CREATURE)
                     .sized(1.8F, 0.8F)
@@ -64,6 +110,7 @@ public class EntityTypeRegistry {
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "scorpion").toString()));
+
     public static final RegistryObject<EntityType<ScorpionBabyEntity>> SCORPION_BABY = ENTITY_TYPES.register("scorpion_baby",
             () -> EntityType.Builder.of(ScorpionBabyEntity::new, LEGENDARY_HOSTILE_CREATURE)
                     .sized(0.4F, 0.2F)
@@ -71,6 +118,7 @@ public class EntityTypeRegistry {
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "scorpion_baby").toString()));
+
     public static final RegistryObject<EntityType<WispEntity>> WISP = ENTITY_TYPES.register("wisp",
             () -> EntityType.Builder.of(WispEntity::new, MobCategory.CREATURE)
                     .sized(0.8F, 1.0F)
@@ -78,12 +126,14 @@ public class EntityTypeRegistry {
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "wisp").toString()));
+
     public static final RegistryObject<EntityType<WispPurseEntity>> WISP_PURSE = ENTITY_TYPES.register("wisp_purse",
             () -> EntityType.Builder.<WispPurseEntity>of(WispPurseEntity::new, MobCategory.MISC)
                     .sized(0.4F, 0.4F)
                     .clientTrackingRange(64)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "wisp_purse").toString()));
+
     public static final RegistryObject<EntityType<NetherWispEntity>> NETHER_WISP = ENTITY_TYPES.register("nether_wisp",
             () -> EntityType.Builder.of(NetherWispEntity::new, MobCategory.CREATURE)
                     .sized(0.8F, 1.0F)
@@ -91,12 +141,14 @@ public class EntityTypeRegistry {
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "nether_wisp").toString()));
+
     public static final RegistryObject<EntityType<NetherWispPurseEntity>> NETHER_WISP_PURSE = ENTITY_TYPES.register("nether_wisp_purse",
             () -> EntityType.Builder.<NetherWispPurseEntity>of(NetherWispPurseEntity::new, MobCategory.MISC)
                     .sized(0.4F, 0.4F)
                     .clientTrackingRange(64)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "nether_wisp_purse").toString()));
+
     public static final RegistryObject<EntityType<EnderWispEntity>> ENDER_WISP = ENTITY_TYPES.register("ender_wisp",
             () -> EntityType.Builder.of(EnderWispEntity::new, MobCategory.CREATURE)
                     .sized(0.8F, 1.0F)
@@ -104,6 +156,7 @@ public class EntityTypeRegistry {
                     .setShouldReceiveVelocityUpdates(true)
                     .setUpdateInterval(3)
                     .build(new ResourceLocation(LegendaryCreatures.MOD_ID, "ender_wisp").toString()));
+
     public static final RegistryObject<EntityType<EnderWispPurseEntity>> ENDER_WISP_PURSE = ENTITY_TYPES.register("ender_wisp_purse",
             () -> EntityType.Builder.<EnderWispPurseEntity>of(EnderWispPurseEntity::new, MobCategory.MISC)
                     .sized(0.4F, 0.4F)

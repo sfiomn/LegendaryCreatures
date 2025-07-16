@@ -68,6 +68,30 @@ public class ItemRegistry {
             () -> new ForgeSpawnEggItem(EntityTypeRegistry.BULLFROG, 0x7b9a24, 0x7a1f1d,
                     new Item.Properties()));
 
+    public static final RegistryObject<SpawnEggItem> BUTTERFLY_SPAWN_EGG = ITEMS.register("butterfly_spawn_egg",
+            () -> new ForgeSpawnEggItem(EntityTypeRegistry.BUTTERFLY, 0xe65b89, 0xfb8e9c,
+                    new Item.Properties()));
+
+    public static final RegistryObject<SpawnEggItem> DRAGONFLY_SPAWN_EGG = ITEMS.register("dragonfly_spawn_egg",
+            () -> new ForgeSpawnEggItem(EntityTypeRegistry.DRAGONFLY, 0x5bdcc5, 0xd8d8d8,
+                    new Item.Properties()));
+
+    public static final RegistryObject<SpawnEggItem> LADYBUG_SPAWN_EGG = ITEMS.register("ladybug_spawn_egg",
+            () -> new ForgeSpawnEggItem(EntityTypeRegistry.LADYBUG, 0x2c1418, 0xc12528,
+                    new Item.Properties()));
+
+    public static final RegistryObject<SpawnEggItem> SCARAB_SPAWN_EGG = ITEMS.register("scarab_spawn_egg",
+            () -> new ForgeSpawnEggItem(EntityTypeRegistry.SCARAB, 0x3bd77d, 0x298d7c,
+                    new Item.Properties()));
+
+    public static final RegistryObject<SpawnEggItem> MANTIS_SPAWN_EGG = ITEMS.register("mantis_spawn_egg",
+            () -> new ForgeSpawnEggItem(EntityTypeRegistry.MANTIS, 0x56ab1a, 0xdbdbdb,
+                    new Item.Properties()));
+
+    public static final RegistryObject<SpawnEggItem> HERMIT_CRAB_SPAWN_EGG = ITEMS.register("hermit_crab_spawn_egg",
+            () -> new ForgeSpawnEggItem(EntityTypeRegistry.HERMIT_CRAB, 0xf89a22, 0xe3d4cb,
+                    new Item.Properties()));
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

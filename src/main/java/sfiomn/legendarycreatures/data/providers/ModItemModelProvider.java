@@ -29,6 +29,13 @@ public class ModItemModelProvider extends ItemModelProvider {
         spawnEgg(ItemRegistry.SCORPION_SPAWN_EGG.get());
         spawnEgg(ItemRegistry.SCORPION_BABY_SPAWN_EGG.get());
 
+        spawnEgg(ItemRegistry.BUTTERFLY_SPAWN_EGG.get());
+        spawnEgg(ItemRegistry.DRAGONFLY_SPAWN_EGG.get());
+        spawnEgg(ItemRegistry.LADYBUG_SPAWN_EGG.get());
+        spawnEgg(ItemRegistry.SCARAB_SPAWN_EGG.get());
+        spawnEgg(ItemRegistry.MANTIS_SPAWN_EGG.get());
+        spawnEgg(ItemRegistry.HERMIT_CRAB_SPAWN_EGG.get());
+
         basicItem(ItemRegistry.STRAW_HAT.get());
     }
 

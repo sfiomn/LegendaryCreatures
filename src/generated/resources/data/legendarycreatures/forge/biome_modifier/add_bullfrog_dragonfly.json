@@ -1,0 +1,18 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "#legendarycreatures:has_bullfrog_dragonfly",
+  "spawners": [
+    {
+      "type": "legendarycreatures:bullfrog",
+      "maxCount": 2,
+      "minCount": 2,
+      "weight": 20
+    },
+    {
+      "type": "legendarycreatures:dragonfly",
+      "maxCount": 1,
+      "minCount": 1,
+      "weight": 40
+    }
+  ]
+}

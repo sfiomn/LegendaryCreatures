@@ -73,11 +73,7 @@ public class ChargeMeleeAttackGoal extends Goal {
                 return false;
             } else {
                 this.path = this.mob.getNavigation().createPath(target, 0);
-                if (path != null && this.mob.getSensing().hasLineOfSight(target) && this.mob.distanceToSqr(target) > minDistance * minDistance) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return path != null && this.mob.getSensing().hasLineOfSight(target) && this.mob.distanceToSqr(target) > minDistance * minDistance;
             }
         }
     }

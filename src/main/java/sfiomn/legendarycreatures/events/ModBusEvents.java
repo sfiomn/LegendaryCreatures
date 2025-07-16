@@ -28,5 +28,12 @@ public class ModBusEvents {
         event.put(EntityTypeRegistry.CORPSE_EATER.get(), CorpseEaterEntity.setCustomAttributes().build());
         event.put(EntityTypeRegistry.PEACOCK_SPIDER.get(), PeacockSpiderEntity.setCustomAttributes().build());
         event.put(EntityTypeRegistry.BULLFROG.get(), BullfrogEntity.setCustomAttributes().build());
+
+        event.put(EntityTypeRegistry.BUTTERFLY.get(), ButterflyEntity.setCustomAttributes().build());
+        event.put(EntityTypeRegistry.DRAGONFLY.get(), DragonflyEntity.setCustomAttributes().build());
+        event.put(EntityTypeRegistry.LADYBUG.get(), LadybugEntity.setCustomAttributes().build());
+        event.put(EntityTypeRegistry.SCARAB.get(), ScarabEntity.setCustomAttributes().build());
+        event.put(EntityTypeRegistry.MANTIS.get(), MantisEntity.setCustomAttributes().build());
+        event.put(EntityTypeRegistry.HERMIT_CRAB.get(), HermitCrabEntity.setCustomAttributes().build());
     }
 }

@@ -33,6 +33,12 @@ public class CreativeTabRegistry {
                         ItemRegistry.HOUND_SPAWN_EGG.get().getDefaultInstance(),
                         ItemRegistry.PEACOCK_SPIDER_SPAWN_EGG.get().getDefaultInstance(),
                         ItemRegistry.CORPSE_EATER_SPAWN_EGG.get().getDefaultInstance(),
+                        ItemRegistry.BUTTERFLY_SPAWN_EGG.get().getDefaultInstance(),
+                        ItemRegistry.DRAGONFLY_SPAWN_EGG.get().getDefaultInstance(),
+                        ItemRegistry.LADYBUG_SPAWN_EGG.get().getDefaultInstance(),
+                        ItemRegistry.SCARAB_SPAWN_EGG.get().getDefaultInstance(),
+                        ItemRegistry.MANTIS_SPAWN_EGG.get().getDefaultInstance(),
+                        ItemRegistry.HERMIT_CRAB_SPAWN_EGG.get().getDefaultInstance(),
 
                         ItemRegistry.STRAW_HAT.get().getDefaultInstance()
                 ));

@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import sfiomn.legendarycreatures.config.Config;
 import sfiomn.legendarycreatures.config.json.JsonConfigRegistration;
 import sfiomn.legendarycreatures.entities.render.*;
+import sfiomn.legendarycreatures.entities.render.DragonflyRenderer;
 import sfiomn.legendarycreatures.items.render.model.StrawHatModel;
 import sfiomn.legendarycreatures.level.gen.ModEntityPlacement;
 import sfiomn.legendarycreatures.particles.CorpseSplatter;
@@ -146,6 +147,13 @@ public class LegendaryCreatures
             event.registerEntityRenderer(EntityTypeRegistry.CORPSE_EATER.get(), CorpseEaterRenderer::new);
             event.registerEntityRenderer(EntityTypeRegistry.PEACOCK_SPIDER.get(), PeacockSpiderRenderer::new);
             event.registerEntityRenderer(EntityTypeRegistry.BULLFROG.get(), BullfrogRenderer::new);
+
+            event.registerEntityRenderer(EntityTypeRegistry.BUTTERFLY.get(), ButterflyRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.DRAGONFLY.get(), DragonflyRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.LADYBUG.get(), LadybugRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.SCARAB.get(), ScarabRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.MANTIS.get(), MantisRenderer::new);
+            event.registerEntityRenderer(EntityTypeRegistry.HERMIT_CRAB.get(), HermitCrabRenderer::new);
         }
 
         @SubscribeEvent

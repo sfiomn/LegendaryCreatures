@@ -169,8 +169,8 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
         if (getSpawnAnimationTicks() > 0 && hasSpawnEffect())
             controllerRegistrar.add(DefaultAnimations.getSpawnController(this, (animationState) -> this, hasSpawnEffect() ? getSpawnAnimationTicks(): 0));
-        controllerRegistrar.add(new AnimationController<>(this, "Movement", 4, this::movementPredicate));
-        controllerRegistrar.add(new AnimationController<>(this, "Attack", 4, this::attackingPredicate));
+        controllerRegistrar.add(new AnimationController<>(this, "Movement", 6, this::movementPredicate));
+        controllerRegistrar.add(new AnimationController<>(this, "Attack", 6, this::attackingPredicate));
     }
 
     @Override
@@ -202,8 +202,8 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
         return level.getDifficulty() != Difficulty.PEACEFUL;
     }
 
-    public static boolean checkPeacefulFlyingCreatureSpawnRules(EntityType<? extends Mob> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {
-        return true;
+    public static boolean checkPeacefulCreatureOnSurfaceSpawnRules(EntityType<? extends Mob> entityType, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {
+        return level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, pos.getX(), pos.getZ()) >= pos.getY();
     }
 
     @Override

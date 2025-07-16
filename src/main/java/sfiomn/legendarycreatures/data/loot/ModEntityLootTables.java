@@ -99,6 +99,13 @@ public class ModEntityLootTables extends EntityLootSubProvider {
         this.add(EntityTypeRegistry.WISP.get(), LootTable.lootTable().withPool(LootPool.lootPool().add(EmptyLootItem.emptyItem())));
         this.add(EntityTypeRegistry.NETHER_WISP.get(), LootTable.lootTable().withPool(LootPool.lootPool().add(EmptyLootItem.emptyItem())));
         this.add(EntityTypeRegistry.ENDER_WISP.get(), LootTable.lootTable().withPool(LootPool.lootPool().add(EmptyLootItem.emptyItem())));
+
+        this.add(EntityTypeRegistry.BUTTERFLY.get(), LootTable.lootTable().withPool(LootPool.lootPool().add(EmptyLootItem.emptyItem())));
+        this.add(EntityTypeRegistry.DRAGONFLY.get(), LootTable.lootTable().withPool(LootPool.lootPool().add(EmptyLootItem.emptyItem())));
+        this.add(EntityTypeRegistry.LADYBUG.get(), LootTable.lootTable().withPool(LootPool.lootPool().add(EmptyLootItem.emptyItem())));
+        this.add(EntityTypeRegistry.SCARAB.get(), LootTable.lootTable().withPool(LootPool.lootPool().add(EmptyLootItem.emptyItem())));
+        this.add(EntityTypeRegistry.MANTIS.get(), LootTable.lootTable().withPool(LootPool.lootPool().add(EmptyLootItem.emptyItem())));
+        this.add(EntityTypeRegistry.HERMIT_CRAB.get(), LootTable.lootTable().withPool(LootPool.lootPool().add(EmptyLootItem.emptyItem())));
     }
 
     @Override

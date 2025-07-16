@@ -11,7 +11,7 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import javax.annotation.Nullable;
 
 public class BullfrogRenderer extends GeoEntityRenderer<BullfrogEntity> {
-    public BullfrogRenderer(EntityRendererProvider.Context  renderManager) {
+    public BullfrogRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new BullfrogModel());
         this.shadowRadius = 1.0f;
     }

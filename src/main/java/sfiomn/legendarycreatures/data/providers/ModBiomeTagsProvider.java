@@ -19,12 +19,18 @@ public class ModBiomeTagsProvider extends BiomeTagsProvider {
     }
 
     protected void addTags(HolderLookup.@NotNull Provider lookupProvider) {
-        this.tag(ModBiomeTags.HAS_BULLFROG).addTag(Tags.Biomes.IS_SWAMP);
-        this.tag(ModBiomeTags.HAS_HOUND).addTag(BiomeTags.IS_FOREST);
-        this.tag(ModBiomeTags.HAS_SCORPION).addTag(Tags.Biomes.IS_DESERT);
-        this.tag(ModBiomeTags.HAS_WISP).addTag(Tags.Biomes.IS_PLAINS).addTag(BiomeTags.IS_FOREST);
+        this.tag(ModBiomeTags.HAS_BULLFROG_DRAGONFLY).addTag(Tags.Biomes.IS_SWAMP);
+
+        this.tag(ModBiomeTags.HAS_HOUND_BUTTERFLY).addTag(BiomeTags.IS_FOREST);
+
+        this.tag(ModBiomeTags.HAS_SCORPION_SCARAB).addTag(Tags.Biomes.IS_DESERT);
+
+        this.tag(ModBiomeTags.HAS_WISP_LADYBUG).addTag(Tags.Biomes.IS_PLAINS).addTag(BiomeTags.IS_FOREST);
+
         this.tag(ModBiomeTags.HAS_NETHER_WIP).addTag(BiomeTags.IS_NETHER);
         this.tag(ModBiomeTags.HAS_ENDER_WISP).addTag(BiomeTags.IS_END);
-        this.tag(ModBiomeTags.HAS_PEACOCK_SPIDER).addTag(BiomeTags.IS_BEACH).addTag(BiomeTags.IS_JUNGLE);
+
+        this.tag(ModBiomeTags.HAS_PEACOCK_SPIDER_HERMIT_CRAB).addTag(BiomeTags.IS_BEACH);
+        this.tag(ModBiomeTags.HAS_PEACOCK_SPIDER_MANTIS).addTag(BiomeTags.IS_JUNGLE);
     }
 }
