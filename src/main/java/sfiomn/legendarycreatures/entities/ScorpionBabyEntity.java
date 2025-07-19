@@ -102,7 +102,7 @@ public class ScorpionBabyEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource source) {
+    protected SoundEvent getHurtSound(@NotNull DamageSource source) {
         return SoundEvents.SILVERFISH_HURT;
     }
 

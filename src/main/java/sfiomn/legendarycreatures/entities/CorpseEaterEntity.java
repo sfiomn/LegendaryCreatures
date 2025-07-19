@@ -128,7 +128,7 @@ public class CorpseEaterEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource source) {
+    protected SoundEvent getHurtSound(@NotNull DamageSource source) {
         return SoundRegistry.CORPSE_EATER_HURT.get();
     }
 

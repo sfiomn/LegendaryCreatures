@@ -56,6 +56,8 @@ public class SoundRegistry {
     public static final RegistryObject<SoundEvent> BULLFROG_STEP = registerSoundEvent("bullfrog_step");
     public static final RegistryObject<SoundEvent> BULLFROG_ATTACK = registerSoundEvent("bullfrog_attack");
     public static final RegistryObject<SoundEvent> BULLFROG_TONGUE_ATTACK = registerSoundEvent("bullfrog_tongue_attack");
+    public static final RegistryObject<SoundEvent> DRAGONFLY_IDLE = registerSoundEvent("dragonfly_idle");
+    public static final RegistryObject<SoundEvent> SCARAB_IDLE = registerSoundEvent("scarab_idle");
 
     private static RegistryObject<SoundEvent> registerSoundEvent(String name) {
         return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(

@@ -199,7 +199,7 @@ public class PeacockSpiderEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource source) {
+    protected SoundEvent getHurtSound(@NotNull DamageSource source) {
         return SoundRegistry.PEACOCK_SPIDER_HURT.get();
     }
 

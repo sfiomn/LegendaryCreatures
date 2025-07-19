@@ -1,6 +1,7 @@
 package sfiomn.legendarycreatures.entities;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -14,8 +15,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
+import sfiomn.legendarycreatures.registry.SoundRegistry;
 
 public class ScarabEntity extends AnimatedCreatureEntity {
     public ScarabEntity(EntityType<? extends PathfinderMob> type, Level level) {
@@ -42,6 +43,12 @@ public class ScarabEntity extends AnimatedCreatureEntity {
                 return DefaultRandomPos.getPos(this.mob, 6, 7);
             }
         });
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return SoundRegistry.SCARAB_IDLE.get();
     }
 
     @Override

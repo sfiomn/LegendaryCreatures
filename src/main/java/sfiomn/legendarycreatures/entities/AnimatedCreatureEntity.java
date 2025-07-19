@@ -22,6 +22,8 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
@@ -145,7 +147,7 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
 
         if (getDeathAnimation() != null && this.isDeadOrDying()) {
             return state.setAndContinue(getDeathAnimation());
-        } else if (state.isMoving()) {
+        } else if (state.isMoving() || this.xOld != this.getX() || this.yOld != this.getY() || this.zOld != this.getZ()) {
             if (this.isInWaterOrBubble()) {
                 if (getSwimAnimation() != null) {
                     return state.setAndContinue(getSwimAnimation());
@@ -207,7 +209,7 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource source) {
+    protected SoundEvent getHurtSound(@NotNull DamageSource source) {
         return SoundEvents.HOSTILE_HURT;
     }
 

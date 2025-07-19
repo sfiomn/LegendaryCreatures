@@ -590,5 +590,33 @@
         "stream": false
       }
     ]
+  },
+  "dragonfly_idle": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.dragonfly_idle",
+    "sounds": [
+      {
+        "name": "legendarycreatures:dragonfly_idle1",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:dragonfly_idle2",
+        "stream": false
+      },
+      {
+        "name": "legendarycreatures:dragonfly_idle3",
+        "stream": false
+      }
+    ]
+  },
+  "scarab_idle": {
+    "category": "neutral",
+    "subtitle": "sounds.legendarycreatures.scarab_idle",
+    "sounds": [
+      {
+        "name": "legendarycreatures:scarab_idle",
+        "stream": false
+      }
+    ]
   }
 }

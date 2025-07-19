@@ -1,6 +1,7 @@
 package sfiomn.legendarycreatures.entities;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -15,7 +16,9 @@ import net.minecraft.world.entity.animal.FlyingAnimal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import sfiomn.legendarycreatures.entities.goals.FlyingHoverGoal;
+import sfiomn.legendarycreatures.registry.SoundRegistry;
 
 public class DragonflyEntity extends AnimatedCreatureEntity implements FlyingAnimal {
     public DragonflyEntity(EntityType<? extends PathfinderMob> type, Level level) {
@@ -42,6 +45,12 @@ public class DragonflyEntity extends AnimatedCreatureEntity implements FlyingAni
         this.goalSelector.addGoal(2, new FloatGoal(this));
         this.goalSelector.addGoal(3, new RandomLookAroundGoal(this));
         this.goalSelector.addGoal(4, new FlyingHoverGoal(this, 10, 7, 2, 2));
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return SoundRegistry.DRAGONFLY_IDLE.get();
     }
 
     @Override

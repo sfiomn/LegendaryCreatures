@@ -204,7 +204,7 @@ public class ScorpionEntity extends AnimatedCreatureEntity {
     }
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource source) {
+    protected SoundEvent getHurtSound(@NotNull DamageSource source) {
         return SoundRegistry.SCORPION_HURT.get();
     }
 
