@@ -147,7 +147,7 @@ public abstract class AnimatedCreatureEntity extends PathfinderMob implements Ge
 
         if (getDeathAnimation() != null && this.isDeadOrDying()) {
             return state.setAndContinue(getDeathAnimation());
-        } else if (state.isMoving() || this.xOld != this.getX() || this.yOld != this.getY() || this.zOld != this.getZ()) {
+        } else if (state.isMoving() || this.xOld != this.getX() || this.zOld != this.getZ()) {
             if (this.isInWaterOrBubble()) {
                 if (getSwimAnimation() != null) {
                     return state.setAndContinue(getSwimAnimation());

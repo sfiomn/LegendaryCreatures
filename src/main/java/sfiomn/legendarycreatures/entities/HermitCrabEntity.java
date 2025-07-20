@@ -34,7 +34,7 @@ public class HermitCrabEntity extends AnimatedCreatureEntity {
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(2, new FloatGoal(this));
-        this.goalSelector.addGoal(4, new RandomStrollGoal(this, 1.0, 180) {
+        this.goalSelector.addGoal(4, new RandomStrollGoal(this, 1.0, 200) {
             @Override
             protected Vec3 getPosition() {
                 return DefaultRandomPos.getPos(this.mob, 6, 7);

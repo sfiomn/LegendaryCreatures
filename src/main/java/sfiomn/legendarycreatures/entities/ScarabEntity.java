@@ -37,7 +37,7 @@ public class ScarabEntity extends AnimatedCreatureEntity {
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(2, new FloatGoal(this));
-        this.goalSelector.addGoal(4, new RandomStrollGoal(this, 1.0, 120) {
+        this.goalSelector.addGoal(4, new RandomStrollGoal(this, 1.0, 160) {
             @Override
             protected Vec3 getPosition() {
                 return DefaultRandomPos.getPos(this.mob, 6, 7);
