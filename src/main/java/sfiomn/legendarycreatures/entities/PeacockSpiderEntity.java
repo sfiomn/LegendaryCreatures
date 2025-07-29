@@ -21,6 +21,7 @@ import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -37,7 +38,7 @@ import software.bernie.geckolib.core.object.PlayState;
 
 import javax.annotation.Nullable;
 
-public class PeacockSpiderEntity extends AnimatedCreatureEntity {
+public class PeacockSpiderEntity extends AnimatedCreatureEntity implements Enemy {
     private final int baseAttackDuration = 16;
     private final int baseAttackActionPoint = 10;
     private final int attackDelayTicks = 40;
